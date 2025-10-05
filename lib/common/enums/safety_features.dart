@@ -1,0 +1,18 @@
+enum SafetyFeature {
+  airbags,
+  abs,
+  tractionControl,
+  laneDepartureWarning,
+  blindSpotMonitoring,
+  adaptiveCruiseControl,
+  forwardCollisionWarning,
+  automaticEmergencyBraking,
+  rearCrossTrafficAlert,
+  tirePressureMonitoringSystem,
+  stabilityControl,
+  parkingSensors,
+  rearviewCamera,
+  hillDescentControl,
+  driverDrowsinessMonitoring,
+  pedestrianDetection,
+}
