@@ -13,6 +13,7 @@ import 'package:wolfera/features/app/domin/repositories/prefs_repository.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_elvated_button.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_svg_picture.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
+import 'package:wolfera/features/app/presentation/widgets/custom_button_with_icon.dart';
 import 'package:wolfera/features/auth/presentation/widgets/custom_textfeild.dart';
 import 'package:wolfera/generated/assets.dart';
 import 'package:wolfera/generated/locale_keys.g.dart';
@@ -168,31 +169,35 @@ class _LoginPageState extends State<LoginPage> {
                         );
                       },
                     ),
-                    20.verticalSpace,
-                    // Google Sign In Button
-                    BlocBuilder<AuthBloc, AuthState>(
-                      builder: (context, state) {
-                        return SizedBox(
-                          width: 351.w,
-                          height: 54.h,
-                          child: AppElevatedButton(
-                            style: ButtonStyle(
-                                shape: WidgetStatePropertyAll(
-                                    RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(5).r)),
-                                textStyle: WidgetStatePropertyAll(
-                                  context.textTheme.bodyMedium!.s20.b
-                                      .withColor(AppColors.white),
-                                ),
-                                backgroundColor: const WidgetStatePropertyAll(
-                                    Colors.red)),
-                            text: "تسجيل الدخول بـ Google",
-                            isLoading: state.loginStatus.isLoading(),
-                            onPressed: _onGoogleLogin,
+                    12.verticalSpace,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            height: 2.h,
+                            color: AppColors.grey,
                           ),
-                        );
-                      },
+                        ),
+                        5.horizontalSpace,
+                        AppText(
+                          "OR",
+                          style: context.textTheme.bodyMedium.b
+                              .withColor(AppColors.grey),
+                        ),
+                        5.horizontalSpace,
+                        Expanded(
+                          child: Container(
+                            height: 2.h,
+                            color: AppColors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                    15.verticalSpace,
+                    CustomButtonWithIcon(
+                      text: "تسجيل الدخول بـ Google",
+                      icon: Assets.svgGoogle,
+                      onTap: _onGoogleLogin,
                     ),
                     45.verticalSpace,
                     InkWell(
@@ -207,7 +212,7 @@ class _LoginPageState extends State<LoginPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           AppText(
-                            "Don’t have an account?",
+                            "Don't have an account?",
                             style: context.textTheme.titleMedium!.b
                                 .withColor(AppColors.whiteLess),
                           ),

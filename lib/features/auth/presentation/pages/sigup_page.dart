@@ -147,10 +147,11 @@ class _SingUpPageState extends State<SingUpPage> {
                     12.verticalSpace,
                     Row(
                       children: [
-                        Container(
-                          height: 2.h,
-                          width: 144.w,
-                          color: AppColors.grey,
+                        Expanded(
+                          child: Container(
+                            height: 2.h,
+                            color: AppColors.grey,
+                          ),
                         ),
                         5.horizontalSpace,
                         AppText(
@@ -159,10 +160,11 @@ class _SingUpPageState extends State<SingUpPage> {
                               .withColor(AppColors.grey),
                         ),
                         5.horizontalSpace,
-                        Container(
-                          height: 2.h,
-                          width: 144.w,
-                          color: AppColors.grey,
+                        Expanded(
+                          child: Container(
+                            height: 2.h,
+                            color: AppColors.grey,
+                          ),
                         ),
                       ],
                     ),
