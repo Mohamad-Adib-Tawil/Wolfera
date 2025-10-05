@@ -29,7 +29,7 @@ class _AddCarImagesPageState extends State<_AddCarImagesPage> {
                 Padding(
                   padding: HWEdgeInsetsDirectional.only(start: 20, top: 10),
                   child: AppText(
-                    'Upload photos of your car',
+                    'Upload photos of your car'.tr(),
                     style: context.textTheme.bodyMedium?.r.s20
                         .withColor(AppColors.grey),
                   ),

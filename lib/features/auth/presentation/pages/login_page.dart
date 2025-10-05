@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -203,7 +204,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     15.verticalSpace,
                     CustomButtonWithIcon(
-                      text: "تسجيل الدخول بـ Google",
+                      text: "تسجيل الدخول بـ Google".tr(),
                       icon: Assets.svgGoogle,
                       onTap: _onGoogleLogin,
                     ),

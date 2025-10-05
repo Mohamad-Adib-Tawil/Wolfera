@@ -34,7 +34,7 @@ class _EnterCarPriceAndDescriptionPageState
             ),
             50.verticalSpace,
             SellCarItem(
-              title: 'Price',
+              title: 'Price'.tr(),
               formControlName: _myCarsBloc.kFromCarPrice,
               prefix: AppText(
                 "\$",

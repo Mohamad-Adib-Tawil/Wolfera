@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
@@ -26,7 +27,7 @@ class AboutUsPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             AppText(
-              'This App Developed by',
+              'This App Developed by'.tr(),
               style: context.textTheme.bodyLarge!.s18.xb
                   .withColor(AppColors.white),
             ),

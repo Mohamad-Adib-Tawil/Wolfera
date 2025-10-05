@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -132,13 +133,13 @@ class MyCarsPage extends StatelessWidget {
                     .pushNamed(GRouter.config.myCarsRoutes.sellMyCarPage);
               },
               child: AppText(
-                "Sell My Car",
+                "Sell My Car".tr(),
                 style: context.textTheme.bodyLarge?.b
                     .withColor(AppColors.blackLight),
               )),
         ),
-        appBar: const CustomAppbar(
-          text: 'My Cars',
+        appBar: CustomAppbar(
+          text: 'My Cars'.tr(),
         ),
         body: const Column(
           children: [

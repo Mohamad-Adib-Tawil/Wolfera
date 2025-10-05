@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
@@ -28,8 +29,8 @@ class FilterPage extends StatelessWidget {
     final bloc = GetIt.I<SearchCubit>();
 
     return Scaffold(
-      appBar: const CustomAppbar(
-        text: 'Filter',
+      appBar: CustomAppbar(
+        text: 'Filter'.tr(),
         automaticallyImplyLeading: true,
       ),
       body: SingleChildScrollView(
@@ -66,7 +67,7 @@ class FilterPage extends StatelessWidget {
             label: Padding(
               padding: HWEdgeInsets.symmetric(horizontal: 36),
               child: AppText(
-                "Apply",
+                "Apply".tr(),
                 style: context.textTheme.bodyMedium?.s20.b,
               ),
             ),
@@ -77,7 +78,7 @@ class FilterPage extends StatelessWidget {
             label: Padding(
               padding: HWEdgeInsets.symmetric(horizontal: 20),
               child: AppText(
-                "Reset",
+                "Reset".tr(),
                 style: context.textTheme.bodyMedium?.s20.b,
               ),
             ),
