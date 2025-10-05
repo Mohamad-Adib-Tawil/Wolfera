@@ -72,6 +72,17 @@
     "writeAnyProblem": "Write any problem or message and we will answer you as soon as possible",
     "writeComment": "Write here any comment related to the service......."
   },
+  "Create Account": "Create Account",
+  "Login": "Login",
+  "Enter email": "Enter email",
+  "Sign Up": "Sign Up",
+  "Don't have an account?": "Don't have an account?",
+  "OR": "OR",
+  "Sign up with Google": "Sign up with Google",
+  "تسجيل الدخول بـ Google": "Sign in with Google",
+  "🇦🇪": "🇦🇪",
+  "971+": "+971",
+  "خطأ في المصادقة. تحقق من إعدادات Supabase": "Authentication error. Check Supabase settings",
   "auth": {
     "createAccount": "Create Account",
     "confirmEmail": "Confirm Email",
