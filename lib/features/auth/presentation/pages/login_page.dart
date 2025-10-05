@@ -14,6 +14,7 @@ import 'package:wolfera/features/app/presentation/widgets/app_elvated_button.dar
 import 'package:wolfera/features/app/presentation/widgets/app_svg_picture.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
 import 'package:wolfera/features/app/presentation/widgets/custom_button_with_icon.dart';
+import 'package:wolfera/features/app/presentation/widgets/language_dropdown.dart';
 import 'package:wolfera/features/auth/presentation/widgets/custom_textfeild.dart';
 import 'package:wolfera/generated/assets.dart';
 import 'package:wolfera/generated/locale_keys.g.dart';
@@ -52,11 +53,18 @@ class _LoginPageState extends State<LoginPage> {
             child: SingleChildScrollView(
               child: Padding(
                 padding:
-                    HWEdgeInsets.only(top: 85, right: 40, left: 40, bottom: 30),
+                    HWEdgeInsets.only(top: 20, right: 40, left: 40, bottom: 30),
                 child: Column(
                   mainAxisSize: MainAxisSize.max,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        const LanguageDropdown(),
+                      ],
+                    ),
+                    45.verticalSpace,
                     Align(
                       alignment: Alignment.center,
                       child: SimpleShadow(

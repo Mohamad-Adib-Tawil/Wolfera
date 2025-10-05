@@ -83,6 +83,8 @@
   "🇦🇪": "🇦🇪",
   "971+": "+971",
   "خطأ في المصادقة. تحقق من إعدادات Supabase": "Authentication error. Check Supabase settings",
+  "عربي": "Arabic",
+  "English": "English",
   "auth": {
     "createAccount": "Create Account",
     "confirmEmail": "Confirm Email",
