@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:wolfera/core/utils/responsive_padding.dart';
 import 'package:wolfera/features/app/presentation/widgets/custom_appbar.dart';
@@ -10,8 +11,8 @@ class FavioratePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppbar(
-        text: 'Faviorate',
+      appBar: CustomAppbar(
+        text: 'Faviorate'.tr(),
         automaticallyImplyLeading: false,
       ),
       body: Column(

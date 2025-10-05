@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -47,7 +48,7 @@ class _ResetPasswordState extends State<ResetPassword> {
               opacity: 0.15,
               offset: const Offset(0, 4),
               sigma: 4,
-              child: AppText("Reset Password",
+              child: AppText("Reset Password".tr(),
                   textAlign: TextAlign.center,
                   style: context.textTheme.headlineSmall.xb),
             ),

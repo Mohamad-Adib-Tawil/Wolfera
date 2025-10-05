@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wolfera/core/config/routing/router.dart';
@@ -65,7 +66,7 @@ class _Button extends StatelessWidget {
     return Padding(
         padding: HWEdgeInsetsDirectional.only(bottom: 24, start: 30, end: 30),
         child: AppElevatedButton(
-          text: 'Go to dashboard',
+          text: 'Go to dashboard'.tr(),
           onPressed: () =>
               GRouter.router.goNamed(GRouter.config.mainRoutes.myCars),
           textStyle:

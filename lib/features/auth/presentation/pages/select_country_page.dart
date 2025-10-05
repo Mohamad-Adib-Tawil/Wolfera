@@ -1,4 +1,5 @@
 import 'package:dropdown_search/dropdown_search.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wolfera/core/config/routing/router.dart';
@@ -71,7 +72,7 @@ class _SelectCountyPageState extends State<SelectCountyPage> {
                     offset: const Offset(0, 4),
                     sigma: 4,
                     child: AppText(
-                      "Chose Country",
+                      "Choose Country".tr(),
                       textAlign: TextAlign.center,
                       style: context.textTheme.headlineMedium?.b.withColor(
                         AppColors.white,

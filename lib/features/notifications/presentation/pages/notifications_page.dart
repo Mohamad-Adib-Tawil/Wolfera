@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
@@ -14,8 +15,8 @@ class NotificationsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.blackLight,
-      appBar: const CustomAppbar(
-        text: 'Notifications',
+      appBar: CustomAppbar(
+        text: 'Notifications'.tr(),
         automaticallyImplyLeading: true,
       ),
       body: SingleChildScrollView(
@@ -61,13 +62,13 @@ class NotificationItemWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AppText(
-            'From Mohamad Adib Tawil',
+            'From Mohamad Adib Tawil'.tr(),
             style:
                 context.textTheme.bodyLarge?.b.s15.withColor(AppColors.white),
           ),
           10.verticalSpace,
           AppText(
-            "Let's go",
+            "Let's go".tr(),
             style: context.textTheme.bodyLarge?.s14.withColor(AppColors.white),
           ),
         ],
