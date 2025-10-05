@@ -97,7 +97,7 @@ class _Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isRtl = Directionality.of(context) == TextDirection.rtl;
+    final isRtl = context.locale.languageCode == 'ar';
     return Container(
       height: 115.h,
       margin: HWEdgeInsets.only(

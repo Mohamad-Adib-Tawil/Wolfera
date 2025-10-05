@@ -215,9 +215,7 @@ class _LoginPageState extends State<LoginPage> {
                       onTap: () => GRouter.router.pushReplacement(
                           GRouter.config.authRoutes.signupPage),
                       child: Row(
-                        textDirection: LanguageService.rtl
-                            ? TextDirection.rtl
-                            : TextDirection.ltr,
+                        textDirection: LanguageService.textDirection,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           AppText(
