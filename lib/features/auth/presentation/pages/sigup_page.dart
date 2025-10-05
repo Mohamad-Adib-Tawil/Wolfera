@@ -190,9 +190,7 @@ class _SingUpPageState extends State<SingUpPage> {
                       onTap: () => GRouter.router
                           .push(GRouter.config.authRoutes.loginPage),
                       child: Row(
-                        textDirection: LanguageService.rtl
-                            ? TextDirection.rtl
-                            : TextDirection.ltr,
+                        textDirection: LanguageService.textDirection,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           AppText(
