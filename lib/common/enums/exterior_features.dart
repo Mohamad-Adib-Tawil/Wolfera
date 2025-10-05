@@ -1,0 +1,17 @@
+enum ExteriorFeature {
+  alloyWheels,
+  fogLights,
+  sunroof,
+  roofRails,
+  towPackage,
+  powerLiftgate,
+  ledHeadlights,
+  runningBoards,
+  rearSpoiler,
+  tintedWindows,
+  heatedSideMirrors,
+  rainSensingWipers,
+  panoramicSunroof,
+  roofRack,
+  dualExhaust,
+}
