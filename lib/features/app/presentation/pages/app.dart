@@ -57,7 +57,16 @@ class _AppRouteState extends State<_AppRoute> {
         locale: context.locale,
         localizationsDelegates: context.localizationDelegates,
         supportedLocales: context.supportedLocales,
-        builder: EasyLoading.init(),
+        builder: (context, child) {
+          return MediaQuery(
+            data: MediaQuery.of(context).copyWith(
+              textScaler: TextScaler.linear(
+                context.locale.languageCode == 'ar' ? 0.85 : 1.0,
+              ),
+            ),
+            child: EasyLoading.init()(context, child),
+          );
+        },
       ),
     );
   }
