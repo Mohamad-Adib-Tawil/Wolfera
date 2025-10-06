@@ -64,14 +64,14 @@ class OnboardingPage extends StatelessWidget {
                   ),
                 ),
               ),
-              40.verticalSpace,
+              60.verticalSpace,
               FadeInLeft(
                 duration: const Duration(milliseconds: 1400),
                 child: Image.asset(
                   Assets.imagesOnboarding,
                 ),
               ),
-              50.verticalSpace,
+              70.verticalSpace,
               Padding(
                 padding: HWEdgeInsets.symmetric(horizontal: 28),
                 child: Bounce(
