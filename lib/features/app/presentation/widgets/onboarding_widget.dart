@@ -64,7 +64,7 @@ class OnboardingPage extends StatelessWidget {
                   ),
                 ),
               ),
-              60.verticalSpace,
+              40.verticalSpace,
               FadeInLeft(
                 duration: const Duration(milliseconds: 1400),
                 child: Image.asset(
