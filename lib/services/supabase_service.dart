@@ -40,32 +40,25 @@ class SupabaseService {
   // Google Sign In - Direct integration with Google Cloud Console
   static Future<AuthResponse> signInWithGoogle() async {
     try {
-      // Configure Google Sign-In with Google Cloud Console Web Client ID
-      final GoogleSignIn googleSignIn = GoogleSignIn(
-        scopes: ['email', 'profile'],
+      // Google Sign-In v7+: use singleton + initialize + authenticate
+      await GoogleSignIn.instance.initialize(
         serverClientId: SupabaseConfig.googleWebClientId,
       );
 
-      final googleUser = await googleSignIn.signIn();
-      if (googleUser == null) {
-        throw 'Google sign in was cancelled';
-      }
+      // Start interactive authentication with scope hints
+      final account = await GoogleSignIn.instance.authenticate(
+        scopeHint: const ['email', 'profile'],
+      );
 
-      final googleAuth = await googleUser.authentication;
-      final accessToken = googleAuth.accessToken;
-      final idToken = googleAuth.idToken;
-
-      if (accessToken == null) {
-        throw 'No Access Token found.';
-      }
+      final idToken = account.authentication.idToken;
       if (idToken == null) {
         throw 'No ID Token found.';
       }
 
+      // Supabase requires idToken for Google; accessToken is optional
       final response = await client.auth.signInWithIdToken(
         provider: OAuthProvider.google,
         idToken: idToken,
-        accessToken: accessToken,
       );
 
       print('✅ Google Sign-In successful: ${response.user?.email}');
