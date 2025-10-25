@@ -16,62 +16,81 @@ class ProfileDatasource {
           'No user is currently logged in.',
         );
       }
-      String? avatarUrl;
 
+      print('📝 Update params: name=${params.displayName}, email=${params.email}, phone=${params.phoneNumber}, hasAvatar=${params.avatar != null}');
+
+      // Get current user data from database
+      final currentData = await SupabaseService.client
+          .from('users')
+          .select('full_name, email, phone_number, avatar_url')
+          .eq('id', user.id)
+          .maybeSingle();
+
+      print('📊 Current data from DB: $currentData');
+
+      // Determine final values (use new value if provided, otherwise keep current)
+      final finalDisplayName = params.displayName ?? currentData?['full_name'] ?? user.userMetadata?['display_name'];
+      final finalEmail = params.email ?? currentData?['email'] ?? user.email;
+      final finalPhoneNumber = params.phoneNumber ?? currentData?['phone_number'];
+      String? finalAvatarUrl = currentData?['avatar_url'] as String?;
+
+      // Upload new avatar if provided
       if (params.avatar != null) {
-        // Upload avatar using the new StorageService
         print('📤 Uploading new avatar...');
-        avatarUrl = await StorageService.uploadAvatar(
+        finalAvatarUrl = await StorageService.uploadAvatar(
           userId: user.id,
           imageFile: params.avatar!,
         );
-        print('✅ Avatar uploaded: $avatarUrl');
+        print('✅ Avatar uploaded: $finalAvatarUrl');
       }
 
-      // Get current avatar URL if not uploading a new one
-      if (avatarUrl == null) {
-        final currentData = await SupabaseService.client
-            .from('users')
-            .select('avatar_url')
-            .eq('id', user.id)
-            .maybeSingle();
-        avatarUrl = currentData?['avatar_url'] as String?;
-      }
+      print('🎯 Final values: name=$finalDisplayName, email=$finalEmail, phone=$finalPhoneNumber, avatar=$finalAvatarUrl');
 
       // Update user metadata in Supabase Auth
       print('🔄 Updating user metadata...');
-      final authUpdateData = {
-        'display_name': params.displayName,
-      };
-      if (avatarUrl != null) {
-        authUpdateData['avatar_url'] = avatarUrl;
+      final authUpdateData = <String, dynamic>{};
+      
+      if (finalDisplayName != null) {
+        authUpdateData['display_name'] = finalDisplayName;
+      }
+      if (finalAvatarUrl != null) {
+        authUpdateData['avatar_url'] = finalAvatarUrl;
       }
       
       final authResponse = await SupabaseService.client.auth.updateUser(
         UserAttributes(
-          email: params.email,
-          data: authUpdateData,
+          email: finalEmail,
+          data: authUpdateData.isNotEmpty ? authUpdateData : null,
         ),
       );
 
       // Update user profile in users table
       print('🔄 Updating users table...');
-      final updateData = {
+      final updateData = <String, dynamic>{
         'id': user.id,
-        'phone_number': params.phoneNumber,
-        'email': params.email,
-        'full_name': params.displayName,
         'updated_at': DateTime.now().toIso8601String(),
       };
       
-      // Always include avatar_url to maintain consistency
-      if (avatarUrl != null) {
-        updateData['avatar_url'] = avatarUrl;
+      // Only update fields that have values
+      if (finalDisplayName != null) {
+        updateData['full_name'] = finalDisplayName;
       }
+      if (finalEmail != null) {
+        updateData['email'] = finalEmail;
+      }
+      if (finalPhoneNumber != null) {
+        updateData['phone_number'] = finalPhoneNumber;
+      }
+      if (finalAvatarUrl != null) {
+        updateData['avatar_url'] = finalAvatarUrl;
+      }
+      
+      print('📦 Update data: $updateData');
       
       await SupabaseService.client
           .from('users')
-          .upsert(updateData, onConflict: 'id');
+          .update(updateData)
+          .eq('id', user.id);
       
       print('✅ Profile updated successfully');
 

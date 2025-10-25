@@ -19,14 +19,14 @@ class UpdateProfileUsecase extends UseCase<Result<User>, UpdateProfileParams> {
 
 class UpdateProfileParams {
   const UpdateProfileParams({
-    required this.displayName,
-    required this.email,
-    required this.phoneNumber,
-    required this.avatar,
+    this.displayName,
+    this.email,
+    this.phoneNumber,
+    this.avatar,
   });
 
-  final String displayName;
-  final String email;
-  final String phoneNumber;
+  final String? displayName;
+  final String? email;
+  final String? phoneNumber;
   final File? avatar;
 }
