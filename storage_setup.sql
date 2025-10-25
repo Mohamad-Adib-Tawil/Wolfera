@@ -4,7 +4,23 @@
 -- Run this SQL in Supabase Dashboard → SQL Editor
 -- ================================================
 
--- 1. Create Storage Buckets
+-- STEP 1: Drop existing policies to avoid conflicts
+-- ================================================
+DROP POLICY IF EXISTS "user-avatars public read" ON storage.objects;
+DROP POLICY IF EXISTS "user-avatars authenticated upload" ON storage.objects;
+DROP POLICY IF EXISTS "user-avatars owner update" ON storage.objects;
+DROP POLICY IF EXISTS "user-avatars owner delete" ON storage.objects;
+
+DROP POLICY IF EXISTS "car-images public read" ON storage.objects;
+DROP POLICY IF EXISTS "car-images authenticated upload" ON storage.objects;
+DROP POLICY IF EXISTS "car-images owner update" ON storage.objects;
+DROP POLICY IF EXISTS "car-images owner delete" ON storage.objects;
+
+DROP POLICY IF EXISTS "chat-attachments public read" ON storage.objects;
+DROP POLICY IF EXISTS "chat-attachments authenticated upload" ON storage.objects;
+DROP POLICY IF EXISTS "chat-attachments participants access" ON storage.objects;
+
+-- STEP 2: Create Storage Buckets
 -- ================================================
 
 -- Create user-avatars bucket (public)
@@ -23,7 +39,7 @@ VALUES ('chat-attachments', 'chat-attachments', false)
 ON CONFLICT (id) DO UPDATE SET public = false;
 
 
--- 2. Storage Policies for user-avatars
+-- STEP 3: Storage Policies for user-avatars
 -- ================================================
 
 -- Public read access for avatars
@@ -32,8 +48,8 @@ ON storage.objects FOR SELECT
 TO public
 USING (bucket_id = 'user-avatars');
 
--- Users can upload to their own folder
-CREATE POLICY "user-avatars user upload"
+-- Authenticated users can upload to their own folder
+CREATE POLICY "user-avatars authenticated upload"
 ON storage.objects FOR INSERT
 TO authenticated
 WITH CHECK (
@@ -42,7 +58,7 @@ WITH CHECK (
 );
 
 -- Users can update their own files
-CREATE POLICY "user-avatars user update"
+CREATE POLICY "user-avatars owner update"
 ON storage.objects FOR UPDATE
 TO authenticated
 USING (
@@ -51,7 +67,7 @@ USING (
 );
 
 -- Users can delete their own files
-CREATE POLICY "user-avatars user delete"
+CREATE POLICY "user-avatars owner delete"
 ON storage.objects FOR DELETE
 TO authenticated
 USING (
@@ -60,7 +76,7 @@ USING (
 );
 
 
--- 3. Storage Policies for car-images
+-- STEP 4: Storage Policies for car-images
 -- ================================================
 
 -- Public read access for car images
@@ -69,8 +85,8 @@ ON storage.objects FOR SELECT
 TO public
 USING (bucket_id = 'car-images');
 
--- Users can upload to their own folder
-CREATE POLICY "car-images user upload"
+-- Authenticated users can upload to their own folder
+CREATE POLICY "car-images authenticated upload"
 ON storage.objects FOR INSERT
 TO authenticated
 WITH CHECK (
@@ -79,7 +95,7 @@ WITH CHECK (
 );
 
 -- Users can update their own files
-CREATE POLICY "car-images user update"
+CREATE POLICY "car-images owner update"
 ON storage.objects FOR UPDATE
 TO authenticated
 USING (
@@ -88,7 +104,7 @@ USING (
 );
 
 -- Users can delete their own files
-CREATE POLICY "car-images user delete"
+CREATE POLICY "car-images owner delete"
 ON storage.objects FOR DELETE
 TO authenticated
 USING (
@@ -97,20 +113,17 @@ USING (
 );
 
 
--- 4. Storage Policies for chat-attachments
+-- STEP 5: Storage Policies for chat-attachments
 -- ================================================
 
--- Owner can read their own attachments
-CREATE POLICY "chat-attachments owner read"
+-- Public read access for chat attachments
+CREATE POLICY "chat-attachments public read"
 ON storage.objects FOR SELECT
-TO authenticated
-USING (
-  bucket_id = 'chat-attachments'
-  AND (storage.foldername(name))[1] = auth.uid()::text
-);
+TO public
+USING (bucket_id = 'chat-attachments');
 
--- Users can upload to their own folder
-CREATE POLICY "chat-attachments user upload"
+-- Authenticated users can upload to their own folder
+CREATE POLICY "chat-attachments authenticated upload"
 ON storage.objects FOR INSERT
 TO authenticated
 WITH CHECK (
@@ -118,23 +131,11 @@ WITH CHECK (
   AND (storage.foldername(name))[1] = auth.uid()::text
 );
 
--- Users can update their own files
-CREATE POLICY "chat-attachments user update"
-ON storage.objects FOR UPDATE
+-- Chat participants can access attachments (simplified for now)
+CREATE POLICY "chat-attachments participants access"
+ON storage.objects FOR SELECT
 TO authenticated
-USING (
-  bucket_id = 'chat-attachments'
-  AND (storage.foldername(name))[1] = auth.uid()::text
-);
-
--- Users can delete their own files
-CREATE POLICY "chat-attachments user delete"
-ON storage.objects FOR DELETE
-TO authenticated
-USING (
-  bucket_id = 'chat-attachments'
-  AND (storage.foldername(name))[1] = auth.uid()::text
-);
+USING (bucket_id = 'chat-attachments');
 
 
 -- ================================================
