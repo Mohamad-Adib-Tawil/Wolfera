@@ -253,16 +253,49 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           loginStatus: const BlocStatus.success(),
         ));
         String? phoneNumber;
+        String? fullName;
+        String? avatarUrl;
+        
         // Get user data from Supabase
         final userData = await Supabase.instance.client
             .from('users')
-            .select('phone_number')
+            .select('phone_number, full_name, avatar_url')
             .eq('id', value.id)
             .maybeSingle();
 
         phoneNumber = userData?['phone_number'] as String?;
+        fullName = userData?['full_name'] as String?;
+        avatarUrl = userData?['avatar_url'] as String?;
 
-        await _prefsRepository.setUser(value, phoneNumber ?? "");
+        print('🔐 Login successful - User metadata: ${value.userMetadata}');
+        print('🔐 User from DB: fullName=$fullName, avatarUrl=$avatarUrl');
+        
+        // If display_name is not in metadata, update it from database
+        if (fullName != null && value.userMetadata?['display_name'] == null) {
+          try {
+            print('🔄 Updating auth metadata with display_name from database...');
+            await Supabase.instance.client.auth.updateUser(
+              UserAttributes(
+                data: {
+                  'display_name': fullName,
+                  if (avatarUrl != null) 'avatar_url': avatarUrl,
+                },
+              ),
+            );
+            // Refresh user to get updated metadata
+            final updatedUser = Supabase.instance.client.auth.currentUser;
+            if (updatedUser != null) {
+              await _prefsRepository.setUser(updatedUser, phoneNumber ?? "");
+            } else {
+              await _prefsRepository.setUser(value, phoneNumber ?? "");
+            }
+          } catch (e) {
+            print('⚠️ Could not update auth metadata: $e');
+            await _prefsRepository.setUser(value, phoneNumber ?? "");
+          }
+        } else {
+          await _prefsRepository.setUser(value, phoneNumber ?? "");
+        }
 
         loginForm
           ..value = {
@@ -298,21 +331,55 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           loginStatus: const BlocStatus.success(),
         ));
         String? phoneNumber;
+        String? fullName;
+        String? avatarUrl;
+        
         // Get user data from Supabase with error handling
         try {
           final userData = await Supabase.instance.client
               .from('users')
-              .select('phone_number')
+              .select('phone_number, full_name, avatar_url')
               .eq('id', value.id)
               .maybeSingle();
           
           phoneNumber = userData?['phone_number'];
+          fullName = userData?['full_name'];
+          avatarUrl = userData?['avatar_url'];
         } catch (e) {
           print('❌ Failed to get user data from database: $e');
           phoneNumber = null;
         }
 
-        await _prefsRepository.setUser(value, phoneNumber ?? "");
+        print('🔐 Google login successful - User metadata: ${value.userMetadata}');
+        print('🔐 User from DB: fullName=$fullName, avatarUrl=$avatarUrl');
+        
+        // If display_name is not in metadata, update it from database
+        if (fullName != null && value.userMetadata?['display_name'] == null) {
+          try {
+            print('🔄 Updating auth metadata with display_name from database...');
+            await Supabase.instance.client.auth.updateUser(
+              UserAttributes(
+                data: {
+                  'display_name': fullName,
+                  if (avatarUrl != null) 'avatar_url': avatarUrl,
+                },
+              ),
+            );
+            // Refresh user to get updated metadata
+            final updatedUser = Supabase.instance.client.auth.currentUser;
+            if (updatedUser != null) {
+              await _prefsRepository.setUser(updatedUser, phoneNumber ?? "");
+            } else {
+              await _prefsRepository.setUser(value, phoneNumber ?? "");
+            }
+          } catch (e) {
+            print('⚠️ Could not update auth metadata: $e');
+            await _prefsRepository.setUser(value, phoneNumber ?? "");
+          }
+        } else {
+          await _prefsRepository.setUser(value, phoneNumber ?? "");
+        }
+        
         _appManagerCubit.checkUser();
 
         event.onSuccess(value);
