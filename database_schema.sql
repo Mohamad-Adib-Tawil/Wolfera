@@ -230,6 +230,9 @@ ALTER TABLE public.car_views ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view all profiles" ON public.users
     FOR SELECT USING (true);
 
+CREATE POLICY "Users can insert own profile" ON public.users
+    FOR INSERT WITH CHECK (auth.uid() = id);
+
 CREATE POLICY "Users can update own profile" ON public.users
     FOR UPDATE USING (auth.uid() = id);
 

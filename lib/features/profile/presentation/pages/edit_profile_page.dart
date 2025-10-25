@@ -82,20 +82,20 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               child: Column(
                                 children: [
                                   65.verticalSpace,
-                                  const CustomTextField(
+                                  CustomTextField(
                                     hint: LocaleKeys.ProfileDetials_fullName,
-                                    formControlName: 'name',
+                                    formControlName: _profileCubit.kFromName,
                                     textInputAction: TextInputAction.next,
-                                    prefixIcon: AppSvgPicture(
+                                    prefixIcon: const AppSvgPicture(
                                       Assets.svgPerson,
                                     ),
                                   ),
                                   30.verticalSpace,
-                                  const CustomTextField(
+                                  CustomTextField(
                                     hint: LocaleKeys.ProfileDetials_email,
-                                    formControlName: 'email',
+                                    formControlName: _profileCubit.kFromEmail,
                                     textInputAction: TextInputAction.next,
-                                    prefixIcon: AppSvgPicture(
+                                    prefixIcon: const AppSvgPicture(
                                       Assets.svgEmail,
                                     ),
                                   ),

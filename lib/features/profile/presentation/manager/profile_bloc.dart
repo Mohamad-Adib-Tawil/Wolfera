@@ -131,10 +131,18 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
               .maybeSingle();
 
           phoneNumber = userData?['phone_number'] as String?;
+          
+          // Save updated user to preferences
           await _prefsRepository.setUser(value, phoneNumber ?? "");
+          
+          // Force UI update by checking user again
           _appManagerCubit.checkUser();
+          
+          // Show success message
           showMessage(tr(LocaleKeys.dataHasBeenModifiedSuccessfully),
               isSuccess: true);
+          
+          // Pop the edit screen
           GRouter.router.pop();
         },
       );

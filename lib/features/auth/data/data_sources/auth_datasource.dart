@@ -18,7 +18,8 @@ class AuthDatasource {
         email: params.email,
         password: params.password,
         data: {
-          'full_name': params.fullName,
+          'display_name': params.fullName,  // Use display_name for consistency
+          'full_name': params.fullName,     // Keep full_name for backward compatibility
           'phone_number': params.phoneNumber,
         },
       );
@@ -84,17 +85,36 @@ class AuthDatasource {
       if (existingUser == null) {
         print('📝 Creating new user record in database...');
         try {
+          // Get user name from Google metadata
+          final displayName = user.userMetadata?['full_name'] ?? 
+                             user.userMetadata?['name'] ?? 
+                             user.email?.split('@').first;
+          
           // Create user record
           await SupabaseService.client
               .from('users')
               .upsert({
             'id': user.id,
-            'full_name': user.userMetadata?['full_name'] ?? user.email?.split('@').first,
+            'full_name': displayName,
             'email': user.email,
             'phone_number': user.phone ?? '',
-            'avatar_url': user.userMetadata?['avatar_url'],
+            'avatar_url': user.userMetadata?['avatar_url'] ?? user.userMetadata?['picture'],
             'created_at': DateTime.now().toIso8601String(),
           }, onConflict: 'id').timeout(Duration(seconds: 10));
+          
+          // Also update auth metadata to ensure consistency
+          try {
+            await SupabaseService.client.auth.updateUser(
+              UserAttributes(
+                data: {
+                  'display_name': displayName,
+                  'avatar_url': user.userMetadata?['avatar_url'] ?? user.userMetadata?['picture'],
+                },
+              ),
+            );
+          } catch (e) {
+            print('⚠️ Could not update auth metadata: $e');
+          }
           print('✅ User record created successfully');
         } catch (e) {
           print('❌ Failed to create user record: $e');
