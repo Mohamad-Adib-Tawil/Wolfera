@@ -68,3 +68,7 @@ app.*.map.json
 .fvm/
 .vscode
 .fvmrc
+
+# Documentation: ignore all markdown files except README.md
+*.md
+!README.md
