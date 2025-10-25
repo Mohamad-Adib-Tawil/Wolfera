@@ -27,8 +27,12 @@ mixin _$LocalUser {
   String? get photoURL => throw _privateConstructorUsedError;
   String? get phoneNumber => throw _privateConstructorUsedError;
 
+  /// Serializes this LocalUser to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
-  @JsonKey(ignore: true)
+
+  /// Create a copy of LocalUser
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   $LocalUserCopyWith<LocalUser> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -57,6 +61,8 @@ class _$LocalUserCopyWithImpl<$Res, $Val extends LocalUser>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
+  /// Create a copy of LocalUser
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -121,6 +127,8 @@ class __$$LocalUserImplCopyWithImpl<$Res>
       _$LocalUserImpl _value, $Res Function(_$LocalUserImpl) _then)
       : super(_value, _then);
 
+  /// Create a copy of LocalUser
+  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
@@ -209,12 +217,14 @@ class _$LocalUserImpl implements _LocalUser {
                 other.phoneNumber == phoneNumber));
   }
 
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   int get hashCode => Object.hash(runtimeType, uid, email, displayName,
       emailVerified, photoURL, phoneNumber);
 
-  @JsonKey(ignore: true)
+  /// Create a copy of LocalUser
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
   _$$LocalUserImplCopyWith<_$LocalUserImpl> get copyWith =>
@@ -252,8 +262,11 @@ abstract class _LocalUser implements LocalUser {
   String? get photoURL;
   @override
   String? get phoneNumber;
+
+  /// Create a copy of LocalUser
+  /// with the given fields replaced by the non-null parameter values.
   @override
-  @JsonKey(ignore: true)
+  @JsonKey(includeFromJson: false, includeToJson: false)
   _$$LocalUserImplCopyWith<_$LocalUserImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
