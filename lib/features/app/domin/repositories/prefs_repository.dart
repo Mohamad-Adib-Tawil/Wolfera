@@ -10,4 +10,7 @@ abstract class PrefsRepository {
   bool get registeredUser;
   LocalUser? get user;
   Future<bool> setUser(User user, String phoneNumber);
+  // Selected city persistence
+  String? get selectedCity;
+  Future<bool> setSelectedCity(String city);
 }

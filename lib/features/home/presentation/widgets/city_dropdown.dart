@@ -1,11 +1,13 @@
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get_it/get_it.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
 import 'package:wolfera/core/config/theme/my_color_scheme.dart';
 import 'package:wolfera/core/config/theme/typography.dart';
 import 'package:wolfera/core/utils/extensions/build_context.dart';
 import 'package:wolfera/core/utils/responsive_padding.dart';
+import 'package:wolfera/features/app/domin/repositories/prefs_repository.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_dropdown_search.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_svg_picture.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
@@ -35,17 +37,24 @@ class CityDropdown extends StatelessWidget {
   }
 
   Widget dropDown(BuildContext context) {
-    return AppDropdownSearch<String?>(
+    return AppDropdownSearch<String?> (
       items: const ["Dubie", "Germany"],
       itemAsString: (item) => item!.toUpperCase(),
-      selectedItem: "Germany",
-      onChanged: onChanged,
+      selectedItem: GetIt.I<PrefsRepository>().selectedCity ?? "Germany",
+      onChanged: (value) async {
+        final v = value ?? "Germany";
+        await GetIt.I<PrefsRepository>().setSelectedCity(v);
+        onChanged?.call(value);
+      },
       contentPadding: HWEdgeInsetsDirectional.only(start: 2, end: 0),
       dropdownButtonProps: DropdownButtonProps(
         iconSize: 14.w,
         alignment: Alignment.centerLeft,
-        icon: AppSvgPicture(Assets.svgArrowDown,
-            width: 14.w, color: context.colorScheme.white),
+        icon: AppSvgPicture(
+          Assets.svgArrowDown,
+          width: 14.w,
+          color: context.colorScheme.white,
+        ),
       ),
       baseStyle:
           context.textTheme.titleMedium?.s17.b.withColor(AppColors.white),

@@ -3,6 +3,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wolfera/core/config/routing/router.dart';
+import 'package:get_it/get_it.dart';
+import 'package:wolfera/features/app/domin/repositories/prefs_repository.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
 import 'package:wolfera/core/config/theme/my_color_scheme.dart';
 import 'package:wolfera/core/config/theme/typography.dart';
@@ -99,8 +101,10 @@ class _SelectCountyPageState extends State<SelectCountyPage> {
                 ),
                 65.verticalSpace,
                 TextButton(
-                  onPressed: () {
+                  onPressed: () async {
                     if (selectedOption != null) {
+                      await GetIt.I<PrefsRepository>()
+                          .setSelectedCity(selectedOption!);
                       GRouter.router.goNamed(GRouter.config.mainRoutes.home);
                     }
                   },
