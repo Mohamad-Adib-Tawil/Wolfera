@@ -27,11 +27,18 @@ class ProfileDatasource {
           .maybeSingle();
 
       print('📊 Current data from DB: $currentData');
+      
+      // Handle empty strings as null
+      final cleanDisplayName = params.displayName?.trim().isEmpty == true ? null : params.displayName?.trim();
+      final cleanEmail = params.email?.trim().isEmpty == true ? null : params.email?.trim();
+      final cleanPhoneNumber = params.phoneNumber?.trim().isEmpty == true ? null : params.phoneNumber?.trim();
+      
+      print('🧹 Cleaned params: name=$cleanDisplayName, email=$cleanEmail, phone=$cleanPhoneNumber');
 
       // Determine final values (use new value if provided, otherwise keep current)
-      final finalDisplayName = params.displayName ?? currentData?['full_name'] ?? user.userMetadata?['display_name'];
-      final finalEmail = params.email ?? currentData?['email'] ?? user.email;
-      final finalPhoneNumber = params.phoneNumber ?? currentData?['phone_number'];
+      final finalDisplayName = cleanDisplayName ?? currentData?['full_name'] ?? user.userMetadata?['display_name'];
+      final finalEmail = cleanEmail ?? currentData?['email'] ?? user.email;
+      final finalPhoneNumber = cleanPhoneNumber ?? currentData?['phone_number'];
       String? finalAvatarUrl = currentData?['avatar_url'] as String?;
 
       // Upload new avatar if provided
@@ -57,12 +64,22 @@ class ProfileDatasource {
         authUpdateData['avatar_url'] = finalAvatarUrl;
       }
       
-      final authResponse = await SupabaseService.client.auth.updateUser(
-        UserAttributes(
-          email: finalEmail,
-          data: authUpdateData.isNotEmpty ? authUpdateData : null,
-        ),
-      );
+      print('🔐 Auth update data: email=$finalEmail, metadata=$authUpdateData');
+      
+      UserResponse authResponse;
+      try {
+        authResponse = await SupabaseService.client.auth.updateUser(
+          UserAttributes(
+            email: finalEmail,
+            data: authUpdateData.isNotEmpty ? authUpdateData : null,
+          ),
+        );
+        print('✅ Auth update successful');
+      } catch (e) {
+        print('❌ Auth update error: $e');
+        print('❌ Error type: ${e.runtimeType}');
+        rethrow;
+      }
 
       // Update user profile in users table
       print('🔄 Updating users table...');
@@ -87,10 +104,19 @@ class ProfileDatasource {
       
       print('📦 Update data: $updateData');
       
-      await SupabaseService.client
-          .from('users')
-          .update(updateData)
-          .eq('id', user.id);
+      try {
+        final response = await SupabaseService.client
+            .from('users')
+            .update(updateData)
+            .eq('id', user.id)
+            .select();
+        
+        print('✅ Database update response: $response');
+      } catch (e) {
+        print('❌ Database update error: $e');
+        print('❌ Error type: ${e.runtimeType}');
+        rethrow;
+      }
       
       print('✅ Profile updated successfully');
 
