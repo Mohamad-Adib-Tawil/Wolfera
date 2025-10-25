@@ -346,10 +346,15 @@ AFTER INSERT ON public.car_views
     FOR EACH ROW EXECUTE FUNCTION increment_car_view_count();
 
 -- ===========================================
--- STORAGE BUCKETS
+-- STORAGE BUCKETS & POLICIES
 -- ===========================================
--- Run these in Supabase Dashboard:
--- 1. Create 'car-images' bucket for car photos
--- 2. Create 'user-avatars' bucket for profile pictures
--- 3. Create 'chat-attachments' bucket for message attachments
--- 4. Set appropriate policies for each bucket
+-- IMPORTANT: Run storage_setup.sql in Supabase SQL Editor to create buckets and policies
+-- File path: storage_setup.sql
+-- 
+-- Summary:
+-- 1. user-avatars (public) - User profile pictures
+-- 2. car-images (public) - Car listing photos
+-- 3. chat-attachments (private) - Message attachments
+--
+-- All buckets use folder-based RLS: {userId}/...
+-- Policies ensure users can only upload/modify/delete their own files
