@@ -92,7 +92,7 @@ class AuthDatasource {
             'full_name': user.userMetadata?['full_name'] ?? user.email?.split('@').first,
             'email': user.email,
             'phone_number': user.phone ?? '',
-            'photo_url': user.userMetadata?['avatar_url'],
+            'avatar_url': user.userMetadata?['avatar_url'],
             'created_at': DateTime.now().toIso8601String(),
           }, onConflict: 'id').timeout(Duration(seconds: 10));
           print('✅ User record created successfully');

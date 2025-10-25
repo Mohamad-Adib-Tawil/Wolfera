@@ -2,9 +2,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:injectable/injectable.dart';
 import 'package:wolfera/core/api/api_utils.dart';
 import 'package:wolfera/core/api/result.dart';
-import 'package:wolfera/core/utils/firebase_storage_helper.dart';
 import 'package:wolfera/features/profile/domain/use_cases/update_profile.dart';
 import 'package:wolfera/services/supabase_service.dart';
+import 'package:wolfera/services/storage_service.dart';
 
 @injectable
 class ProfileDatasource {
@@ -19,9 +19,10 @@ class ProfileDatasource {
       String? avatarUrl;
 
       if (params.avatar != null) {
-        avatarUrl = await SupabaseStorageHelper.uploadFile(
-          params.avatar!,
-          'avatars/${user.id}.jpg',
+        // Upload avatar using the new StorageService
+        avatarUrl = await StorageService.uploadAvatar(
+          userId: user.id,
+          imageFile: params.avatar!,
         );
       }
 
@@ -39,12 +40,14 @@ class ProfileDatasource {
       // Update user profile in users table
       await SupabaseService.client
           .from('users')
-          .update({
+          .upsert({
+        'id': user.id,
         'phone_number': params.phoneNumber,
         'email': params.email,
         'full_name': params.displayName,
-        if (avatarUrl != null) 'photo_url': avatarUrl,
-      }).eq('id', user.id);
+        if (avatarUrl != null) 'avatar_url': avatarUrl,
+        'updated_at': DateTime.now().toIso8601String(),
+      }, onConflict: 'id');
 
       return SupabaseService.currentUser!;
     }
