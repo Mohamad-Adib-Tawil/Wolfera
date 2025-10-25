@@ -43,14 +43,25 @@ class PrefsRepositoryImpl extends PrefsRepository {
       await setToken(session.accessToken);
     }
     
+    // Get display name from multiple sources (priority order)
+    String? displayName = user.userMetadata?['display_name'] ?? 
+                         user.userMetadata?['full_name'] ?? 
+                         user.email?.split('@').first;
+    
+    // Get avatar URL from multiple sources
+    String? photoURL = user.userMetadata?['avatar_url'] ?? 
+                      user.userMetadata?['photo_url'];
+    
     final userData = {
       'uid': user.id,
       'email': user.email,
-      'displayName': user.userMetadata?['display_name'],
+      'displayName': displayName,
       'emailVerified': user.emailConfirmedAt != null,
-      'photoURL': user.userMetadata?['avatar_url'],
+      'photoURL': photoURL,
       'phoneNumber': phoneNumber
     };
+    
+    debugPrint('💾 Saving user to prefs: $userData');
     return _preferences.setString(PrefsKey.user, jsonEncode(userData));
   }
 
