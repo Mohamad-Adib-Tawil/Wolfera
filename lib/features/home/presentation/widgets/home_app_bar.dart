@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wolfera/core/config/routing/router.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
+import 'package:wolfera/features/app/presentation/bloc/app_manager_cubit.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_svg_picture.dart';
 import 'package:wolfera/features/chat/presentation/widgets/circlue_user_image_widget.dart';
 import 'package:wolfera/features/home/presentation/widgets/city_dropdown.dart';
@@ -44,7 +46,18 @@ class HomeAppBar extends StatelessWidget {
               onTap: () {
                 GRouter.router.pushNamed(GRouter.config.profileRoutes.profile);
               },
-              child: const CirclueUserImageWidget(width: 40, height: 40),
+              child: BlocBuilder<AppManagerCubit, AppManagerState>(
+                builder: (context, state) {
+                  final imageUrl = state.user?.photoURL;
+                  return CirclueUserImageWidget(
+                    width: 40,
+                    height: 40,
+                    userImage: (imageUrl != null && imageUrl.isNotEmpty)
+                        ? imageUrl
+                        : null,
+                  );
+                },
+              ),
             ),
           ],
         ),
