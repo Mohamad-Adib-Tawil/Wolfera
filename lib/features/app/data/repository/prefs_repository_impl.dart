@@ -66,6 +66,14 @@ class PrefsRepositoryImpl extends PrefsRepository {
   }
 
   @override
+  String? get selectedCity => _preferences.getString(PrefsKey.city);
+
+  @override
+  Future<bool> setSelectedCity(String city) async {
+    return _preferences.setString(PrefsKey.city, city);
+  }
+
+  @override
   LocalUser? get user {
     final currentUser = _preferences.getString(PrefsKey.user);
     if (currentUser == null) {

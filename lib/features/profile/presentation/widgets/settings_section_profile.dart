@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:wolfera/core/config/routing/router.dart';
+import 'package:get_it/get_it.dart';
+import 'package:wolfera/features/app/domin/repositories/prefs_repository.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
 import 'package:wolfera/features/app/presentation/widgets/animated_dialog.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_bottom_sheet.dart';
@@ -31,8 +33,9 @@ class SettingsSectionProfile extends StatelessWidget {
           title: 'Address',
           svgIcon: Assets.svgMapPin,
           onTap: () => GRouter.router.pushNamed(
-              GRouter.config.profileRoutes.addressPage,
-              extra: "Germany"),
+            GRouter.config.profileRoutes.addressPage,
+            extra: GetIt.I<PrefsRepository>().selectedCity ?? "Germany",
+          ),
         ),
         ProfileItemSettingsWidget(
           title: 'My Cars',
