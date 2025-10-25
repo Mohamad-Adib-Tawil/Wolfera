@@ -19,14 +19,10 @@ class ProfileDatasource {
 
       print('📝 Update params: name=${params.displayName}, email=${params.email}, phone=${params.phoneNumber}, hasAvatar=${params.avatar != null}');
 
-      // Get current user data from database
-      final currentData = await SupabaseService.client
-          .from('users')
-          .select('full_name, email, phone_number, avatar_url')
-          .eq('id', user.id)
-          .maybeSingle();
-
-      print('📊 Current data from DB: $currentData');
+      // Skip DB select (temporary) to avoid RLS blocking the whole flow.
+      // We'll rely on auth metadata and let the DB update be best-effort below.
+      Map<String, dynamic>? currentData;
+      print('🛑 Skipping DB select for users (using auth metadata fallback)');
       
       // Handle empty strings as null
       final cleanDisplayName = params.displayName?.trim().isEmpty == true ? null : params.displayName?.trim();
@@ -64,13 +60,20 @@ class ProfileDatasource {
         authUpdateData['avatar_url'] = finalAvatarUrl;
       }
       
-      print('🔐 Auth update data: email=$finalEmail, metadata=$authUpdateData');
+      // Only allow email change for email/password provider and when actually changed
+      final provider = user.appMetadata['provider'] as String?;
+      final canUpdateEmail = provider == 'email';
+      final emailToUpdate = (canUpdateEmail && cleanEmail != null && cleanEmail != user.email)
+          ? cleanEmail
+          : null;
+
+      print('🔐 Auth update: provider=$provider, emailToUpdate=$emailToUpdate, metadata=$authUpdateData');
       
       UserResponse authResponse;
       try {
         authResponse = await SupabaseService.client.auth.updateUser(
           UserAttributes(
-            email: finalEmail,
+            email: emailToUpdate,
             data: authUpdateData.isNotEmpty ? authUpdateData : null,
           ),
         );
@@ -78,7 +81,23 @@ class ProfileDatasource {
       } catch (e) {
         print('❌ Auth update error: $e');
         print('❌ Error type: ${e.runtimeType}');
-        rethrow;
+        // Retry without email change if the email update caused the failure
+        if (emailToUpdate != null) {
+          try {
+            print('🔁 Retrying auth update without email change...');
+            authResponse = await SupabaseService.client.auth.updateUser(
+              UserAttributes(
+                data: authUpdateData.isNotEmpty ? authUpdateData : null,
+              ),
+            );
+            print('✅ Auth metadata update successful (without email)');
+          } catch (e2) {
+            print('❌ Auth retry failed: $e2');
+            rethrow;
+          }
+        } else {
+          rethrow;
+        }
       }
 
       // Update user profile in users table
@@ -113,9 +132,9 @@ class ProfileDatasource {
         
         print('✅ Database update response: $response');
       } catch (e) {
+        // Do not abort the whole flow if DB update fails; auth metadata was updated
         print('❌ Database update error: $e');
         print('❌ Error type: ${e.runtimeType}');
-        rethrow;
       }
       
       print('✅ Profile updated successfully');

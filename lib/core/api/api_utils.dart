@@ -12,6 +12,8 @@ Future<T> throwAppException<T>(FutureOr<T> Function() call) async {
   try {
     return await call();
   } on AuthException catch (e) {
+    // Debug: print full auth error details
+    debugPrint('🔐 AuthException caught: ${e.message}');
     if (e.message.contains('403')) {
       throw AppNetworkException(
           message: tr(AppNetworkExceptionReason.responseError.message),
@@ -37,6 +39,8 @@ Future<T> throwAppException<T>(FutureOr<T> Function() call) async {
           exception: e, message: e.message);
     }
   } on PostgrestException catch (e) {
+    // Debug: print full postgrest error details
+    debugPrint('🗄️ PostgrestException caught: code=${e.code}, message=${e.message}, details=${e.details}');
     throw AppNetworkResponseException(
         exception: e, data: e.message);
   } on SocketException catch (e) {
