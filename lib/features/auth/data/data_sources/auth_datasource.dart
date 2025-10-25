@@ -25,16 +25,16 @@ class AuthDatasource {
 
       final user = response.user!;
 
-      // Insert user data into users table
+      // Upsert user data into users table (idempotent)
       await SupabaseService.client
           .from('users')
-          .insert({
+          .upsert({
         'id': user.id,
         'full_name': params.fullName,
         'email': params.email,
         'phone_number': params.phoneNumber,
         'created_at': DateTime.now().toIso8601String(),
-      });
+      }, onConflict: 'id');
 
       return user;
     }
@@ -87,14 +87,14 @@ class AuthDatasource {
           // Create user record
           await SupabaseService.client
               .from('users')
-              .insert({
+              .upsert({
             'id': user.id,
             'full_name': user.userMetadata?['full_name'] ?? user.email?.split('@').first,
             'email': user.email,
             'phone_number': user.phone ?? '',
             'photo_url': user.userMetadata?['avatar_url'],
             'created_at': DateTime.now().toIso8601String(),
-          }).timeout(Duration(seconds: 10));
+          }, onConflict: 'id').timeout(Duration(seconds: 10));
           print('✅ User record created successfully');
         } catch (e) {
           print('❌ Failed to create user record: $e');

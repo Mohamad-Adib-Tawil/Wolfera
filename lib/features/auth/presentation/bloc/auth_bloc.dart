@@ -258,9 +258,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             .from('users')
             .select('phone_number')
             .eq('id', value.id)
-            .single();
-        
-        phoneNumber = userData['phone_number'];
+            .maybeSingle();
+
+        phoneNumber = userData?['phone_number'] as String?;
 
         await _prefsRepository.setUser(value, phoneNumber ?? "");
 
