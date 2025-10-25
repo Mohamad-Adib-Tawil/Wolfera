@@ -99,24 +99,38 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   FutureOr<void> _onUpdateProfile(
       UpdateProfile event, Emitter<ProfileState> emit) async {
     try {
+      print('🔄 Starting profile update...');
       emit(state.copyWith(updateProfileStatus: const BlocStatus.loading()));
 
       if (profileForm.invalid) {
+        print('❌ Form is invalid');
         profileForm.markAllAsTouched();
         emit(state.copyWith(
             updateProfileStatus: const BlocStatus.fail(error: "fail")));
         return;
       }
+      
+      final email = profileForm.control(kFromEmail).value;
+      final displayName = profileForm.control(kFromName).value;
+      final phoneNumber = profileForm.control(kFromPhone).value;
+      
+      print('📝 Form data: name=$displayName, email=$email, phone=$phoneNumber');
+      print('📷 Has avatar: ${state.selectedFile != null}');
+      
       final result = await _updateProfileUsecase(UpdateProfileParams(
-        email: profileForm.control(kFromEmail).value,
-        displayName: profileForm.control(kFromName).value,
-        phoneNumber: profileForm.control(kFromPhone).value,
+        email: email,
+        displayName: displayName,
+        phoneNumber: phoneNumber,
         avatar: state.selectedFile,
       ));
       result.fold(
-        (exception, message) => emit(state.copyWith(
-            updateProfileStatus: BlocStatus.fail(error: message))),
+        (exception, message) {
+          print('❌ Update failed: $message');
+          emit(state.copyWith(
+              updateProfileStatus: BlocStatus.fail(error: message)));
+        },
         (value) async {
+          print('✅ Update successful, processing result...');
           emit(state.copyWith(
             updateProfileStatus: const BlocStatus.success(),
             selectedFile: const Nullable.value(null),
@@ -124,6 +138,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
           String? phoneNumber;
           // Get user data from Supabase
+          print('🔍 Fetching updated user data from database...');
           final userData = await Supabase.instance.client
               .from('users')
               .select('phone_number')
@@ -131,11 +146,14 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
               .maybeSingle();
 
           phoneNumber = userData?['phone_number'] as String?;
+          print('📞 Phone from DB: $phoneNumber');
           
           // Save updated user to preferences
+          print('💾 Saving updated user to preferences...');
           await _prefsRepository.setUser(value, phoneNumber ?? "");
           
           // Force UI update by checking user again
+          print('🔄 Refreshing UI...');
           _appManagerCubit.checkUser();
           
           // Show success message
@@ -143,10 +161,12 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
               isSuccess: true);
           
           // Pop the edit screen
+          print('✅ Profile update complete, closing screen');
           GRouter.router.pop();
         },
       );
     } catch (exp) {
+      print('❌ Exception during profile update: $exp');
       emit(state.copyWith(
           updateProfileStatus: const BlocStatus.fail(error: "fail")));
     }
