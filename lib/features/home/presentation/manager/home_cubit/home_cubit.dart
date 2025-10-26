@@ -17,18 +17,25 @@ class HomeCubit extends Cubit<HomeState> {
       : super(const HomeState());
 
   void getHomeData() async {
+    print('\n🏠 HomeCubit: Fetching cars from Supabase...');
     emit(state.copyWith(carsState: const PageState.loading()));
     try {
       // Fetch cars from Supabase 'cars' table (latest first)
       final cars = await SupabaseService.getCars();
+      print('📊 HomeCubit: Fetched ${cars.length} cars from database');
+      
       // Optionally filter status Available
       final filtered = cars
           .where((e) => (e['status']?.toString().toLowerCase() ?? '')
               .contains('available'))
           .toList();
-      emit(state.copyWith(
-          carsState: PageState.loaded(data: filtered.isEmpty ? cars : filtered)));
+      
+      final finalList = filtered.isEmpty ? cars : filtered;
+      print('✅ HomeCubit: Showing ${finalList.length} cars (filtered: ${filtered.length})');
+      
+      emit(state.copyWith(carsState: PageState.loaded(data: finalList)));
     } catch (e) {
+      print('❌ HomeCubit: Error fetching cars: $e');
       emit(state.copyWith(
           carsState: PageState.error(
               exception: e is Exception ? e : Exception(e.toString()))));

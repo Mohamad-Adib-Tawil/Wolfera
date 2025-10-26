@@ -129,9 +129,15 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
         createAt: DateTime.now(),
         updateAt: DateTime.now(),
       );
+      print('\n🔵 MyCarsBloc: Calling sellMyCarUsecase...');
       final result = await _sellMyCarUsecase(params);
+      
       result.fold(
         (exception, message) {
+          print('🔴 MyCarsBloc: Sell car FAILED');
+          print('   Exception: $exception');
+          print('   Message: $message');
+          
           EasyLoading.dismiss();
 
           emit(
@@ -143,13 +149,19 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
           );
         },
         (value) {
+          print('🟢 MyCarsBloc: Sell car SUCCESS');
           EasyLoading.dismiss();
 
           // Refresh Home cars list so the new car appears on Home
+          print('🔄 Refreshing Home cars list...');
           try {
             GetIt.I<HomeCubit>().getHomeData();
-          } catch (_) {}
+            print('✅ Home refresh triggered');
+          } catch (e) {
+            print('⚠️  Failed to refresh home: $e');
+          }
 
+          print('🎉 Navigating to congratulations page...');
           GRouter.router
               .pushNamed(GRouter.config.myCarsRoutes.congratulationsPage);
 
@@ -157,8 +169,10 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
         },
       );
     } catch (e) {
+      print('💥 MyCarsBloc: Unexpected error in sellMyCar: $e');
+      
       emit(state.copyWith(
-          sellMyCarStatus: const BlocStatus.fail(error: "e.toString()")));
+          sellMyCarStatus: BlocStatus.fail(error: e.toString())));
 
       EasyLoading.dismiss();
     }
