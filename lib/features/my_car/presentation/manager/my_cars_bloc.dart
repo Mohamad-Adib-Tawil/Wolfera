@@ -17,6 +17,7 @@ import 'package:wolfera/core/config/routing/router.dart';
 import 'package:wolfera/core/utils/nullable.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:wolfera/features/my_car/domain/usecases/sell_my_car_usecase.dart';
+import 'package:wolfera/features/home/presentation/manager/home_cubit/home_cubit.dart';
 import 'package:wolfera/features/my_car/presentation/pages/sell_my_car_page.dart';
 import 'package:wolfera/generated/locale_keys.g.dart';
 
@@ -78,7 +79,7 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
       final String userId = SupabaseService.currentUser!.id;
       final params = SellMyCarParams(
         userId: userId,
-        location: 'Dubie',
+        location: 'Dubai',
         status: 'Available',
         carMaker: sellMyCarForm.control(kFromCarMaker).value as String,
         carModel: sellMyCarForm.control(kFromCarModel).value as String,
@@ -143,6 +144,11 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
         },
         (value) {
           EasyLoading.dismiss();
+
+          // Refresh Home cars list so the new car appears on Home
+          try {
+            GetIt.I<HomeCubit>().getHomeData();
+          } catch (_) {}
 
           GRouter.router
               .pushNamed(GRouter.config.myCarsRoutes.congratulationsPage);

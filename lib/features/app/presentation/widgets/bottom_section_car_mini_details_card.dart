@@ -13,7 +13,22 @@ import 'space_text_widget.dart';
 class BottomSectionCarMiniDetailsCard extends StatelessWidget {
   const BottomSectionCarMiniDetailsCard({
     super.key,
+    this.title,
+    this.spec1,
+    this.spec2,
+    this.mileage,
+    this.fuel,
+    this.location,
+    this.price,
   });
+
+  final String? title;
+  final String? spec1;
+  final String? spec2;
+  final String? mileage;
+  final String? fuel;
+  final String? location;
+  final String? price;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +42,7 @@ class BottomSectionCarMiniDetailsCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AppText(
-                '2021 KIA SELTOS',
+                title ?? '2021 KIA SELTOS',
                 style:
                     context.textTheme.titleSmall!.xb.withColor(AppColors.white),
               ),
@@ -35,13 +50,13 @@ class BottomSectionCarMiniDetailsCard extends StatelessWidget {
               Row(
                 children: [
                   AppText(
-                    'GTX 1.4 GDI PETROL',
+                    spec1 ?? 'GTX 1.4 GDI PETROL',
                     style: context.textTheme.titleSmall!.s13.b
                         .withColor(AppColors.white),
                   ),
                   const SpaceTextWidget(),
                   AppText(
-                    'Manual',
+                    spec2 ?? 'Manual',
                     style: context.textTheme.titleSmall!.s13.sb
                         .withColor(AppColors.white),
                   ),
@@ -51,14 +66,14 @@ class BottomSectionCarMiniDetailsCard extends StatelessWidget {
               Row(
                 children: [
                   AppText(
-                    '99,488 KM',
+                    mileage ?? '99,488 KM',
                     style: context.textTheme.titleSmall!.s13.sb
                         .withColor(AppColors.white),
                   ),
                   const SpaceTextWidget(),
 
                   AppText(
-                    'Petrol',
+                    fuel ?? 'Petrol',
                     style: context.textTheme.titleSmall!.s13.sb
                         .withColor(AppColors.white),
                   ),
@@ -73,7 +88,7 @@ class BottomSectionCarMiniDetailsCard extends StatelessWidget {
                     ),
                   ),
                   AppText(
-                    ' Germany',
+                    ' ${location ?? 'Germany'}',
                     style: context.textTheme.titleSmall!.sb
                         .withColor(AppColors.white),
                   ),
@@ -83,7 +98,7 @@ class BottomSectionCarMiniDetailsCard extends StatelessWidget {
           ),
           const Spacer(),
           AppText(
-            r'34,999$',
+            price ?? r'34,999$',
             style: context.textTheme.titleMedium!.xb.withColor(AppColors.white),
           ),
         ],

@@ -11,10 +11,24 @@ class CarMiniDetailsCardWidget extends StatelessWidget {
       {super.key,
       this.isFaviorateIcon = true,
       this.isStatus = false,
-      this.image});
+      this.image,
+      this.title,
+      this.spec1,
+      this.spec2,
+      this.mileage,
+      this.fuel,
+      this.location,
+      this.price});
   final bool isFaviorateIcon;
   final bool isStatus;
   final String? image;
+  final String? title;
+  final String? spec1;
+  final String? spec2;
+  final String? mileage;
+  final String? fuel;
+  final String? location;
+  final String? price;
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +50,15 @@ class CarMiniDetailsCardWidget extends StatelessWidget {
               isFaviorateIcon: isFaviorateIcon,
               image: image,
             ),
-            const BottomSectionCarMiniDetailsCard(),
+            BottomSectionCarMiniDetailsCard(
+              title: title,
+              spec1: spec1,
+              spec2: spec2,
+              mileage: mileage,
+              fuel: fuel,
+              location: location,
+              price: price,
+            ),
             if (isStatus) const StatusSectionWidget()
           ],
         ),
