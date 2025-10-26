@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:wolfera/common/models/page_state/page_state.dart';
-import 'package:wolfera/common/models/page_state/page_state.dart';
+import 'package:wolfera/services/supabase_service.dart';
 
 part 'home_state.dart';
 
@@ -17,18 +17,22 @@ class HomeCubit extends Cubit<HomeState> {
       : super(const HomeState());
 
   void getHomeData() async {
-    // emit(state.copyWith(homeDataState: const PageState.loading()));
-
-    // final response = await _getHomeDataUsecase();
-
-    // response.fold(
-    //   (exception, message) => emit(
-    //       state.copyWith(homeDataState: PageState.error(exception: exception))),
-    //   (value) {
-    //     emit(
-    //         state.copyWith(homeDataState: PageState.loaded(data: value.data!)));
-    //   },
-    // );
+    emit(state.copyWith(carsState: const PageState.loading()));
+    try {
+      // Fetch cars from Supabase 'cars' table (latest first)
+      final cars = await SupabaseService.getCars();
+      // Optionally filter status Available
+      final filtered = cars
+          .where((e) => (e['status']?.toString().toLowerCase() ?? '')
+              .contains('available'))
+          .toList();
+      emit(state.copyWith(
+          carsState: PageState.loaded(data: filtered.isEmpty ? cars : filtered)));
+    } catch (e) {
+      emit(state.copyWith(
+          carsState: PageState.error(
+              exception: e is Exception ? e : Exception(e.toString()))));
+    }
   }
 
   // favoriteCarToggle(CarViewModel car) async {
