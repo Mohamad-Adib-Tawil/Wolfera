@@ -34,20 +34,23 @@ class CarsListViewBuilder extends StatelessWidget {
         }
 
         final car = list[index];
-        final images = (car['car_images'] as List?)?.cast<dynamic>() ?? const [];
+        // Try both naming conventions (with and without car_ prefix)
+        final images = (car['images'] ?? car['car_images'] as List?)?.cast<dynamic>() ?? const [];
         final imageUrl = images.isNotEmpty ? images.first?.toString() : null;
-        final title = [car['car_year'], car['car_maker'], car['car_model']]
-            .where((e) => e != null && e.toString().isNotEmpty)
-            .join(' ');
-        final spec1 = (car['car_trim'] ?? car['car_engine'])?.toString();
-        final spec2 = car['car_transmission']?.toString();
-        final mileageVal = car['car_mileage']?.toString();
+        final title = [
+          car['year'] ?? car['car_year'],
+          car['brand'] ?? car['car_maker'],
+          car['model'] ?? car['car_model']
+        ].where((e) => e != null && e.toString().isNotEmpty).join(' ');
+        final spec1 = (car['trim'] ?? car['car_trim'] ?? car['engine'] ?? car['car_engine'])?.toString();
+        final spec2 = (car['transmission'] ?? car['car_transmission'])?.toString();
+        final mileageVal = (car['mileage'] ?? car['car_mileage'])?.toString();
         final mileage = mileageVal != null && mileageVal.isNotEmpty
             ? '$mileageVal KM'
             : null;
-        final fuel = car['car_fuel_type']?.toString();
-        final location = car['car_location']?.toString();
-        final priceVal = car['car_price']?.toString();
+        final fuel = (car['fuel_type'] ?? car['car_fuel_type'])?.toString();
+        final location = (car['location'] ?? car['car_location'])?.toString();
+        final priceVal = (car['price'] ?? car['car_price'])?.toString();
         final price = priceVal != null && priceVal.isNotEmpty
             ? '${priceVal}\$'
             : null;
