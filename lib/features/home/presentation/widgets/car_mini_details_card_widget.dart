@@ -54,6 +54,7 @@ class CarMiniDetailsCardWidget extends StatelessWidget {
             TopSecrionCarMiniDetailsCard(
               isFaviorateIcon: isFaviorateIcon,
               image: image,
+              carData: carData,
             ),
             BottomSectionCarMiniDetailsCard(
               title: title,
