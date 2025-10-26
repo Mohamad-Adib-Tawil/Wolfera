@@ -6,6 +6,9 @@ import 'package:wolfera/core/utils/debouncer.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:wolfera/core/utils/nullable.dart';
 import 'package:wolfera/services/search_and_filters_service.dart';
+import 'package:wolfera/core/constants/locations_data.dart';
+import 'package:get_it/get_it.dart';
+import 'package:wolfera/features/app/domin/repositories/prefs_repository.dart';
 
 part 'search_state.dart';
 
@@ -74,6 +77,51 @@ class SearchCubit extends Cubit<SearchState> {
   // دالة مساعدة لتطبيق الفلاتر فورًا
   Future<void> _applyFiltersAndSearch() async {
     await searchCars();
+  }
+
+  // ===================== Address Filters =====================
+  void setWorldwide(bool value) {
+    // persist
+    try { GetIt.I<PrefsRepository>().setWorldwide(value); } catch (_) {}
+    if (value) {
+      try {
+        GetIt.I<PrefsRepository>().setSelectedCountryCode(null);
+        GetIt.I<PrefsRepository>().setSelectedRegionOrCity(null);
+      } catch (_) {}
+    }
+    emit(state.copyWith(
+      isWorldwide: value,
+      selectedCountryCode: const Nullable.value(null),
+      selectedRegionOrCity: const Nullable.value(null),
+    ));
+    _applyFiltersAndSearch();
+  }
+
+  void selectCountryByName(String? countryName) {
+    if (countryName == null) return;
+    if (countryName == 'Worldwide') {
+      setWorldwide(true);
+      return;
+    }
+    final co = LocationsData.findByName(countryName);
+    // persist
+    try {
+      GetIt.I<PrefsRepository>().setWorldwide(false);
+      GetIt.I<PrefsRepository>().setSelectedCountryCode(co?.code);
+      GetIt.I<PrefsRepository>().setSelectedRegionOrCity(null);
+    } catch (_) {}
+    emit(state.copyWith(
+      isWorldwide: false,
+      selectedCountryCode: Nullable.value(co?.code),
+      selectedRegionOrCity: const Nullable.value(null),
+    ));
+    _applyFiltersAndSearch();
+  }
+
+  void selectRegionOrCity(String? value) {
+    try { GetIt.I<PrefsRepository>().setSelectedRegionOrCity(value); } catch (_) {}
+    emit(state.copyWith(selectedRegionOrCity: Nullable.value(value)));
+    _applyFiltersAndSearch();
   }
 
   void resetAllFilters() {

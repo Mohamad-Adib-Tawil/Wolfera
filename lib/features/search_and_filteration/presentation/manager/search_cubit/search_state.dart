@@ -15,6 +15,10 @@ class SearchState {
   final String? seletedSeatsCount;
   final String? seletedCondition;
   final String? seletedFuelType;
+  // Address filters
+  final bool isWorldwide;
+  final String? selectedCountryCode; // 'WW','AE','SY','DE'
+  final String? selectedRegionOrCity; // Emirate/Governorate/City
   
   // حالات البحث والنتائج
   final bool isSearching;
@@ -55,6 +59,9 @@ class SearchState {
     this.seletedSeatsCount,
     this.seletedCondition,
     this.seletedFuelType,
+    this.isWorldwide = true,
+    this.selectedCountryCode,
+    this.selectedRegionOrCity,
     this.isSearching = false,
     this.searchQuery = '',
     this.searchResults = const [],
@@ -76,6 +83,9 @@ class SearchState {
       seletedSeatsCount: null,
       seletedCondition: null,
       seletedFuelType: null,
+      isWorldwide: true,
+      selectedCountryCode: null,
+      selectedRegionOrCity: null,
       isSearching: false,
       searchQuery: '',
       searchResults: [],
@@ -97,6 +107,9 @@ class SearchState {
     Nullable<String?>? seletedSeatsCount,
     Nullable<String?>? seletedCondition,
     Nullable<String?>? seletedFuelType,
+    bool? isWorldwide,
+    Nullable<String?>? selectedCountryCode,
+    Nullable<String?>? selectedRegionOrCity,
     bool? isSearching,
     String? searchQuery,
     List<Map<String, dynamic>>? searchResults,
@@ -138,6 +151,13 @@ class SearchState {
       seletedFuelType: seletedFuelType != null
           ? seletedFuelType.value
           : this.seletedFuelType,
+      isWorldwide: isWorldwide ?? this.isWorldwide,
+      selectedCountryCode: selectedCountryCode != null
+          ? selectedCountryCode.value
+          : this.selectedCountryCode,
+      selectedRegionOrCity: selectedRegionOrCity != null
+          ? selectedRegionOrCity.value
+          : this.selectedRegionOrCity,
       isSearching: isSearching ?? this.isSearching,
       searchQuery: searchQuery ?? this.searchQuery,
       searchResults: searchResults ?? this.searchResults,
@@ -164,6 +184,8 @@ class SearchState {
     if (seletedSeatsCount != null) count++;
     if (seletedCondition != null) count++;
     if (seletedFuelType != null) count++;
+    if (!isWorldwide || selectedCountryCode != null) count++;
+    if (selectedRegionOrCity != null) count++;
     return count;
   }
 }

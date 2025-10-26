@@ -19,6 +19,7 @@ import 'package:wolfera/features/my_car/domain/usecases/sell_my_car_usecase.dart
 import 'package:wolfera/features/home/presentation/manager/home_cubit/home_cubit.dart';
 import 'package:wolfera/features/my_car/presentation/pages/sell_my_car_page.dart';
 import 'package:wolfera/generated/locale_keys.g.dart';
+import 'package:wolfera/core/constants/locations_data.dart';
 
 part 'my_cars_event.dart';
 part 'my_cars_state.dart';
@@ -61,11 +62,29 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
   final String kFromCarDescription = 'carDescription';
   final String kFromCarPrice = 'carPrice';
   final String kFromCarLocation = 'carLocation';
+  // Address selections (new)
+  final String kFromWorldwide = 'worldwide';
+  final String kFromCountryCode = 'countryCode';
+  final String kFromRegionOrCity = 'regionOrCity';
   final String kFromCarImageFullRight = 'carImageFullRight';
   final String kFromCarImageFullLeft = 'carImageFullLeft';
   final String kFromCarImageRear = 'carImageRear';
   final String kFromCarImageFront = 'carImageFront';
   final String kFromCarImageDashboard = 'carImageDashboard';
+
+  String _computeCountryName() {
+    try {
+      final bool worldwide =
+          descriptionSectionForm.control(kFromWorldwide).value as bool? ?? true;
+      if (worldwide) return 'Worldwide';
+      final String? code =
+          descriptionSectionForm.control(kFromCountryCode).value as String?;
+      if (code == null) return 'Worldwide';
+      return LocationsData.findByCode(code)?.name ?? 'Worldwide';
+    } catch (_) {
+      return 'Worldwide';
+    }
+  }
 
   FutureOr<void> sellMyCar(
       SellMyCarEvent event, Emitter<MyCarsState> emit) async {
@@ -78,7 +97,8 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
       final String userId = SupabaseService.currentUser!.id;
       final params = SellMyCarParams(
         userId: userId,
-        location: 'Dubai',
+        // Use countryName for 'location' param (legacy mapping)
+        location: _computeCountryName(),
         status: 'Available',
         carMaker: sellMyCarForm.control(kFromCarMaker).value as String,
         carModel: sellMyCarForm.control(kFromCarModel).value as String,
@@ -113,8 +133,8 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
         carDescription:
             descriptionSectionForm.control(kFromCarDescription).value as String,
         carPrice: descriptionSectionForm.control(kFromCarPrice).value as String,
-        carLocation:
-            descriptionSectionForm.control(kFromCarLocation).value as String,
+        // regionOrCity stored in 'carLocation' (legacy mapping)
+        carLocation: descriptionSectionForm.control(kFromRegionOrCity).value as String? ?? '',
         carImages: [
           imagesSectionForm.control(kFromCarImageFullRight).value as File?,
           imagesSectionForm.control(kFromCarImageFullLeft).value as File?,
@@ -314,10 +334,13 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
     kFromCarDescription: FormControl<String>(
         validators: [Validators.required],
         value: "BMW 3.0L Twin-Turbo I6 2024 Automatic."),
-    kFromCarPrice:
-        FormControl<String>(validators: [Validators.required], value: "15000"),
-    kFromCarLocation: FormControl<String>(
-        validators: [Validators.required], value: "Germany"),
+    kFromCarPrice: FormControl<String>(validators: [Validators.required], value: "15000"),
+    // legacy location field (unused now in mapping, kept to avoid breaking)
+    kFromCarLocation: FormControl<String>(value: ''),
+    // Address selections (new)
+    kFromWorldwide: FormControl<bool>(value: true),
+    kFromCountryCode: FormControl<String?>(),
+    kFromRegionOrCity: FormControl<String?>(),
   });
   late final imagesSectionForm = FormGroup({
     kFromCarImageFullRight:

@@ -2,6 +2,7 @@ import 'package:injectable/injectable.dart';
 import 'package:wolfera/core/utils/nullable.dart';
 import 'package:wolfera/features/search_and_filteration/presentation/manager/search_cubit/search_cubit.dart';
 import 'package:wolfera/services/supabase_service.dart';
+import 'package:wolfera/core/constants/locations_data.dart';
 
 @lazySingleton
 class SearchFilterService {
@@ -41,6 +42,18 @@ class SearchFilterService {
 
       if (filters.seletedCondition != null) {
         queryBuilder = queryBuilder.eq('condition', filters.seletedCondition!);
+      }
+
+      // فلاتر العنوان: الدولة + المنطقة/المدينة
+      final countryName = filters.selectedCountryCode != null
+          ? LocationsData.findByCode(filters.selectedCountryCode!)?.name
+          : null;
+      if (countryName != null && countryName != 'Worldwide') {
+        queryBuilder = queryBuilder.eq('country', countryName);
+      }
+      if (filters.selectedRegionOrCity != null &&
+          filters.selectedRegionOrCity!.trim().isNotEmpty) {
+        queryBuilder = queryBuilder.eq('city', filters.selectedRegionOrCity!);
       }
 
       if (filters.selectedCarMinYear != null) {
