@@ -159,21 +159,23 @@ class _SearcgPageState extends State<SearchPage> {
 
                     // حالة عدم وجود نتائج
                     if (state.searchResults.isEmpty) {
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            AppEmptyState.foodsEmpty(),
-                            if (hasActiveFilters) ...[
-                              20.verticalSpace,
-                              ElevatedButton(
-                                onPressed: () {
-                                  _searchCubit.resetAllFilters();
-                                },
-                                child: AppText('Clear all filters'.tr()),
-                              ),
+                      return SingleChildScrollView(
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              AppEmptyState.foodsEmpty(),
+                              if (hasActiveFilters) ...[
+                                20.verticalSpace,
+                                ElevatedButton(
+                                  onPressed: () {
+                                    _searchCubit.resetAllFilters();
+                                  },
+                                  child: AppText('Clear all filters'.tr()),
+                                ),
+                              ],
                             ],
-                          ],
+                          ),
                         ),
                       );
                     }
