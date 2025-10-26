@@ -87,10 +87,36 @@ class SellMyCarParams {
 
   Map<String, dynamic> toMapWithUrls(List<String> uploadedUrls) {
     return {
+      // Core fields matching Supabase schema (without car_ prefix)
       'user_id': userId,
-      'location': location,
+      'brand': carMaker,
+      'model': carModel,
+      'year': carYear,
+      'price': carPrice,
+      'mileage': carMileage,
+      'images': uploadedUrls,
+      'location': carLocation,
       'status': status,
-      'brand': carMaker, // Required by Supabase schema
+      'transmission': carTransmission,
+      'fuel_type': carFuelType,
+      'trim': carTrim,
+      'engine': carEngine,
+      'cylinders': carCylinders,
+      'seats': carSeats,
+      'condition': carCondition,
+      'plate': carPlate,
+      'color': carColor,
+      'seat_material': carSeatMaterial,
+      'wheels': carWheels,
+      'vehicle_type': carVehicleType,
+      'interior_color': carInteriorColor,
+      'exterior_color': carExteriorColor,
+      'paint_parts': carPaintParts,
+      'warranty': warranty,
+      'created_at': createAt?.toIso8601String(),
+      'updated_at': updateAt?.toIso8601String(),
+      
+      // Keep car_ prefixed versions for backward compatibility (will be removed by sanitization if not in schema)
       'car_maker': carMaker,
       'car_model': carModel,
       'car_engine': carEngine,
@@ -113,9 +139,6 @@ class SellMyCarParams {
       'car_price': carPrice,
       'car_location': carLocation,
       'car_images': uploadedUrls,
-      'warranty': warranty,
-      'created_at': createAt?.toIso8601String(),
-      'updated_at': updateAt?.toIso8601String(),
     };
   }
 }
