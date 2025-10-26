@@ -8,23 +8,34 @@ import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
 import 'package:wolfera/generated/assets.dart';
 
 class CarNameAndPriceRowWidget extends StatelessWidget {
+  final Map<String, dynamic> carData;
+  
   const CarNameAndPriceRowWidget({
     super.key,
+    required this.carData,
   });
 
   @override
   Widget build(BuildContext context) {
+    final brand = carData['brand']?.toString() ?? '';
+    final model = carData['model']?.toString() ?? '';
+    final price = carData['price']?.toString() ?? '0';
+    final currency = carData['currency']?.toString() ?? '\$';
+    
     return Row(
       children: [
-        AppText(
-          'Ferrari',
-          style: context.textTheme.bodyLarge!.s20.b.withColor(AppColors.white),
-        ),
-        6.horizontalSpace,
-        AppText(
-          'SF90 Stradale',
-          style: context.textTheme.bodyLarge!.s20.r.withColor(AppColors.white),
-        ),
+        if (brand.isNotEmpty)
+          AppText(
+            brand,
+            style: context.textTheme.bodyLarge!.s20.b.withColor(AppColors.white),
+          ),
+        if (brand.isNotEmpty && model.isNotEmpty)
+          6.horizontalSpace,
+        if (model.isNotEmpty)
+          AppText(
+            model,
+            style: context.textTheme.bodyLarge!.s20.r.withColor(AppColors.white),
+          ),
         const Spacer(),
         AppSvgPicture(
           Assets.svgBell,
@@ -33,7 +44,7 @@ class CarNameAndPriceRowWidget extends StatelessWidget {
         ),
         10.horizontalSpace,
         AppText(
-          r'125,000 $',
+          '$price $currency',
           style:
               context.textTheme.bodyLarge!.s20.xb.withColor(AppColors.primary),
         ),

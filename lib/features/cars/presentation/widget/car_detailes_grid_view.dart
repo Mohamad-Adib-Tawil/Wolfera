@@ -5,32 +5,42 @@ import 'package:wolfera/features/cars/presentation/widget/car_details_with_icon_
 import 'package:wolfera/generated/assets.dart';
 
 class CarDetailesGridView extends StatelessWidget {
+  final Map<String, dynamic> carData;
+  
   const CarDetailesGridView({
     super.key,
+    required this.carData,
   });
 
   @override
   Widget build(BuildContext context) {
+    final mileage = carData['mileage']?.toString() ?? '0';
+    final transmission = carData['transmission']?.toString() ?? '-';
+    final engineCapacity = carData['engine_capacity']?.toString() ?? '-';
+    final cylinders = carData['cylinders']?.toString() ?? '-';
+    final fuelType = carData['fuel_type']?.toString() ?? '-';
+    final year = carData['year']?.toString() ?? '-';
+    
     return Column(
       children: [
         Row(
           children: [
             10.horizontalSpace,
-            const CarDetailesWithIconItem(
+            CarDetailesWithIconItem(
               path: Assets.svgSpeedometer,
-              title: '18,000 KM',
+              title: '$mileage KM',
               textWidth: 92,
             ),
             40.horizontalSpace,
-            const CarDetailesWithIconItem(
+            CarDetailesWithIconItem(
               path: Assets.svgGear,
-              title: 'Automatic',
+              title: transmission,
               textWidth: 80,
             ),
             35.horizontalSpace,
-            const CarDetailesWithIconItem(
+            CarDetailesWithIconItem(
               path: Assets.svgEngineMotor,
-              title: '4.0 L V8 Electric',
+              title: '$engineCapacity L',
               textWidth: 85,
             ),
           ],
@@ -39,22 +49,22 @@ class CarDetailesGridView extends StatelessWidget {
         Row(
           children: [
             10.horizontalSpace,
-            const CarDetailesWithIconItem(
+            CarDetailesWithIconItem(
               path: Assets.svgPistonMotor,
-              title: '8 Cylinders',
+              title: '$cylinders Cylinders',
               textWidth: 100,
             ),
             50.horizontalSpace,
             CarDetailesWithIconItem(
               path: Assets.svgGasStation,
-              title: 'Petrol',
+              title: fuelType,
               textPadding: HWEdgeInsets.only(right: 6),
               textWidth: 50,
             ),
             65.horizontalSpace,
-            const CarDetailesWithIconItem(
+            CarDetailesWithIconItem(
               path: Assets.svgYear,
-              title: '2020',
+              title: year,
               textWidth: 32,
             ),
           ],

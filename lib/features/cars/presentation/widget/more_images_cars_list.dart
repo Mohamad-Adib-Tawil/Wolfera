@@ -7,8 +7,11 @@ import 'package:wolfera/features/cars/presentation/widget/car_image_viewer.dart'
 import 'package:wolfera/generated/assets.dart';
 
 class MoreImagesCarsList extends StatefulWidget {
+  final List<String>? images;
+  
   const MoreImagesCarsList({
     super.key,
+    this.images,
   });
 
   @override
@@ -16,14 +19,16 @@ class MoreImagesCarsList extends StatefulWidget {
 }
 
 class _MoreImagesCarsListState extends State<MoreImagesCarsList> {
-  final List<String> carImages = [
-    Assets.imagesCar1,
-    Assets.imagesCar2,
-    Assets.imagesCar1,
-    Assets.imagesCar2,
-  ];
-
   int selectedIndex = 0;
+  
+  List<String> get carImages => widget.images?.isNotEmpty == true 
+      ? widget.images! 
+      : [
+          Assets.imagesCar1,
+          Assets.imagesCar2,
+          Assets.imagesCar1,
+          Assets.imagesCar2,
+        ];
   @override
   Widget build(BuildContext context) {
     return Column(
