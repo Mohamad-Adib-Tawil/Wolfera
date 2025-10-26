@@ -25,12 +25,14 @@ class CarDetailsItem extends StatelessWidget {
                 width: 160.w,
                 child: AppText(
                   '$title:',
+                  translation: false,
                   style: context.textTheme.bodyLarge!.s17.r
                       .withColor(AppColors.white),
                 ),
               ),
               AppText(
                 value,
+                translation: false,
                 style: context.textTheme.bodyLarge!.s17.r
                     .withColor(AppColors.white),
               ),

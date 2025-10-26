@@ -45,6 +45,7 @@ class ContectButton extends StatelessWidget {
               width: textWidth,
               child: AppText(
                 title,
+                translation: false,
                 textAlign: TextAlign.center,
                 style: context.textTheme.bodyLarge!.s18.b
                     .withColor(AppColors.blackLight),

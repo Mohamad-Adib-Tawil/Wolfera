@@ -35,6 +35,7 @@ class CarDetailesWithIconItem extends StatelessWidget {
               width: textWidth.w,
               child: AppText(
                 title,
+                translation: false,
                 textAlign: TextAlign.center,
                 style:
                     context.textTheme.bodySmall!.r.withColor(AppColors.white),

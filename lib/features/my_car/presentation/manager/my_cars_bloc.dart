@@ -5,7 +5,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:equatable/equatable.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:wolfera/services/supabase_service.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get_it/get_it.dart';
@@ -65,8 +64,6 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
   final String kFromCarImageRear = 'carImageRear';
   final String kFromCarImageFront = 'carImageFront';
   final String kFromCarImageDashboard = 'carImageDashboard';
-
-  final PageController pagedSellMyCarController = PageController();
 
   FutureOr<void> sellMyCar(
       SellMyCarEvent event, Emitter<MyCarsState> emit) async {
@@ -181,24 +178,12 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
   FutureOr<void> nextPage(NextPageEvent event, Emitter<MyCarsState> emit) {
     if ((sellMyCarForm.valid && state.activeStep == 0)) {
       emit(state.copyWith(activeStep: state.activeStep + 1));
-      pagedSellMyCarController.nextPage(
-        duration: kTabScrollDuration,
-        curve: Curves.linear,
-      );
     } else if (state.activeStep == 1 && sellMyCarForm.valid) {
       emit(state.copyWith(activeStep: state.activeStep + 1));
-      pagedSellMyCarController.nextPage(
-        duration: kTabScrollDuration,
-        curve: Curves.linear,
-      );
     } else if (descriptionSectionForm.valid &&
         state.activeStep == 2 &&
         sellMyCarForm.valid) {
       emit(state.copyWith(activeStep: state.activeStep + 1));
-      pagedSellMyCarController.nextPage(
-        duration: kTabScrollDuration,
-        curve: Curves.linear,
-      );
     } else if (imagesSectionForm.valid &&
         descriptionSectionForm.valid &&
         state.activeStep == 3 &&
@@ -222,10 +207,6 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
 
   previousPage(PreviousPageEvent event, Emitter<MyCarsState> emit) {
     emit(state.copyWith(activeStep: state.activeStep - 1));
-    pagedSellMyCarController.previousPage(
-      duration: kTabScrollDuration,
-      curve: Curves.linear,
-    );
   }
 
   back(BackPageEvent event, Emitter<MyCarsState> emit) {
@@ -355,10 +336,6 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
 
   resetSellMyCar(ResetSellMyCarEvent event, Emitter<MyCarsState> emit) {
     emit(state.copyWith(activeStep: 0));
-
-    if (pagedSellMyCarController.hasClients) {
-      pagedSellMyCarController.jumpToPage(0);
-    }
 
     for (int i = imagesSectionForm.controls.length; i > 4; i--) {
       if (imagesSectionForm.contains("optionalImage$i")) {
