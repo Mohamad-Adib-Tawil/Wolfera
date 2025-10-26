@@ -19,7 +19,35 @@ class CarDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final data = carData ?? {};
-    
+    // Log car data for debugging purposes
+    // ignore: avoid_print
+    print('\n🚘 ========== CAR DETAILS PAGE ==========');
+    // ignore: avoid_print
+    print('🆔 Car ID: ${data['id']}');
+    // ignore: avoid_print
+    print('📝 Title: ${data['title']}');
+    // ignore: avoid_print
+    print('🏷️ Brand: ${data['brand']}');
+    // ignore: avoid_print
+    print('🏷️ Model: ${data['model']}');
+    // ignore: avoid_print
+    print('💰 Price: ${data['price']} ${data['currency']}');
+    // ignore: avoid_print
+    print('📍 Location: ${data['location']}');
+    // ignore: avoid_print
+    print('🛠️ Condition: ${data['condition']}');
+    // ignore: avoid_print
+    print('🧩 Full data payload:');
+    data.forEach((key, value) {
+      if (value is List) {
+        // ignore: avoid_print
+        print('   ▸ $key (${value.length} items): $value');
+      } else {
+        // ignore: avoid_print
+        print('   ▸ $key: $value');
+      }
+    });
+
     // Extract all car data
     final imageUrls = (data['image_urls'] as List?)?.map((e) => e.toString()).toList() ?? [];
     final mainImage = data['main_image_url']?.toString();
