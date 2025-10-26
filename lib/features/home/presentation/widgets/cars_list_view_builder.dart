@@ -34,20 +34,20 @@ class CarsListViewBuilder extends StatelessWidget {
         }
 
         final car = list[index];
-        final images = (car['carImages'] as List?)?.cast<dynamic>() ?? const [];
+        final images = (car['car_images'] as List?)?.cast<dynamic>() ?? const [];
         final imageUrl = images.isNotEmpty ? images.first?.toString() : null;
-        final title = [car['carYear'], car['carMaker'], car['carModel']]
+        final title = [car['car_year'], car['car_maker'], car['car_model']]
             .where((e) => e != null && e.toString().isNotEmpty)
             .join(' ');
-        final spec1 = (car['carTrim'] ?? car['carEngine'])?.toString();
-        final spec2 = car['carTransmission']?.toString();
-        final mileageVal = car['carMileage']?.toString();
+        final spec1 = (car['car_trim'] ?? car['car_engine'])?.toString();
+        final spec2 = car['car_transmission']?.toString();
+        final mileageVal = car['car_mileage']?.toString();
         final mileage = mileageVal != null && mileageVal.isNotEmpty
             ? '$mileageVal KM'
             : null;
-        final fuel = car['carFuelType']?.toString();
-        final location = car['carLocation']?.toString();
-        final priceVal = car['carPrice']?.toString();
+        final fuel = car['car_fuel_type']?.toString();
+        final location = car['car_location']?.toString();
+        final priceVal = car['car_price']?.toString();
         final price = priceVal != null && priceVal.isNotEmpty
             ? '${priceVal}\$'
             : null;
