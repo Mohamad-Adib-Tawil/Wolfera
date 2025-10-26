@@ -1,4 +1,5 @@
 import 'package:injectable/injectable.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 import 'package:wolfera/core/api/api_utils.dart';
 import 'package:wolfera/core/api/result.dart';
@@ -39,13 +40,35 @@ class MyCarDatasouce {
       // Prepare car data with uploaded image URLs
       final carData = params.toMapWithUrls(uploadedUrls);
       carData['id'] = carId; // Add the car ID to the data
-      
-      // Insert car data into Supabase
-      await SupabaseService.addCar(carData);
+
+      // Insert car data into Supabase with schema sanitization (remove unknown columns)
+      await _insertCarWithSchemaSanitization(carData);
 
       return true;
     }
 
     return toApiResult(() => throwAppException(fun));
+  }
+
+  Future<void> _insertCarWithSchemaSanitization(
+      Map<String, dynamic> carData) async {
+    final data = Map<String, dynamic>.from(carData);
+    while (true) {
+      try {
+        await SupabaseService.addCar(data);
+        return;
+      } on PostgrestException catch (e) {
+        final message = e.message;
+        final match =
+            RegExp(r"Could not find the '([^']+)' column").firstMatch(message);
+        if (match != null) {
+          final missingColumn = match.group(1)!;
+          // Remove the missing column and retry
+          data.remove(missingColumn);
+          continue;
+        }
+        rethrow;
+      }
+    }
   }
 }
