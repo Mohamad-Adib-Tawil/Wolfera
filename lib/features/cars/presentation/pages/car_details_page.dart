@@ -58,7 +58,7 @@ class CarDetailsPage extends StatelessWidget {
               child:
                   CustomDivider(color: AppColors.whiteLess, thickness: 0.6.r),
             ),
-            const SellerSctionDetalis(),
+            SellerSctionDetalis(carData: data),
             const SimilarCarsListView()
           ],
         ),

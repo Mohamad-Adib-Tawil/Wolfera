@@ -113,6 +113,15 @@ class SellMyCarParams {
       'seats': int.tryParse(carSeats),
       'condition': carCondition,
       
+      // Additional car details
+      'trim': carTrim.isNotEmpty ? carTrim : null,
+      'paint_parts': carPaintParts.isNotEmpty ? carPaintParts : null,
+      'plate': carPlate.isNotEmpty ? carPlate : null,
+      'seat_material': carSeatMaterial.isNotEmpty ? carSeatMaterial : null,
+      'wheels': carWheels.isNotEmpty ? carWheels : null,
+      'interior_color': carInteriorColor.isNotEmpty ? carInteriorColor : null,
+      'exterior_color': carExteriorColor.isNotEmpty ? carExteriorColor : null,
+      
       // Location
       'location': carLocation,
       'city': carLocation,

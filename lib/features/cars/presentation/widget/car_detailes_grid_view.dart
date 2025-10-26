@@ -16,10 +16,28 @@ class CarDetailesGridView extends StatelessWidget {
   Widget build(BuildContext context) {
     final mileage = carData['mileage']?.toString() ?? '0';
     final transmission = carData['transmission']?.toString() ?? '-';
-    final engineCapacity = carData['engine_capacity']?.toString() ?? '-';
-    final cylinders = carData['cylinders']?.toString() ?? '-';
+    final engineCapacity = carData['engine_capacity'];
+    final cylinders = carData['cylinders'];
     final fuelType = carData['fuel_type']?.toString() ?? '-';
     final year = carData['year']?.toString() ?? '-';
+    
+    // Format engine capacity
+    String engineText = '-';
+    if (engineCapacity != null) {
+      final engineVal = engineCapacity.toString();
+      if (engineVal != 'null' && engineVal.isNotEmpty) {
+        engineText = '$engineVal L';
+      }
+    }
+    
+    // Format cylinders
+    String cylindersText = '-';
+    if (cylinders != null) {
+      final cylindersVal = cylinders.toString();
+      if (cylindersVal != 'null' && cylindersVal.isNotEmpty) {
+        cylindersText = '$cylindersVal Cylinders';
+      }
+    }
     
     return Column(
       children: [
@@ -40,7 +58,7 @@ class CarDetailesGridView extends StatelessWidget {
             35.horizontalSpace,
             CarDetailesWithIconItem(
               path: Assets.svgEngineMotor,
-              title: '$engineCapacity L',
+              title: engineText,
               textWidth: 85,
             ),
           ],
@@ -51,7 +69,7 @@ class CarDetailesGridView extends StatelessWidget {
             10.horizontalSpace,
             CarDetailesWithIconItem(
               path: Assets.svgPistonMotor,
-              title: '$cylinders Cylinders',
+              title: cylindersText,
               textWidth: 100,
             ),
             50.horizontalSpace,
