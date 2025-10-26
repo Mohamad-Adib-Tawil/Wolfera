@@ -11,8 +11,11 @@ import 'package:wolfera/features/chat/presentation/widgets/white_divider.dart';
 import 'package:wolfera/generated/assets.dart';
 
 class SellerSctionDetalis extends StatelessWidget {
+  final Map<String, dynamic> carData;
+  
   const SellerSctionDetalis({
     super.key,
+    required this.carData,
   });
 
   @override
@@ -27,7 +30,7 @@ class SellerSctionDetalis extends StatelessWidget {
             style: context.textTheme.bodyLarge!.s17.b.withColor(AppColors.grey),
           ),
           14.verticalSpace,
-          const UserSectionWithLocation(),
+          UserSectionWithLocation(carData: carData),
           29.verticalSpace,
           const Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
