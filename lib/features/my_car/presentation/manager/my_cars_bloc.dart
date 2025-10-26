@@ -32,6 +32,8 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
     on<AddOptionalImageEvent>(addOptionalImageControl);
     on<ResetSellMyCarEvent>(resetSellMyCar);
     on<SellMyCarEvent>(sellMyCar);
+    on<LoadMyCarsEvent>(_onLoadMyCars);
+    on<DeleteMyCarEvent>(_onDeleteMyCar);
   }
   final SellMyCarUsecase _sellMyCarUsecase;
   final String kFromCarMaker = 'carMaker';
@@ -157,6 +159,9 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
           } catch (e) {
             print('⚠️  Failed to refresh home: $e');
           }
+
+          // إعادة تحميل سيارات المستخدم بعد إضافة سيارة جديدة
+          add(LoadMyCarsEvent());
 
           print('🎉 Navigating to congratulations page...');
           GRouter.router
@@ -346,5 +351,65 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
     imagesSectionForm.reset();
     descriptionSectionForm.reset();
     sellMyCarForm.reset();
+  }
+
+  // جلب السيارات الخاصة بالمستخدم الحالي
+  Future<void> _onLoadMyCars(
+    LoadMyCarsEvent event,
+    Emitter<MyCarsState> emit,
+  ) async {
+    try {
+      emit(state.copyWith(loadCarsStatus: const BlocStatus.loading()));
+
+      final userId = SupabaseService.currentUser?.id;
+      if (userId == null) {
+        emit(state.copyWith(
+          loadCarsStatus: const BlocStatus.fail(error: 'User not logged in'),
+          myCars: [],
+        ));
+        return;
+      }
+
+      // جلب السيارات من Supabase مع تصفية حسب user_id
+      final response = await SupabaseService.client
+          .from('cars')
+          .select('*')
+          .eq('user_id', userId)
+          .order('created_at', ascending: false);
+
+      final cars = (response as List).cast<Map<String, dynamic>>();
+
+      emit(state.copyWith(
+        loadCarsStatus: const BlocStatus.success(),
+        myCars: cars,
+      ));
+    } catch (e, stackTrace) {
+      print('🔴 Error loading my cars: $e');
+      print('Stack trace: $stackTrace');
+      emit(state.copyWith(
+        loadCarsStatus: BlocStatus.fail(error: e.toString()),
+        myCars: [],
+      ));
+    }
+  }
+
+  // حذف سيارة
+  Future<void> _onDeleteMyCar(
+    DeleteMyCarEvent event,
+    Emitter<MyCarsState> emit,
+  ) async {
+    try {
+      EasyLoading.show(status: 'Deleting car...');
+
+      await SupabaseService.deleteCar(event.carId);
+
+      // إعادة تحميل القائمة بعد الحذف
+      add(LoadMyCarsEvent());
+
+      EasyLoading.showSuccess('Car deleted successfully');
+    } catch (e) {
+      print('🔴 Error deleting car: $e');
+      EasyLoading.showError('Failed to delete car');
+    }
   }
 }
