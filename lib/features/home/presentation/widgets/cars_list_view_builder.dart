@@ -34,23 +34,30 @@ class CarsListViewBuilder extends StatelessWidget {
         }
 
         final car = list[index];
-        // Try both naming conventions (with and without car_ prefix)
-        final images = (car['images'] ?? car['car_images'] as List?)?.cast<dynamic>() ?? const [];
-        final imageUrl = images.isNotEmpty ? images.first?.toString() : null;
+        
+        // Get images from image_urls (jsonb array) or main_image_url
+        final imageUrls = (car['image_urls'] as List?)?.cast<dynamic>() ?? const [];
+        final mainImage = car['main_image_url']?.toString();
+        final imageUrl = imageUrls.isNotEmpty 
+            ? imageUrls.first?.toString() 
+            : mainImage;
+        
+        // Build title from year, brand, model
         final title = [
-          car['year'] ?? car['car_year'],
-          car['brand'] ?? car['car_maker'],
-          car['model'] ?? car['car_model']
-        ].where((e) => e != null && e.toString().isNotEmpty).join(' ');
-        final spec1 = (car['trim'] ?? car['car_trim'] ?? car['engine'] ?? car['car_engine'])?.toString();
-        final spec2 = (car['transmission'] ?? car['car_transmission'])?.toString();
-        final mileageVal = (car['mileage'] ?? car['car_mileage'])?.toString();
+          car['year']?.toString(),
+          car['brand']?.toString(),
+          car['model']?.toString()
+        ].where((e) => e != null && e.isNotEmpty).join(' ');
+        
+        final spec1 = (car['body_type'] ?? car['engine_capacity'])?.toString();
+        final spec2 = car['transmission']?.toString();
+        final mileageVal = car['mileage']?.toString();
         final mileage = mileageVal != null && mileageVal.isNotEmpty
             ? '$mileageVal KM'
             : null;
-        final fuel = (car['fuel_type'] ?? car['car_fuel_type'])?.toString();
-        final location = (car['location'] ?? car['car_location'])?.toString();
-        final priceVal = (car['price'] ?? car['car_price'])?.toString();
+        final fuel = car['fuel_type']?.toString();
+        final location = (car['city'] ?? car['location'])?.toString();
+        final priceVal = car['price']?.toString();
         final price = priceVal != null && priceVal.isNotEmpty
             ? '${priceVal}\$'
             : null;
