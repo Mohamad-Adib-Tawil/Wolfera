@@ -40,6 +40,7 @@ class UserSectionWithLocation extends StatelessWidget {
               width: 200.w,
               child: AppText(
                 userName,
+                translation: false,
                 style: context.textTheme.bodyLarge!.s17.xb
                     .withColor(AppColors.white),
               ),
@@ -58,6 +59,7 @@ class UserSectionWithLocation extends StatelessWidget {
                   width: 200.w,
                   child: AppText(
                     userLocation,
+                    translation: false,
                     style: context.textTheme.bodyLarge!.s17.r
                         .withColor(AppColors.grey),
                   ),

@@ -17,6 +17,61 @@ class CarDetailsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String? _stringValue(dynamic v) {
+      if (v == null) return null;
+      final s = v.toString();
+      if (s.isEmpty || s == 'null') return null;
+      return s;
+    }
+
+    final resolvedLocation = _stringValue(carData['country']) ??
+        _stringValue(carData['city']) ??
+        _stringValue(carData['location']);
+
+    final List<Widget> items = [];
+    void addItem(String title, dynamic value) {
+      final s = _stringValue(value);
+      if (s != null) {
+        items.add(CarDetailsItem(title: title, value: s));
+      }
+    }
+    void addBool(String title, dynamic value) {
+      if (value is bool) {
+        items.add(CarDetailsItem(title: title, value: value ? 'Yes' : 'No'));
+      }
+    }
+
+    addItem('Brand', carData['brand']);
+    addItem('Model', carData['model']);
+    addItem('Year Model', carData['year']);
+    addItem('Color', carData['color']);
+    addItem('Trim', carData['trim']);
+    addItem('Paint Parts', carData['paint_parts']);
+    addItem('Plate', carData['plate']);
+    addItem('Seat Material', carData['seat_material']);
+    addItem('Wheels', carData['wheels']);
+    addItem('Cylinders', carData['cylinders']);
+    addItem('Seat Number', carData['seats']);
+    addItem('Condition', carData['condition']);
+    addItem('Vehicle Type', carData['body_type']);
+    addItem('Gearbox', carData['transmission']);
+    // metrics
+    final mileage = _stringValue(carData['mileage']);
+    if (mileage != null) {
+      items.add(CarDetailsItem(title: 'Mileage', value: '$mileage KM'));
+    }
+    addItem('Fuel Type', carData['fuel_type']);
+    addItem('Doors', carData['doors']);
+    addItem('Drive Type', carData['drive_type']);
+    addItem('Interior Color', carData['interior_color']);
+    addItem('Exterior Color', carData['exterior_color']);
+    addItem('Engine Capacity', carData['engine_capacity'] == null ? null : carData['engine_capacity']);
+    // booleans
+    addBool('Accidents History', carData['accidents_history']);
+    addBool('Service History', carData['service_history']);
+    addBool('Warranty', carData['warranty']);
+    if (resolvedLocation != null) addItem('Location', resolvedLocation);
+
     return Padding(
       padding: HWEdgeInsets.symmetric(horizontal: 11),
       child: Column(
@@ -27,23 +82,7 @@ class CarDetailsSection extends StatelessWidget {
           CarDetailesGridView(carData: carData),
           6.verticalSpace,
           CustomDivider(color: AppColors.whiteLess, thickness: 1.r),
-          CarDetailsItem(title: 'Brand', value: carData['brand']?.toString() ?? '-'),
-          CarDetailsItem(title: 'Model', value: carData['model']?.toString() ?? '-'),
-          CarDetailsItem(title: 'Year Model', value: carData['year']?.toString() ?? '-'),
-          CarDetailsItem(title: 'Trim', value: carData['trim']?.toString() ?? '-'),
-          CarDetailsItem(title: 'Paint Parts', value: carData['paint_parts']?.toString() ?? '-'),
-          CarDetailsItem(title: 'Seat Number', value: carData['seats']?.toString() ?? '-'),
-          CarDetailsItem(title: 'Plate', value: carData['plate']?.toString() ?? '-'),
-          CarDetailsItem(title: 'Color', value: carData['color']?.toString() ?? '-'),
-          CarDetailsItem(title: 'Seat Material', value: carData['seat_material']?.toString() ?? '-'),
-          CarDetailsItem(title: 'Condition', value: carData['condition']?.toString() ?? '-'),
-          CarDetailsItem(title: 'Wheels', value: carData['wheels']?.toString() ?? '-'),
-          CarDetailsItem(title: 'Vehicle Type', value: carData['body_type']?.toString() ?? '-'),
-          CarDetailsItem(title: 'Gearbox', value: carData['transmission']?.toString() ?? '-'),
-          CarDetailsItem(title: 'Cylinders', value: carData['cylinders']?.toString() ?? '-'),
-          CarDetailsItem(title: 'Interior Color', value: carData['interior_color']?.toString() ?? '-'),
-          CarDetailsItem(title: 'Exterior Color', value: carData['exterior_color']?.toString() ?? '-'),
-          CarDetailsItem(title: 'Location', value: carData['location']?.toString() ?? '-'),
+          ...items,
           10.verticalSpace,
         ],
       ),
