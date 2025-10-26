@@ -1,9 +1,78 @@
 import 'package:injectable/injectable.dart';
 import 'package:wolfera/core/utils/nullable.dart';
 import 'package:wolfera/features/search_and_filteration/presentation/manager/search_cubit/search_cubit.dart';
+import 'package:wolfera/services/supabase_service.dart';
 
 @lazySingleton
 class SearchFilterService {
+  // دالة البحث عن السيارات من Supabase
+  Future<List<Map<String, dynamic>>> searchCars({
+    required String query,
+    required SearchState filters,
+  }) async {
+    try {
+      var queryBuilder = SupabaseService.client
+          .from('cars')
+          .select('*');
+
+      // البحث في العنوان أو الماركة أو الموديل
+      if (query.isNotEmpty) {
+        queryBuilder = queryBuilder.or(
+          'title.ilike.%$query%,brand.ilike.%$query%,model.ilike.%$query%,description.ilike.%$query%'
+        );
+      }
+
+      // تطبيق الفلاتر
+      if (filters.selectedCarMakersFilter.isNotEmpty) {
+        queryBuilder = queryBuilder.inFilter('brand', filters.selectedCarMakersFilter);
+      }
+
+      if (filters.selectedTransmission != null) {
+        queryBuilder = queryBuilder.eq('transmission', filters.selectedTransmission!);
+      }
+
+      if (filters.seletedBodyType != null) {
+        queryBuilder = queryBuilder.eq('body_type', filters.seletedBodyType!);
+      }
+
+      if (filters.seletedFuelType != null) {
+        queryBuilder = queryBuilder.eq('fuel_type', filters.seletedFuelType!);
+      }
+
+      if (filters.seletedCondition != null) {
+        queryBuilder = queryBuilder.eq('condition', filters.seletedCondition!);
+      }
+
+      if (filters.selectedCarMinYear != null) {
+        queryBuilder = queryBuilder.gte('year', filters.selectedCarMinYear!);
+      }
+
+      if (filters.selectedCarMaxYear != null) {
+        queryBuilder = queryBuilder.lte('year', filters.selectedCarMaxYear!);
+      }
+
+      if (filters.selectedCarMinKilometers != null) {
+        final minKm = int.tryParse(filters.selectedCarMinKilometers!);
+        if (minKm != null) {
+          queryBuilder = queryBuilder.gte('mileage', minKm);
+        }
+      }
+
+      if (filters.selectedCarMaxKilometers != null) {
+        final maxKm = int.tryParse(filters.selectedCarMaxKilometers!);
+        if (maxKm != null) {
+          queryBuilder = queryBuilder.lte('mileage', maxKm);
+        }
+      }
+
+      // ترتيب حسب تاريخ الإنشاء
+      final response = await queryBuilder.order('created_at', ascending: false);
+      return (response as List).cast<Map<String, dynamic>>();
+    } catch (e) {
+      print('🔴 Error in searchCars: $e');
+      rethrow;
+    }
+  }
   // Toggle Car Maker Selection Filter
   SearchState toggleMakerSelection(SearchState state, String carMaker) {
     final currentSelected = List<String>.from(state.selectedCarMakersFilter);

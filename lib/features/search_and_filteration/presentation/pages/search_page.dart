@@ -8,12 +8,14 @@ import 'package:wolfera/core/config/theme/colors_app.dart';
 import 'package:wolfera/core/config/theme/typography.dart';
 import 'package:wolfera/core/utils/extensions/build_context.dart';
 import 'package:wolfera/core/utils/responsive_padding.dart';
+import 'package:wolfera/features/app/presentation/widgets/app_empty_state_widet/app_empty_state.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_svg_picture.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
 import 'package:wolfera/features/app/presentation/widgets/refresh_list_widget.dart';
 import 'package:wolfera/features/chat/presentation/widgets/white_divider.dart';
 import 'package:wolfera/features/home/presentation/manager/home_cubit/home_cubit.dart';
 import 'package:wolfera/features/home/presentation/widgets/cars_list_view_builder.dart';
+import 'package:wolfera/features/search_and_filteration/presentation/manager/search_cubit/search_cubit.dart';
 import 'package:wolfera/features/search_and_filteration/presentation/widget/cars_search_bar.dart';
 import 'package:wolfera/features/search_and_filteration/presentation/widget/search_filters_section.dart';
 import 'package:wolfera/generated/assets.dart';
@@ -27,66 +29,140 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearcgPageState extends State<SearchPage> {
-  late HomeCubit _homeCubit;
+  late SearchCubit _searchCubit;
+  
   @override
   void initState() {
-    _homeCubit = GetIt.I<HomeCubit>();
+    _searchCubit = GetIt.I<SearchCubit>();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
-      value: _homeCubit,
+      value: _searchCubit,
       child: SafeArea(
         child: Scaffold(
-          body: RefreshListWidget(
-            onRefresh: _homeCubit.getHomeData,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                25.verticalSpace,
-                const SearchItemsBar(),
-                16.verticalSpace,
-                const SearchFiltersSection(),
-                14.verticalSpace,
-                Padding(
-                  padding: HWEdgeInsets.symmetric(horizontal: 23),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      AppText(
-                        "89 Cars found".tr(),
-                        style: context.textTheme.titleMedium?.s13.m
-                            .withColor(AppColors.white),
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              25.verticalSpace,
+              const SearchItemsBar(),
+              16.verticalSpace,
+              const SearchFiltersSection(),
+              14.verticalSpace,
+              
+              // عرض عدد النتائج
+              BlocBuilder<SearchCubit, SearchState>(
+                builder: (context, state) {
+                  final resultsCount = state.searchQuery.isEmpty 
+                      ? 0 
+                      : state.searchResults.length;
+                  
+                  return Padding(
+                    padding: HWEdgeInsets.symmetric(horizontal: 23),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        AppText(
+                          state.searchQuery.isEmpty
+                              ? "Search for cars".tr()
+                              : "$resultsCount Cars found".tr(),
+                          style: context.textTheme.titleMedium?.s13.m
+                              .withColor(AppColors.white),
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.sort_outlined,
+                              size: 12.r,
+                            ),
+                            5.horizontalSpace,
+                            AppText(
+                              "Sort by".tr(),
+                              style: context.textTheme.titleMedium?.s13.m
+                                  .withColor(AppColors.white),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  );
+                },
+              ),
+              const CustomDivider(indent: 10, endIndent: 10),
+              
+              // عرض النتائج
+              Expanded(
+                child: BlocBuilder<SearchCubit, SearchState>(
+                  builder: (context, state) {
+                    // حالة التحميل
+                    if (state.isSearching) {
+                      return CarsListViewBuilder(
+                        scrollDirection: Axis.vertical,
+                        padding: HWEdgeInsetsDirectional.only(
+                          start: 8,
+                          end: 8,
+                          top: 12,
+                        ),
+                      );
+                    }
+
+                    // حالة الخطأ
+                    if (state.searchError != null) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            AppText(
+                              'Error: ${state.searchError}',
+                              style: context.textTheme.bodyMedium
+                                  ?.withColor(AppColors.white),
+                            ),
+                            20.verticalSpace,
+                            ElevatedButton(
+                              onPressed: () {
+                                _searchCubit.searchCars(state.searchQuery);
+                              },
+                              child: AppText('Retry'.tr()),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
+                    // حالة عدم وجود نص بحث
+                    if (state.searchQuery.isEmpty) {
+                      return Center(
+                        child: AppText(
+                          'Type to search for cars'.tr(),
+                          style: context.textTheme.bodyLarge
+                              ?.withColor(AppColors.white.withOpacity(0.6)),
+                        ),
+                      );
+                    }
+
+                    // حالة عدم وجود نتائج
+                    if (state.searchResults.isEmpty) {
+                      return Center(
+                        child: AppEmptyState.foodsEmpty(),
+                      );
+                    }
+
+                    // عرض النتائج
+                    return CarsListViewBuilder(
+                      scrollDirection: Axis.vertical,
+                      padding: HWEdgeInsetsDirectional.only(
+                        start: 8,
+                        end: 8,
+                        top: 12,
                       ),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.sort_outlined,
-                            size: 12.r,
-                          ),
-                          5.horizontalSpace,
-                          AppText(
-                            "Sort by".tr(),
-                            style: context.textTheme.titleMedium?.s13.m
-                                .withColor(AppColors.white),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
+                      cars: state.searchResults,
+                    );
+                  },
                 ),
-                const CustomDivider(indent: 10, endIndent: 10),
-                Expanded(
-                  child: CarsListViewBuilder(
-                    scrollDirection: Axis.vertical,
-                    padding:
-                        HWEdgeInsetsDirectional.only(start: 8, end: 8, top: 12),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

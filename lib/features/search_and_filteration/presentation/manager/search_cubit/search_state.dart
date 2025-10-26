@@ -15,6 +15,12 @@ class SearchState {
   final String? seletedSeatsCount;
   final String? seletedCondition;
   final String? seletedFuelType;
+  
+  // حالات البحث والنتائج
+  final bool isSearching;
+  final String searchQuery;
+  final List<Map<String, dynamic>> searchResults;
+  final String? searchError;
   @override
   List<Object?> get props => [
         selectedPrice,
@@ -30,6 +36,10 @@ class SearchState {
         seletedSeatsCount,
         seletedCondition,
         seletedFuelType,
+        isSearching,
+        searchQuery,
+        searchResults,
+        searchError,
       ];
   const SearchState({
     this.selectedPrice,
@@ -45,6 +55,10 @@ class SearchState {
     this.seletedSeatsCount,
     this.seletedCondition,
     this.seletedFuelType,
+    this.isSearching = false,
+    this.searchQuery = '',
+    this.searchResults = const [],
+    this.searchError,
   });
 
   factory SearchState.initial() {
@@ -62,6 +76,10 @@ class SearchState {
       seletedSeatsCount: null,
       seletedCondition: null,
       seletedFuelType: null,
+      isSearching: false,
+      searchQuery: '',
+      searchResults: [],
+      searchError: null,
     );
   }
 
@@ -79,6 +97,10 @@ class SearchState {
     Nullable<String?>? seletedSeatsCount,
     Nullable<String?>? seletedCondition,
     Nullable<String?>? seletedFuelType,
+    bool? isSearching,
+    String? searchQuery,
+    List<Map<String, dynamic>>? searchResults,
+    Nullable<String?>? searchError,
   }) {
     return SearchState(
       selectedPrice:
@@ -116,6 +138,10 @@ class SearchState {
       seletedFuelType: seletedFuelType != null
           ? seletedFuelType.value
           : this.seletedFuelType,
+      isSearching: isSearching ?? this.isSearching,
+      searchQuery: searchQuery ?? this.searchQuery,
+      searchResults: searchResults ?? this.searchResults,
+      searchError: searchError != null ? searchError.value : this.searchError,
     );
   }
 
