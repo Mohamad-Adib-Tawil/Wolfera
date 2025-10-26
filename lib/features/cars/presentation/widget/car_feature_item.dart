@@ -28,6 +28,7 @@ class CarFeautreItem extends StatelessWidget {
           Flexible(
             child: AppText(
               featureName,
+              translation: false,
               style: context.textTheme.titleMedium?.r,
             ),
           ),
