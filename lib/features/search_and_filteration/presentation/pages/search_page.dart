@@ -11,9 +11,8 @@ import 'package:wolfera/core/utils/responsive_padding.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_empty_state_widet/app_empty_state.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_svg_picture.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
-import 'package:wolfera/features/app/presentation/widgets/refresh_list_widget.dart';
+import 'package:wolfera/features/app/presentation/widgets/app_elvated_button.dart';
 import 'package:wolfera/features/chat/presentation/widgets/white_divider.dart';
-import 'package:wolfera/features/home/presentation/manager/home_cubit/home_cubit.dart';
 import 'package:wolfera/features/home/presentation/widgets/cars_list_view_builder.dart';
 import 'package:wolfera/features/search_and_filteration/presentation/manager/search_cubit/search_cubit.dart';
 import 'package:wolfera/features/search_and_filteration/presentation/widget/cars_search_bar.dart';
@@ -58,6 +57,7 @@ class _SearcgPageState extends State<SearchPage> {
                   final resultsCount = state.searchQuery.isEmpty 
                       ? 0 
                       : state.searchResults.length;
+                  final hasActiveFilters = state.activeFilterCount() > 0;
                   
                   return Padding(
                     padding: HWEdgeInsets.symmetric(horizontal: 23),
@@ -73,6 +73,38 @@ class _SearcgPageState extends State<SearchPage> {
                         ),
                         Row(
                           children: [
+                            if (hasActiveFilters) ...[
+                              AppElevatedButton(
+                                onPressed: () => _searchCubit.resetAllFilters(),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.transparent,
+                                  elevation: 0,
+                                  shadowColor: Colors.transparent,
+                                  side: const BorderSide(color: AppColors.primary, width: 0.7),
+                                  padding: HWEdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20).r,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.filter_alt_off_rounded,
+                                      size: 14.r,
+                                      color: AppColors.primary,
+                                    ),
+                                    6.horizontalSpace,
+                                    AppText(
+                                      'Clear all filters'.tr(),
+                                      style: context.textTheme.titleMedium?.s13.m
+                                          .withColor(AppColors.primary),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              12.horizontalSpace,
+                            ],
                             Icon(
                               Icons.sort_outlined,
                               size: 12.r,
@@ -96,17 +128,7 @@ class _SearcgPageState extends State<SearchPage> {
               Expanded(
                 child: BlocBuilder<SearchCubit, SearchState>(
                   builder: (context, state) {
-                    // حالة التحميل
-                    if (state.isSearching) {
-                      return CarsListViewBuilder(
-                        scrollDirection: Axis.vertical,
-                        padding: HWEdgeInsetsDirectional.only(
-                          start: 8,
-                          end: 8,
-                          top: 12,
-                        ),
-                      );
-                    }
+                   
 
                     // حالة الخطأ
                     if (state.searchError != null) {
@@ -166,12 +188,35 @@ class _SearcgPageState extends State<SearchPage> {
                             children: [
                               AppEmptyState.foodsEmpty(),
                               if (hasActiveFilters) ...[
-                                20.verticalSpace,
-                                ElevatedButton(
-                                  onPressed: () {
-                                    _searchCubit.resetAllFilters();
-                                  },
-                                  child: AppText('Clear all filters'.tr()),
+                                4.verticalSpace,
+                                AppElevatedButton(
+                                  onPressed: () => _searchCubit.resetAllFilters(),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.transparent,
+                                    elevation: 0,
+                                    shadowColor: Colors.transparent,
+                                    side: const BorderSide(color: AppColors.primary, width: 0.7),
+                                    padding: HWEdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(24).r,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.filter_alt_off_rounded,
+                                        size: 16.r,
+                                        color: AppColors.primary,
+                                      ),
+                                      8.horizontalSpace,
+                                      AppText(
+                                        'Clear all filters'.tr(),
+                                        style: context.textTheme.titleMedium?.s13.m
+                                            .withColor(AppColors.primary),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ],
