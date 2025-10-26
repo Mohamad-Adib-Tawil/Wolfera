@@ -31,10 +31,53 @@ class SearchCubit extends Cubit<SearchState> {
   void _initStreams() {
     carsSearchStream = form.control('searchCars').valueChanges.listen(
       (event) {
-        debounce.run(() {});
+        final query = event?.toString() ?? '';
+        debounce.run(() {
+          searchCars(query);
+        });
       },
       onError: _handleError,
     );
+  }
+
+  // دالة البحث عن السيارات
+  Future<void> searchCars(String query) async {
+    try {
+      // إذا كان النص فارغًا، نعيد تعيين النتائج
+      if (query.trim().isEmpty) {
+        emit(state.copyWith(
+          isSearching: false,
+          searchQuery: '',
+          searchResults: [],
+          searchError: const Nullable.value(null),
+        ));
+        return;
+      }
+
+      // بدء البحث
+      emit(state.copyWith(
+        isSearching: true,
+        searchQuery: query,
+        searchError: const Nullable.value(null),
+      ));
+
+      // جلب السيارات من Supabase مع البحث
+      final results = await _searchFilterService.searchCars(
+        query: query,
+        filters: state,
+      );
+
+      emit(state.copyWith(
+        isSearching: false,
+        searchResults: results,
+      ));
+    } catch (e) {
+      print('🔴 Error searching cars: $e');
+      emit(state.copyWith(
+        isSearching: false,
+        searchError: Nullable.value(e.toString()),
+      ));
+    }
   }
 
   void resetAllFilters() {
