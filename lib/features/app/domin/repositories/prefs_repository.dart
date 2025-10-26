@@ -13,4 +13,14 @@ abstract class PrefsRepository {
   // Selected city persistence
   String? get selectedCity;
   Future<bool> setSelectedCity(String city);
+
+  // Address selections (new)
+  String? get selectedCountryCode; // e.g., 'AE', 'SY', 'DE', 'WW'
+  Future<bool> setSelectedCountryCode(String? code);
+
+  String? get selectedRegionOrCity; // e.g., 'Dubai', 'Damascus'
+  Future<bool> setSelectedRegionOrCity(String? value);
+
+  bool get isWorldwide; // true => Worldwide mode
+  Future<bool> setWorldwide(bool value);
 }

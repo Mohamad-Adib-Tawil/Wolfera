@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wolfera/features/auth/data/models/local_user.dart';
-
-import '../../../../common/constants/prefs_key.dart';
+import 'package:wolfera/common/constants/prefs_key.dart';
 import '../../domin/repositories/prefs_repository.dart';
 
 @Injectable(as: PrefsRepository)
@@ -71,6 +70,37 @@ class PrefsRepositoryImpl extends PrefsRepository {
   @override
   Future<bool> setSelectedCity(String city) async {
     return _preferences.setString(PrefsKey.city, city);
+  }
+
+  // ===== Address selections (new) =====
+  @override
+  String? get selectedCountryCode => _preferences.getString(PrefsKey.countryCode);
+
+  @override
+  Future<bool> setSelectedCountryCode(String? code) async {
+    if (code == null) {
+      return _preferences.remove(PrefsKey.countryCode);
+    }
+    return _preferences.setString(PrefsKey.countryCode, code);
+    }
+
+  @override
+  String? get selectedRegionOrCity => _preferences.getString(PrefsKey.regionOrCity);
+
+  @override
+  Future<bool> setSelectedRegionOrCity(String? value) async {
+    if (value == null) {
+      return _preferences.remove(PrefsKey.regionOrCity);
+    }
+    return _preferences.setString(PrefsKey.regionOrCity, value);
+  }
+
+  @override
+  bool get isWorldwide => _preferences.getBool(PrefsKey.worldwide) ?? true;
+
+  @override
+  Future<bool> setWorldwide(bool value) async {
+    return _preferences.setBool(PrefsKey.worldwide, value);
   }
 
   @override
