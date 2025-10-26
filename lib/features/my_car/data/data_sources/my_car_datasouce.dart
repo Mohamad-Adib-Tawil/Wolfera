@@ -55,11 +55,15 @@ class MyCarDatasouce {
       
       print('📋 Car data keys: ${carData.keys.toList()}');
       print('🔑 user_id in data: ${carData['user_id']}');
-      print('🏷️  car_maker: ${carData['car_maker']}');
-      print('🏷️  car_model: ${carData['car_model']}');
-      print('💰 car_price: ${carData['car_price']}');
-      print('📍 car_location: ${carData['car_location']}');
-      print('🖼️  car_images count: ${(carData['car_images'] as List?)?.length ?? 0}');
+      print('📝 title: ${carData['title']}');
+      print('🏷️  brand: ${carData['brand']}');
+      print('🏷️  model: ${carData['model']}');
+      print('📅 year: ${carData['year']}');
+      print('💰 price: ${carData['price']}');
+      print('📍 location: ${carData['location']}');
+      print('🏙️  city: ${carData['city']}');
+      print('🖼️  image_urls count: ${(carData['image_urls'] as List?)?.length ?? 0}');
+      print('🔧 condition: ${carData['condition']}');
 
       // Insert car data into Supabase with schema sanitization (remove unknown columns)
       print('\n💾 Inserting into Supabase...');
