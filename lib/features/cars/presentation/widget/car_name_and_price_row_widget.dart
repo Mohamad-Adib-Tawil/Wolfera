@@ -27,6 +27,7 @@ class CarNameAndPriceRowWidget extends StatelessWidget {
         if (brand.isNotEmpty)
           AppText(
             brand,
+            translation: false,
             style: context.textTheme.bodyLarge!.s20.b.withColor(AppColors.white),
           ),
         if (brand.isNotEmpty && model.isNotEmpty)
@@ -34,6 +35,7 @@ class CarNameAndPriceRowWidget extends StatelessWidget {
         if (model.isNotEmpty)
           AppText(
             model,
+            translation: false,
             style: context.textTheme.bodyLarge!.s20.r.withColor(AppColors.white),
           ),
         const Spacer(),
@@ -45,6 +47,7 @@ class CarNameAndPriceRowWidget extends StatelessWidget {
         10.horizontalSpace,
         AppText(
           '$price $currency',
+          translation: false,
           style:
               context.textTheme.bodyLarge!.s20.xb.withColor(AppColors.primary),
         ),

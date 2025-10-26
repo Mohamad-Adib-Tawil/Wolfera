@@ -48,25 +48,29 @@ class SellMyCarPage extends StatefulWidget {
 
 class _SellMyCarPageState extends State<SellMyCarPage> {
   late MyCarsBloc bloc;
+  late final PageController _pageController;
 
   @override
   void initState() {
     bloc = GetIt.I<MyCarsBloc>();
+    _pageController = PageController();
     super.initState();
   }
 
   @override
   void dispose() {
     bloc.add(ResetSellMyCarEvent());
+    _pageController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        if (didPop) return;
         bloc.add(BackPageEvent());
-        return false;
       },
       child: SafeArea(
         top: false,
@@ -75,7 +79,17 @@ class _SellMyCarPageState extends State<SellMyCarPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _Header(),
-              const _PagedSellMyCar(),
+              BlocListener<MyCarsBloc, MyCarsState>(
+                listenWhen: (prev, curr) => prev.activeStep != curr.activeStep,
+                listener: (context, state) {
+                  _pageController.animateToPage(
+                    state.activeStep,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.linear,
+                  );
+                },
+                child: _PagedSellMyCar(controller: _pageController),
+              ),
               const _Button(),
             ],
           ),
@@ -86,7 +100,7 @@ class _SellMyCarPageState extends State<SellMyCarPage> {
 }
 
 class _Header extends StatelessWidget {
-  _Header({super.key});
+  _Header();
 
   final steps = [
     "Details",
@@ -101,7 +115,10 @@ class _Header extends StatelessWidget {
     return Container(
       height: 115.h,
       margin: HWEdgeInsets.only(
-          left: 10, right: 10, top: MediaQuery.of(context).padding.top + 5.h),
+        left: 10,
+        right: 10,
+        top: MediaQuery.of(context).padding.top + 5.h,
+      ),
       padding: HWEdgeInsetsDirectional.only(start: 10, end: 20),
       child: Column(
         children: [
@@ -110,99 +127,104 @@ class _Header extends StatelessWidget {
             children: [
               IconButton(
                 onPressed: () => GetIt.I<MyCarsBloc>().add(BackPageEvent()),
-                icon: const Icon(Icons.arrow_back_ios_rounded,
-                    color: AppColors.white),
+                icon: const Icon(
+                  Icons.arrow_back_ios_rounded,
+                  color: AppColors.white,
+                ),
                 padding: EdgeInsets.zero,
               ),
               62.horizontalSpace,
               AppText(
                 "Sell My Car",
+                translation: false,
                 style: context.textTheme.titleSmall.m!
                     .copyWith(color: AppColors.white, fontSize: 22.sp),
-              )
+              ),
             ],
           ),
           10.verticalSpace,
           BlocSelector<MyCarsBloc, MyCarsState, int>(
             selector: (state) => state.activeStep,
-            builder: (context, activeStep) => Padding(
-              padding: HWEdgeInsetsDirectional.only(top: 10),
-              child: EasyStepper(
-                activeStep: activeStep,
-                internalPadding: 1,
-                showLoadingAnimation: false,
-                stepRadius: 5,
-                showStepBorder: false,
-                lineStyle: LineStyle(
-                  lineLength: 90.w,
-                  lineSpace: 0,
-                  lineType: LineType.normal,
-                  lineThickness: 3,
-                  defaultLineColor: AppColors.grey,
-                  activeLineColor: AppColors.grey,
-                  finishedLineColor: activeStep < steps.length - 1
-                      ? AppColors.orange
-                      : AppColors.orange,
-                ),
-                stepShape: StepShape.circle,
-                padding: EdgeInsets.zero,
-                steps: steps
-                    .mapIndexed<EasyStep>((index, title) => EasyStep(
-                          customStep: AnimatedContainer(
-                            duration: kTabScrollDuration,
-                            width: 22.r,
-                            height: 22.r,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                width: 2.r,
-                                color: activeStep >= index &&
-                                        activeStep != steps.length - 1
-                                    ? AppColors.primary
-                                    : AppColors.white,
-                              ),
-                              color: activeStep == index
-                                  ? null
-                                  : activeStep > index &&
+            builder: (context, activeStep) {
+              return Padding(
+                padding: HWEdgeInsetsDirectional.only(top: 10),
+                child: EasyStepper(
+                  activeStep: activeStep,
+                  internalPadding: 1,
+                  showLoadingAnimation: false,
+                  stepRadius: 5,
+                  showStepBorder: false,
+                  lineStyle: LineStyle(
+                    lineLength: 90.w,
+                    lineSpace: 0,
+                    lineType: LineType.normal,
+                    lineThickness: 3,
+                    defaultLineColor: AppColors.grey,
+                    activeLineColor: AppColors.grey,
+                    finishedLineColor: AppColors.orange,
+                  ),
+                  stepShape: StepShape.circle,
+                  padding: EdgeInsets.zero,
+                  steps: steps
+                      .mapIndexed<EasyStep>((index, title) => EasyStep(
+                            customStep: AnimatedContainer(
+                              duration: kTabScrollDuration,
+                              width: 22.r,
+                              height: 22.r,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  width: 2.r,
+                                  color: activeStep >= index &&
                                           activeStep != steps.length - 1
                                       ? AppColors.primary
                                       : AppColors.white,
+                                ),
+                                color: activeStep == index
+                                    ? null
+                                    : activeStep > index &&
+                                            activeStep != steps.length - 1
+                                        ? AppColors.primary
+                                        : AppColors.white,
+                              ),
+                              child: activeStep > index
+                                  ? Icon(
+                                      Icons.done_rounded,
+                                      size: 14.r,
+                                      color: activeStep == index
+                                          ? null
+                                          : activeStep >= steps.length - 1
+                                              ? AppColors.primary
+                                              : AppColors.white,
+                                    )
+                                  : null,
                             ),
-                            child: activeStep > index
-                                ? Icon(
-                                    Icons.done_rounded,
-                                    size: 14.r,
-                                    color: activeStep == index
-                                        ? null
-                                        : activeStep >= steps.length - 1
-                                            ? AppColors.primary
-                                            : AppColors.white,
-                                  )
-                                : null,
-                          ),
-                          customTitle: Transform.translate(
-                            offset: Offset(
+                            customTitle: Transform.translate(
+                              offset: Offset(
                                 index == 0
                                     ? (isRtl ? -20.r : 32.r)
                                     : index != steps.length - 1
                                         ? (isRtl ? -20.r : 20.r)
                                         : (isRtl ? -30.r : 30.r),
-                                10.r),
-                            child: AppText(
-                              title,
-                              style:
-                                  context.textTheme.labelSmall.s13.m.withColor(
-                                activeStep >= index &&
-                                        activeStep != steps.length - 1
-                                    ? AppColors.primary
-                                    : AppColors.white,
+                                10.r,
+                              ),
+                              child: AppText(
+                                title,
+                                translation: false,
+                                style: context.textTheme.labelSmall.s13.m
+                                    .withColor(
+                                  activeStep >= index &&
+                                          activeStep != steps.length - 1
+                                      ? AppColors.primary
+                                      : AppColors.white,
+                                ),
                               ),
                             ),
-                          ),
-                        ))
-                    .toList(),
-              ),
-            ),
+                          ))
+                      .toList(),
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -238,13 +260,15 @@ class _Button extends StatelessWidget {
 }
 
 class _PagedSellMyCar extends StatelessWidget {
-  const _PagedSellMyCar();
+  const _PagedSellMyCar({required this.controller});
+
+  final PageController controller;
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: PageView(
-        controller: GetIt.I<MyCarsBloc>().pagedSellMyCarController,
+        controller: controller,
         physics: const NeverScrollableScrollPhysics(),
         children: const [
           _EnterCarDetailsPage(),
