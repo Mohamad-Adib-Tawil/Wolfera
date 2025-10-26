@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
 import 'package:wolfera/core/utils/responsive_padding.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_svg_picture.dart';
+import 'package:wolfera/features/faviorate/presentation/manager/favorite_cubit.dart';
 import 'package:wolfera/generated/assets.dart';
 
 class FavorateIconWidget extends StatefulWidget {
-  const FavorateIconWidget({super.key});
+  const FavorateIconWidget({super.key, this.carData});
+
+  // بيانات السيارة (اختياري). في حال عدم توفرها، سيتم تعطيل التبديل فعليًا
+  final Map<String, dynamic>? carData;
 
   @override
   State<FavorateIconWidget> createState() => _FavorateIconWidgetState();
@@ -14,7 +19,6 @@ class FavorateIconWidget extends StatefulWidget {
 
 class _FavorateIconWidgetState extends State<FavorateIconWidget>
     with SingleTickerProviderStateMixin {
-  bool _isRed = true;
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
   late Animation<double> _rotationAnimation;
@@ -41,10 +45,11 @@ class _FavorateIconWidgetState extends State<FavorateIconWidget>
     );
   }
 
-  void _toggleColor() {
-    setState(() {
-      _isRed = !_isRed;
-    });
+  // عند الضغط: نقوم بعمل Toggle عبر Cubit ثم نشغل الأنيميشن
+  void _onTapToggleFavorite() {
+    final car = widget.carData;
+    if (car == null) return;
+    context.read<FavoriteCubit>().toggleFavorite(car);
     _controller.forward().then((_) => _controller.reverse());
   }
 
@@ -56,10 +61,14 @@ class _FavorateIconWidgetState extends State<FavorateIconWidget>
 
   @override
   Widget build(BuildContext context) {
+    final carId = widget.carData?['id']?.toString();
+    final isFav = context.select<FavoriteCubit, bool>(
+      (cubit) => cubit.isFavoriteById(carId),
+    );
     return Padding(
       padding: HWEdgeInsets.all(10),
       child: GestureDetector(
-        onTap: _toggleColor,
+        onTap: _onTapToggleFavorite,
         child: AnimatedBuilder(
           animation: _controller,
           builder: (context, child) {
@@ -68,14 +77,14 @@ class _FavorateIconWidgetState extends State<FavorateIconWidget>
               child: Transform.rotate(
                 angle: _rotationAnimation.value,
                 child: Opacity(
-                  opacity: _isRed ? 1.0 : _fadeAnimation.value,
+                  opacity: isFav ? 1.0 : _fadeAnimation.value,
                   child: CircleAvatar(
                     backgroundColor: AppColors.blackLight.withOpacity(0.7),
                     child: AppSvgPicture(
                       Assets.svgHeart,
                       height: 20.h,
                       width: 20.w,
-                      color: _isRed ? AppColors.red : AppColors.white,
+                      color: isFav ? AppColors.red : AppColors.white,
                     ),
                   ),
                 ),

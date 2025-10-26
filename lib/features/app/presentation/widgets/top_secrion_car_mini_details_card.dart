@@ -9,9 +9,11 @@ class TopSecrionCarMiniDetailsCard extends StatelessWidget {
     super.key,
     required this.isFaviorateIcon,
     this.image,
+    this.carData,
   });
   final String? image;
   final bool isFaviorateIcon;
+  final Map<String, dynamic>? carData;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +33,9 @@ class TopSecrionCarMiniDetailsCard extends StatelessWidget {
                 : AssetImage(image ?? Assets.imagesCar2),
             fit: BoxFit.cover,
           )),
-      child: isFaviorateIcon ? const FavorateIconWidget() : const SizedBox(),
+      child: isFaviorateIcon
+          ? FavorateIconWidget(carData: carData ?? const <String, dynamic>{})
+          : const SizedBox(),
     );
   }
 }
