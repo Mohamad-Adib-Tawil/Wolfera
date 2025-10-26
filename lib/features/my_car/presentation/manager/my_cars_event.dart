@@ -15,3 +15,12 @@ class ResetSellMyCarEvent extends MyCarsEvent {}
 class SellMyCarEvent extends MyCarsEvent {
   SellMyCarEvent();
 }
+
+// حدث جلب السيارات الخاصة بالمستخدم
+class LoadMyCarsEvent extends MyCarsEvent {}
+
+// حدث حذف سيارة
+class DeleteMyCarEvent extends MyCarsEvent {
+  final String carId;
+  DeleteMyCarEvent(this.carId);
+}
