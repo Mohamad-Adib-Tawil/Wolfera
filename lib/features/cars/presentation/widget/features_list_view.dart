@@ -7,7 +7,16 @@ import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
 import 'package:wolfera/features/cars/presentation/widget/features_grid_view.dart';
 
 class FeaturesListView extends StatelessWidget {
-  const FeaturesListView({super.key});
+  final List<String> safetyFeatures;
+  final List<String> interiorFeatures;
+  final List<String> exteriorFeatures;
+  
+  const FeaturesListView({
+    super.key,
+    this.safetyFeatures = const [],
+    this.interiorFeatures = const [],
+    this.exteriorFeatures = const [],
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -15,36 +24,39 @@ class FeaturesListView extends StatelessWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       children: <Widget>[
-        ExpansionTile(
-          iconColor: AppColors.grey,
-          collapsedIconColor: AppColors.grey,
-          title: AppText(
-            'Safety',
-            style:
-                context.textTheme.bodyMedium?.s18.b.withColor(AppColors.grey),
+        if (safetyFeatures.isNotEmpty)
+          ExpansionTile(
+            iconColor: AppColors.grey,
+            collapsedIconColor: AppColors.grey,
+            title: AppText(
+              'Safety',
+              style:
+                  context.textTheme.bodyMedium?.s18.b.withColor(AppColors.grey),
+            ),
+            children: [FeaturesGridView(features: safetyFeatures)],
           ),
-          children: const [FeaturesGridView()],
-        ),
-        5.verticalSpace,
-        ExpansionTile(
-          iconColor: AppColors.grey,
-          collapsedIconColor: AppColors.grey,
-          title: AppText(
-            'Exterior',
-            style: context.textTheme.bodyMedium.s18.b.withColor(AppColors.grey),
+        if (safetyFeatures.isNotEmpty) 5.verticalSpace,
+        if (exteriorFeatures.isNotEmpty)
+          ExpansionTile(
+            iconColor: AppColors.grey,
+            collapsedIconColor: AppColors.grey,
+            title: AppText(
+              'Exterior',
+              style: context.textTheme.bodyMedium.s18.b.withColor(AppColors.grey),
+            ),
+            children: [FeaturesGridView(features: exteriorFeatures)],
           ),
-          children: const [FeaturesGridView()],
-        ),
-        5.verticalSpace,
-        ExpansionTile(
-          collapsedIconColor: AppColors.grey,
-          iconColor: AppColors.grey,
-          title: AppText(
-            'Interior',
-            style: context.textTheme.bodyMedium.s18.b.withColor(AppColors.grey),
+        if (exteriorFeatures.isNotEmpty) 5.verticalSpace,
+        if (interiorFeatures.isNotEmpty)
+          ExpansionTile(
+            collapsedIconColor: AppColors.grey,
+            iconColor: AppColors.grey,
+            title: AppText(
+              'Interior',
+              style: context.textTheme.bodyMedium.s18.b.withColor(AppColors.grey),
+            ),
+            children: [FeaturesGridView(features: interiorFeatures)],
           ),
-          children: const [FeaturesGridView()],
-        ),
       ],
     );
   }

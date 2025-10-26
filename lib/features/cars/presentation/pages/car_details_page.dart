@@ -19,6 +19,15 @@ class CarDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final data = carData ?? {};
+    
+    // Extract all car data
+    final imageUrls = (data['image_urls'] as List?)?.map((e) => e.toString()).toList() ?? [];
+    final mainImage = data['main_image_url']?.toString();
+    final allImages = imageUrls.isNotEmpty ? imageUrls : (mainImage != null ? [mainImage] : <String>[]);
+    
+    final safetyFeatures = (data['safety_features'] as List?)?.cast<String>() ?? [];
+    final interiorFeatures = (data['interior_features'] as List?)?.cast<String>() ?? [];
+    final exteriorFeatures = (data['exterior_features'] as List?)?.cast<String>() ?? [];
     final description = data['description']?.toString() ?? '';
     
     return Scaffold(
@@ -28,10 +37,14 @@ class CarDetailsPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             8.verticalSpace,
-            const MoreImagesCarsList(),
+            MoreImagesCarsList(images: allImages),
             10.verticalSpace,
-            const CarDetailsSection(),
-            const FeaturesListView(),
+            CarDetailsSection(carData: data),
+            FeaturesListView(
+              safetyFeatures: safetyFeatures,
+              interiorFeatures: interiorFeatures,
+              exteriorFeatures: exteriorFeatures,
+            ),
             Padding(
               padding: HWEdgeInsets.symmetric(horizontal: 11),
               child:

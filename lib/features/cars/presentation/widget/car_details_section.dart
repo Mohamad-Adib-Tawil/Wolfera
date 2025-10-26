@@ -8,8 +8,11 @@ import 'package:wolfera/features/cars/presentation/widget/car_detailes_grid_view
 import 'package:wolfera/features/chat/presentation/widgets/white_divider.dart';
 
 class CarDetailsSection extends StatelessWidget {
+  final Map<String, dynamic> carData;
+  
   const CarDetailsSection({
     super.key,
+    required this.carData,
   });
 
   @override
@@ -18,30 +21,29 @@ class CarDetailsSection extends StatelessWidget {
       padding: HWEdgeInsets.symmetric(horizontal: 11),
       child: Column(
         children: [
-          const CarNameAndPriceRowWidget(),
+          CarNameAndPriceRowWidget(carData: carData),
           CustomDivider(color: AppColors.whiteLess, thickness: 1.r),
           5.verticalSpace,
-          const CarDetailesGridView(),
+          CarDetailesGridView(carData: carData),
           6.verticalSpace,
           CustomDivider(color: AppColors.whiteLess, thickness: 1.r),
-          const CarDetailsItem(title: 'Brand', value: 'Ferrari'),
-          const CarDetailsItem(title: 'Model', value: 'SF90 Stradale'),
-          const CarDetailsItem(title: 'Year Model', value: '2019'),
-          const CarDetailsItem(title: 'Trim', value: 'Carbon fiber'),
-          const CarDetailsItem(title: 'Paint Parts', value: '3 Parts'),
-          const CarDetailsItem(title: 'Seat Number', value: '5'),
-          const CarDetailsItem(title: 'Plate', value: 'Berlin'),
-          const CarDetailsItem(title: 'Color', value: 'Orange'),
-          const CarDetailsItem(
-              title: 'Seat Material', value: 'Carlex Original'),
-          const CarDetailsItem(title: 'Condition', value: 'Used'),
-          const CarDetailsItem(title: 'Wheels', value: '20'),
-          const CarDetailsItem(title: 'Vehicle Type', value: 'Super car'),
-          const CarDetailsItem(title: 'Gearbox', value: 'Automatic'),
-          const CarDetailsItem(title: 'Cylinders', value: '8'),
-          const CarDetailsItem(title: 'Interior Color', value: 'Black'),
-          const CarDetailsItem(title: 'Exterior Color', value: 'Orange'),
-          const CarDetailsItem(title: 'Location', value: 'Germany'),
+          CarDetailsItem(title: 'Brand', value: carData['brand']?.toString() ?? '-'),
+          CarDetailsItem(title: 'Model', value: carData['model']?.toString() ?? '-'),
+          CarDetailsItem(title: 'Year Model', value: carData['year']?.toString() ?? '-'),
+          CarDetailsItem(title: 'Trim', value: carData['trim']?.toString() ?? '-'),
+          CarDetailsItem(title: 'Paint Parts', value: carData['paint_parts']?.toString() ?? '-'),
+          CarDetailsItem(title: 'Seat Number', value: carData['seats']?.toString() ?? '-'),
+          CarDetailsItem(title: 'Plate', value: carData['plate']?.toString() ?? '-'),
+          CarDetailsItem(title: 'Color', value: carData['color']?.toString() ?? '-'),
+          CarDetailsItem(title: 'Seat Material', value: carData['seat_material']?.toString() ?? '-'),
+          CarDetailsItem(title: 'Condition', value: carData['condition']?.toString() ?? '-'),
+          CarDetailsItem(title: 'Wheels', value: carData['wheels']?.toString() ?? '-'),
+          CarDetailsItem(title: 'Vehicle Type', value: carData['body_type']?.toString() ?? '-'),
+          CarDetailsItem(title: 'Gearbox', value: carData['transmission']?.toString() ?? '-'),
+          CarDetailsItem(title: 'Cylinders', value: carData['cylinders']?.toString() ?? '-'),
+          CarDetailsItem(title: 'Interior Color', value: carData['interior_color']?.toString() ?? '-'),
+          CarDetailsItem(title: 'Exterior Color', value: carData['exterior_color']?.toString() ?? '-'),
+          CarDetailsItem(title: 'Location', value: carData['location']?.toString() ?? '-'),
           10.verticalSpace,
         ],
       ),
