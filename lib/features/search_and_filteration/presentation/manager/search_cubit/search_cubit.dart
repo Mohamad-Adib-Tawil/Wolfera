@@ -40,30 +40,21 @@ class SearchCubit extends Cubit<SearchState> {
     );
   }
 
-  // دالة البحث عن السيارات
-  Future<void> searchCars(String query) async {
+  // دالة البحث عن السيارات (تعمل مع أو بدون نص بحث)
+  Future<void> searchCars([String? query]) async {
     try {
-      // إذا كان النص فارغًا، نعيد تعيين النتائج
-      if (query.trim().isEmpty) {
-        emit(state.copyWith(
-          isSearching: false,
-          searchQuery: '',
-          searchResults: [],
-          searchError: const Nullable.value(null),
-        ));
-        return;
-      }
-
+      final searchQuery = query ?? state.searchQuery;
+      
       // بدء البحث
       emit(state.copyWith(
         isSearching: true,
-        searchQuery: query,
+        searchQuery: searchQuery,
         searchError: const Nullable.value(null),
       ));
 
-      // جلب السيارات من Supabase مع البحث
+      // جلب السيارات من Supabase مع البحث والفلاتر
       final results = await _searchFilterService.searchCars(
-        query: query,
+        query: searchQuery,
         filters: state,
       );
 
@@ -80,8 +71,14 @@ class SearchCubit extends Cubit<SearchState> {
     }
   }
 
+  // دالة مساعدة لتطبيق الفلاتر فورًا
+  Future<void> _applyFiltersAndSearch() async {
+    await searchCars();
+  }
+
   void resetAllFilters() {
     emit(state.resetAllFilters());
+    _applyFiltersAndSearch();
   }
 
   int getActiveFilterCount() {
@@ -92,6 +89,7 @@ class SearchCubit extends Cubit<SearchState> {
     final updatedState =
         _searchFilterService.toggleMakerSelection(state, carMaker);
     emit(updatedState);
+    _applyFiltersAndSearch();
   }
 
   void changeCarKilometersFilter(
@@ -99,61 +97,72 @@ class SearchCubit extends Cubit<SearchState> {
     final updatedState = _searchFilterService.changeCarKilometersFilter(state,
         minKilometers: minKilometers, maxKilometers: maxKilometers);
     emit(updatedState);
+    _applyFiltersAndSearch();
   }
 
   void changeCarYearFilter({int? minYear, int? maxYear}) {
     final updatedState = _searchFilterService.changeCarYearFilter(state,
         minYear: minYear, maxYear: maxYear);
     emit(updatedState);
+    _applyFiltersAndSearch();
   }
 
   void selectPrice(String? price) {
     final updatedState = _searchFilterService.selectPrice(state, price);
     emit(updatedState);
+    _applyFiltersAndSearch();
   }
 
   void selectTransmission(String? transmissionType) {
     final updatedState =
         _searchFilterService.selectTransmission(state, transmissionType);
     emit(updatedState);
+    _applyFiltersAndSearch();
   }
 
   void selectBodyType(String? bodyType) {
     final updatedState = _searchFilterService.selectBodyType(state, bodyType);
     emit(updatedState);
+    _applyFiltersAndSearch();
   }
 
   void selectCylinders(String? cylinders) {
     final updatedState = _searchFilterService.selectCylinders(state, cylinders);
     emit(updatedState);
+    _applyFiltersAndSearch();
   }
 
   void selectSeats(String? seatsCount) {
     final updatedState = _searchFilterService.selectSeats(state, seatsCount);
     emit(updatedState);
+    _applyFiltersAndSearch();
   }
 
   void toggleColorsSelection(String carColor) {
     final updatedState =
         _searchFilterService.toggleColorsSelection(state, carColor);
     emit(updatedState);
+    _applyFiltersAndSearch();
   }
 
   void selectCarCondition(String? carCondition) {
     final updatedState =
         _searchFilterService.selectCarCondition(state, carCondition);
     emit(updatedState);
+    _applyFiltersAndSearch();
   }
 
   void selectFuelType(String? fuelType) {
     final updatedState = _searchFilterService.selectFuelType(state, fuelType);
     emit(updatedState);
+    _applyFiltersAndSearch();
   }
 
   // Reset Filters Section
   void resetMakerSelectionFilter() {
     final updatedState = _searchFilterService.resetMakerSelectionFilter(state);
     emit(updatedState);
+    _applyFiltersAndSearch();
   }
 
   void resetKilometersFilter(
@@ -162,52 +171,62 @@ class SearchCubit extends Cubit<SearchState> {
         resetMinKilometers: resetMinKilometers,
         resetMaxKilometers: resetMaxKilometers);
     emit(updatedState);
+    _applyFiltersAndSearch();
   }
 
   void resetYearFilter({bool? resetMinYear, bool? resetMaxYear}) {
     final updatedState = _searchFilterService.resetYearFilter(state,
         resetMinYear: resetMinYear, resetMaxYear: resetMaxYear);
     emit(updatedState);
+    _applyFiltersAndSearch();
   }
 
   void resetPriceFilter() {
     final updatedState = _searchFilterService.resetPriceFilter(state);
     emit(updatedState);
+    _applyFiltersAndSearch();
   }
 
   void resetTransmissionFilter() {
     final updatedState = _searchFilterService.resetTransmissionFilter(state);
     emit(updatedState);
+    _applyFiltersAndSearch();
   }
 
   void resetCarBodyTypeFilter() {
     final updatedState = _searchFilterService.resetCarBodyTypeFilter(state);
     emit(updatedState);
+    _applyFiltersAndSearch();
   }
 
   void resetFuelTypeFilter() {
     final updatedState = _searchFilterService.resetFuelTypeFilter(state);
     emit(updatedState);
+    _applyFiltersAndSearch();
   }
 
   void resetCylindersFilter() {
     final updatedState = _searchFilterService.resetCylindersFilter(state);
     emit(updatedState);
+    _applyFiltersAndSearch();
   }
 
   void resetSeatsFilter() {
     final updatedState = _searchFilterService.resetSeatsFilter(state);
     emit(updatedState);
+    _applyFiltersAndSearch();
   }
 
   void resetColorFilter() {
     final updatedState = _searchFilterService.resetColorFilter(state);
     emit(updatedState);
+    _applyFiltersAndSearch();
   }
 
   void resetConditionFilter() {
     final updatedState = _searchFilterService.resetConditionFilter(state);
     emit(updatedState);
+    _applyFiltersAndSearch();
   }
 
   void _handleError(error) {

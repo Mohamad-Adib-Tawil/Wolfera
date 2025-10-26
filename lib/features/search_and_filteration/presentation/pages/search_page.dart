@@ -122,7 +122,7 @@ class _SearcgPageState extends State<SearchPage> {
                             20.verticalSpace,
                             ElevatedButton(
                               onPressed: () {
-                                _searchCubit.searchCars(state.searchQuery);
+                                _searchCubit.searchCars();
                               },
                               child: AppText('Retry'.tr()),
                             ),
@@ -131,13 +131,28 @@ class _SearcgPageState extends State<SearchPage> {
                       );
                     }
 
-                    // حالة عدم وجود نص بحث
-                    if (state.searchQuery.isEmpty) {
+                    // التحقق من وجود فلاتر نشطة
+                    final hasActiveFilters = state.activeFilterCount() > 0;
+                    final hasSearchQuery = state.searchQuery.isNotEmpty;
+
+                    // حالة عدم وجود نص بحث ولا فلاتر
+                    if (!hasSearchQuery && !hasActiveFilters) {
                       return Center(
-                        child: AppText(
-                          'Type to search for cars'.tr(),
-                          style: context.textTheme.bodyLarge
-                              ?.withColor(AppColors.white.withOpacity(0.6)),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.search,
+                              size: 80.r,
+                              color: AppColors.white.withOpacity(0.3),
+                            ),
+                            20.verticalSpace,
+                            AppText(
+                              'Search for cars or apply filters'.tr(),
+                              style: context.textTheme.bodyLarge
+                                  ?.withColor(AppColors.white.withOpacity(0.6)),
+                            ),
+                          ],
                         ),
                       );
                     }
@@ -145,7 +160,21 @@ class _SearcgPageState extends State<SearchPage> {
                     // حالة عدم وجود نتائج
                     if (state.searchResults.isEmpty) {
                       return Center(
-                        child: AppEmptyState.foodsEmpty(),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            AppEmptyState.foodsEmpty(),
+                            if (hasActiveFilters) ...[
+                              20.verticalSpace,
+                              ElevatedButton(
+                                onPressed: () {
+                                  _searchCubit.resetAllFilters();
+                                },
+                                child: AppText('Clear all filters'.tr()),
+                              ),
+                            ],
+                          ],
+                        ),
                       );
                     }
 
