@@ -8,10 +8,21 @@ import 'package:wolfera/features/faviorate/presentation/manager/favorite_cubit.d
 import 'package:wolfera/features/faviorate/presentation/manager/favorite_state.dart';
 import 'package:wolfera/features/home/presentation/widgets/cars_list_view_builder.dart';
 
-class FavioratePage extends StatelessWidget {
-  const FavioratePage({
-    super.key,
-  });
+class FavioratePage extends StatefulWidget {
+  const FavioratePage({super.key});
+
+  @override
+  State<FavioratePage> createState() => _FavioratePageState();
+}
+
+class _FavioratePageState extends State<FavioratePage> {
+  @override
+  void initState() {
+    super.initState();
+    // إعادة تحميل المفضلات عند فتح الصفحة لضمان عرض البيانات الفعلية
+    Future.microtask(() => context.read<FavoriteCubit>().init());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,11 +34,8 @@ class FavioratePage extends StatelessWidget {
         builder: (context, state) {
           final list = state.favoriteCars;
           if (list.isEmpty) {
-            // لا توجد مفضلات
-            return Padding(
-              padding: HWEdgeInsets.symmetric(horizontal: 24, vertical: 20),
-              child: AppEmptyState.favoritesEmpty(),
-            );
+            // لا توجد مفضلات: عرضها في منتصف الشاشة بشكل جميل
+            return Center(child: AppEmptyState.favoritesEmpty());
           }
 
           // عرض قائمة المفضلة باستخدام نفس تصميم بطاقات السيارات
