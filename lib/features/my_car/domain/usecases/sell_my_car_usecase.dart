@@ -90,6 +90,7 @@ class SellMyCarParams {
       'user_id': userId,
       'location': location,
       'status': status,
+      'brand': carMaker, // Required by Supabase schema
       'car_maker': carMaker,
       'car_model': carModel,
       'car_engine': carEngine,
