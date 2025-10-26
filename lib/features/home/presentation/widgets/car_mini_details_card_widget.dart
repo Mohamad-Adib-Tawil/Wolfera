@@ -7,18 +7,20 @@ import '../../../app/presentation/widgets/status_section_widget.dart';
 import '../../../app/presentation/widgets/top_secrion_car_mini_details_card.dart';
 
 class CarMiniDetailsCardWidget extends StatelessWidget {
-  const CarMiniDetailsCardWidget(
-      {super.key,
-      this.isFaviorateIcon = true,
-      this.isStatus = false,
-      this.image,
-      this.title,
-      this.spec1,
-      this.spec2,
-      this.mileage,
-      this.fuel,
-      this.location,
-      this.price});
+  const CarMiniDetailsCardWidget({
+    super.key,
+    this.isFaviorateIcon = true,
+    this.isStatus = false,
+    this.image,
+    this.title,
+    this.spec1,
+    this.spec2,
+    this.mileage,
+    this.fuel,
+    this.location,
+    this.price,
+    this.carData,
+  });
   final bool isFaviorateIcon;
   final bool isStatus;
   final String? image;
@@ -29,13 +31,16 @@ class CarMiniDetailsCardWidget extends StatelessWidget {
   final String? fuel;
   final String? location;
   final String? price;
+  final Map<String, dynamic>? carData;
 
   @override
   Widget build(BuildContext context) {
     double h = isStatus ? 200.h + 60.h : 215.h;
     return GestureDetector(
-      onTap: () =>
-          GRouter.router.pushNamed(GRouter.config.homeRoutes.carDetails),
+      onTap: () => GRouter.router.pushNamed(
+        GRouter.config.homeRoutes.carDetails,
+        extra: carData,
+      ),
       child: Container(
         height: h,
         width: 320.w,

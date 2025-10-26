@@ -208,6 +208,7 @@ class GRouter {
                     name: _config.homeRoutes.carDetails,
                     parentNavigatorKey: _rootNavigatorKey,
                     pageBuilder: (BuildContext context, GoRouterState state) {
+                      final carData = state.extra as Map<String, dynamic>?;
                       return CustomTransitionPage(
                         transitionDuration: const Duration(milliseconds: 200),
                         reverseTransitionDuration:
@@ -215,7 +216,7 @@ class GRouter {
                         transitionsBuilder: (context, animation,
                                 secondaryAnimation, child) =>
                             FadeTransition(opacity: animation, child: child),
-                        child: const CarDetailsPage(),
+                        child: CarDetailsPage(carData: carData),
                       );
                     },
                     routes: [

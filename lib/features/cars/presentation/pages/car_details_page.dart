@@ -5,7 +5,6 @@ import 'package:wolfera/core/utils/responsive_padding.dart';
 import 'package:wolfera/features/cars/presentation/widget/car_description.dart';
 import 'package:wolfera/features/cars/presentation/widget/car_details_section.dart';
 import 'package:wolfera/features/cars/presentation/widget/car_detalis_appbar.dart';
-import 'package:wolfera/features/cars/presentation/widget/car_image_viewer.dart';
 import 'package:wolfera/features/cars/presentation/widget/features_list_view.dart';
 import 'package:wolfera/features/cars/presentation/widget/more_images_cars_list.dart';
 import 'package:wolfera/features/cars/presentation/widget/seller_sction_detalis.dart';
@@ -13,10 +12,15 @@ import 'package:wolfera/features/cars/presentation/widget/similar_car_list_view.
 import 'package:wolfera/features/chat/presentation/widgets/white_divider.dart';
 
 class CarDetailsPage extends StatelessWidget {
-  const CarDetailsPage({super.key});
+  final Map<String, dynamic>? carData;
+  
+  const CarDetailsPage({super.key, this.carData});
 
   @override
   Widget build(BuildContext context) {
+    final data = carData ?? {};
+    final description = data['description']?.toString() ?? '';
+    
     return Scaffold(
       appBar: const CarDetalisAppbar(),
       body: SingleChildScrollView(
@@ -33,10 +37,8 @@ class CarDetailsPage extends StatelessWidget {
               child:
                   CustomDivider(color: AppColors.whiteLess, thickness: 0.6.r),
             ),
-            const CarDescription(
-              description:
-                  "This SF90 Stradale is the first plug-in hybrid from the brand with the prancing horse, but Ferrari proves that adding a battery is not only interesting for CO2 emissions: thanks to This SF90 Stradale is the first plug-in hybrid from the brand but Ferrari proves that adding a battery is not only interesting",
-            ),
+            if (description.isNotEmpty)
+              CarDescription(description: description),
             Padding(
               padding:
                   HWEdgeInsets.only(left: 11, right: 11, top: 10, bottom: 5),

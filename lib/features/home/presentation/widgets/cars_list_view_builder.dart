@@ -73,6 +73,7 @@ class CarsListViewBuilder extends StatelessWidget {
             fuel: fuel,
             location: location,
             price: price,
+            carData: car, // Pass the full car data
           ),
         );
       },
