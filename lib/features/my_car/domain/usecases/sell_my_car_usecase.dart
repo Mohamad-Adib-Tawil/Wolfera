@@ -86,59 +86,60 @@ class SellMyCarParams {
   });
 
   Map<String, dynamic> toMapWithUrls(List<String> uploadedUrls) {
+    // Generate title from car details
+    final titleParts = [carYear, carMaker, carModel]
+        .where((e) => e.isNotEmpty)
+        .join(' ');
+    final title = titleParts.isNotEmpty ? titleParts : 'Car for Sale';
+    
     return {
-      // Core fields matching Supabase schema (without car_ prefix)
+      // Required fields
       'user_id': userId,
+      'title': title,
+      
+      // Core car details
       'brand': carMaker,
       'model': carModel,
-      'year': carYear,
-      'price': carPrice,
-      'mileage': carMileage,
-      'images': uploadedUrls,
-      'location': carLocation,
-      'status': status,
+      'year': int.tryParse(carYear),
+      'price': num.tryParse(carPrice),
+      'currency': 'USD',
+      'mileage': int.tryParse(carMileage),
       'transmission': carTransmission,
       'fuel_type': carFuelType,
-      'trim': carTrim,
-      'engine': carEngine,
-      'cylinders': carCylinders,
-      'seats': carSeats,
-      'condition': carCondition,
-      'plate': carPlate,
+      'body_type': carVehicleType,
       'color': carColor,
-      'seat_material': carSeatMaterial,
-      'wheels': carWheels,
-      'vehicle_type': carVehicleType,
-      'interior_color': carInteriorColor,
-      'exterior_color': carExteriorColor,
-      'paint_parts': carPaintParts,
-      'warranty': warranty,
+      'engine_capacity': num.tryParse(carEngine),
+      'cylinders': int.tryParse(carCylinders),
+      'seats': int.tryParse(carSeats),
+      'condition': carCondition,
+      
+      // Location
+      'location': carLocation,
+      'city': carLocation,
+      'country': location,
+      
+      // Images
+      'main_image_url': uploadedUrls.isNotEmpty ? uploadedUrls.first : null,
+      'image_urls': uploadedUrls,
+      
+      // Features (as JSON arrays)
+      'safety_features': carSafety,
+      'interior_features': carInteriorFeatures,
+      'exterior_features': carExteriorFeatures,
+      
+      // Description
+      'description': carDescription,
+      
+      // Status
+      'status': status.toLowerCase(),
+      
+      // Warranty
+      'warranty': warranty != null && warranty!.isNotEmpty,
+      'warranty_details': warranty,
+      
+      // Timestamps
       'created_at': createAt?.toIso8601String(),
       'updated_at': updateAt?.toIso8601String(),
-      
-      // Keep car_ prefixed versions for backward compatibility (will be removed by sanitization if not in schema)
-      'car_maker': carMaker,
-      'car_model': carModel,
-      'car_engine': carEngine,
-      'car_year': carYear,
-      'car_transmission': carTransmission,
-      'car_mileage': carMileage,
-      'car_fuel_type': carFuelType,
-      'car_trim': carTrim,
-      'car_cylinders': carCylinders,
-      'car_seats': carSeats,
-      'car_paint_parts': carPaintParts,
-      'car_condition': carCondition,
-      'car_plate': carPlate,
-      'car_color': carColor,
-      'car_seat_material': carSeatMaterial,
-      'car_wheels': carWheels,
-      'car_vehicle_type': carVehicleType,
-      'car_interior_color': carInteriorColor,
-      'car_exterior_color': carExteriorColor,
-      'car_price': carPrice,
-      'car_location': carLocation,
-      'car_images': uploadedUrls,
     };
   }
 }
