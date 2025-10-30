@@ -20,6 +20,7 @@ class CarMiniDetailsCardWidget extends StatelessWidget {
     this.location,
     this.price,
     this.carData,
+    this.fullWidth = false,
   });
   final bool isFaviorateIcon;
   final bool isStatus;
@@ -32,6 +33,7 @@ class CarMiniDetailsCardWidget extends StatelessWidget {
   final String? location;
   final String? price;
   final Map<String, dynamic>? carData;
+  final bool fullWidth;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +45,7 @@ class CarMiniDetailsCardWidget extends StatelessWidget {
       ),
       child: Container(
         height: h,
-        width: 320.w,
+        width: fullWidth ? double.infinity : 320.w,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(color: AppColors.greyStroke, width: 1.5.r),
