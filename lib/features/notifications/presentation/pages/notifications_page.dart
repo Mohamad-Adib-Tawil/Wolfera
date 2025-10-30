@@ -7,36 +7,74 @@ import 'package:wolfera/core/utils/extensions/build_context.dart';
 import 'package:wolfera/core/utils/responsive_padding.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
 import 'package:wolfera/features/app/presentation/widgets/custom_appbar.dart';
+import 'package:wolfera/features/app/presentation/widgets/animations/delayed_fade_slide.dart';
 
-class NotificationsPage extends StatelessWidget {
+class NotificationsPage extends StatefulWidget {
   const NotificationsPage({super.key});
 
   @override
+  State<NotificationsPage> createState() => _NotificationsPageState();
+}
+
+class _NotificationsPageState extends State<NotificationsPage> {
+  static bool _didAnimateOnce = false;
+  late final bool _shouldAnimateEntrance;
+
+  @override
+  void initState() {
+    _shouldAnimateEntrance = !_didAnimateOnce;
+    _didAnimateOnce = true;
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final list = SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          20.verticalSpace,
+          const NotificationItemWidget(),
+          const NotificationItemWidget(),
+          const NotificationItemWidget(),
+          const NotificationItemWidget(),
+          const NotificationItemWidget(),
+          const NotificationItemWidget(),
+          const NotificationItemWidget(),
+          const NotificationItemWidget(),
+          const NotificationItemWidget(),
+        ],
+      ),
+    );
+
     return Scaffold(
       backgroundColor: AppColors.blackLight,
-      appBar: CustomAppbar(
-        text: 'Notifications'.tr(),
-        automaticallyImplyLeading: true,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: _shouldAnimateEntrance
+            ? DelayedFadeSlide(
+                delay: const Duration(milliseconds: 100),
+                duration: const Duration(milliseconds: 1000),
+                beginOffset: const Offset(0, -0.24),
+                child: CustomAppbar(
+                  text: 'Notifications'.tr(),
+                  automaticallyImplyLeading: true,
+                ),
+              )
+            : CustomAppbar(
+                text: 'Notifications'.tr(),
+                automaticallyImplyLeading: true,
+              ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            20.verticalSpace,
-            const NotificationItemWidget(),
-            const NotificationItemWidget(),
-            const NotificationItemWidget(),
-            const NotificationItemWidget(),
-            const NotificationItemWidget(),
-            const NotificationItemWidget(),
-            const NotificationItemWidget(),
-            const NotificationItemWidget(),
-            const NotificationItemWidget(),
-          ],
-        ),
-      ),
+      body: _shouldAnimateEntrance
+          ? DelayedFadeSlide(
+              delay: const Duration(milliseconds: 260),
+              duration: const Duration(milliseconds: 1000),
+              beginOffset: const Offset(-0.24, 0),
+              child: list,
+            )
+          : list,
     );
   }
 }

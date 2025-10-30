@@ -20,6 +20,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:reactive_forms/reactive_forms.dart';
+import 'package:wolfera/features/app/presentation/widgets/animations/delayed_fade_slide.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
@@ -31,12 +32,16 @@ class EditProfilePage extends StatefulWidget {
 class _EditProfilePageState extends State<EditProfilePage> {
   late AppManagerCubit blocApp;
   late ProfileBloc _profileCubit;
+  static bool _didAnimateOnce = false;
+  late final bool _shouldAnimateEntrance;
 
   @override
   void initState() {
     blocApp = GetIt.I<AppManagerCubit>();
     _profileCubit = GetIt.I<ProfileBloc>();
     initProfileFormGroup();
+    _shouldAnimateEntrance = !_didAnimateOnce;
+    _didAnimateOnce = true;
     super.initState();
   }
 
@@ -62,13 +67,26 @@ class _EditProfilePageState extends State<EditProfilePage> {
         child: ReactiveForm(
           formGroup: _profileCubit.profileForm,
           child: Scaffold(
-            appBar: const CustomAppbar(
-              text: LocaleKeys.editProfile,
-              automaticallyImplyLeading: true,
+            appBar: PreferredSize(
+              preferredSize: const Size.fromHeight(kToolbarHeight),
+              child: _shouldAnimateEntrance
+                  ? const DelayedFadeSlide(
+                      delay: Duration(milliseconds: 100),
+                      duration: Duration(milliseconds: 1000),
+                      beginOffset: Offset(0, -0.24),
+                      child: CustomAppbar(
+                        text: LocaleKeys.editProfile,
+                        automaticallyImplyLeading: true,
+                      ),
+                    )
+                  : const CustomAppbar(
+                      text: LocaleKeys.editProfile,
+                      automaticallyImplyLeading: true,
+                    ),
             ),
             body: BlocBuilder<ProfileBloc, ProfileState>(
               builder: (context, state) {
-                return Stack(
+                final stack = Stack(
                   children: [
                     Positioned.fill(
                         child: Column(
@@ -234,6 +252,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     ),
                   ],
                 );
+                return _shouldAnimateEntrance
+                    ? DelayedFadeSlide(
+                        delay: const Duration(milliseconds: 240),
+                        duration: const Duration(milliseconds: 1000),
+                        beginOffset: const Offset(-0.24, 0),
+                        child: stack,
+                      )
+                    : stack;
               },
             ),
           ),
