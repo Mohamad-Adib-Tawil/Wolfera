@@ -59,7 +59,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         builder: (context, obscureText, _) {
           return SimpleShadow(
             opacity: 0.3,
-            color: AppColors.primary.withOpacity(0.15),
+            color: AppColors.primary.withValues(alpha: 0.15),
             offset: const Offset(0, 4),
             sigma: 17.8,
             child: ReactiveTextField(
@@ -131,22 +131,26 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(widget.radius ?? 8).r,
                   borderSide: BorderSide(
-                      width: 1, color: AppColors.blackLight.withOpacity(0.65)),
+                      width: 1,
+                      color: AppColors.blackLight.withValues(alpha: 0.65)),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(widget.radius ?? 8).r,
                   borderSide: BorderSide(
-                      width: 1, color: AppColors.blackLight.withOpacity(0.65)),
+                      width: 1,
+                      color: AppColors.blackLight.withValues(alpha: 0.65)),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(widget.radius ?? 8).r,
                   borderSide: BorderSide(
-                      width: 1, color: AppColors.blackLight.withOpacity(0.65)),
+                      width: 1,
+                      color: AppColors.blackLight.withValues(alpha: 0.65)),
                 ),
                 disabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(widget.radius ?? 8).r,
                   borderSide: BorderSide(
-                      width: 1, color: AppColors.blackLight.withOpacity(0.65)),
+                      width: 1,
+                      color: AppColors.blackLight.withValues(alpha: 0.65)),
                 ),
               ),
               obscuringCharacter: "*",

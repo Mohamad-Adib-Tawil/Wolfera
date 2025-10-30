@@ -17,6 +17,8 @@ import 'package:wolfera/features/app/presentation/widgets/custom_appbar.dart';
 import 'package:wolfera/generated/assets.dart';
 import 'package:wolfera/generated/locale_keys.g.dart';
 import 'package:simple_shadow/simple_shadow.dart';
+import 'package:wolfera/core/constants/locations_data.dart';
+import 'package:country_flags/country_flags.dart';
 
 class SelectCountyPage extends StatefulWidget {
   final String? country;
@@ -27,29 +29,30 @@ class SelectCountyPage extends StatefulWidget {
 }
 
 class _SelectCountyPageState extends State<SelectCountyPage> {
-  String? selectedOption;
-
-  void onSelectOption(String option) {
-    setState(() {
-      selectedOption = option;
-    });
-  }
-
-  onFilter(String value) {
-    onSelectOption(value);
-    // return _carsCubit.onChangeSelectedCity(value);
-  }
+  CountryOption? _selectedCountry;
+  String? _selectedRegion;
+  bool _isWorldwide = true;
 
   @override
   void initState() {
-    initSelectedOption();
+    _initFromPrefsOrArg();
     super.initState();
   }
 
-  initSelectedOption() async {
-    setState(() {
-      selectedOption = widget.country ?? "Germany";
-    });
+  void _initFromPrefsOrArg() {
+    final prefs = GetIt.I<PrefsRepository>();
+    _isWorldwide = prefs.isWorldwide;
+    _selectedCountry = LocationsData.findByCode(prefs.selectedCountryCode) ?? LocationsData.countries.first;
+    _selectedRegion = prefs.selectedRegionOrCity;
+    // If page received a string country name, prefer it
+    if (widget.country != null) {
+      final byName = LocationsData.findByName(widget.country);
+      if (byName != null) {
+        _selectedCountry = byName;
+        _isWorldwide = byName.code == LocationsData.worldwideCode;
+      }
+    }
+    setState(() {});
   }
 
   @override
@@ -91,22 +94,129 @@ class _SelectCountyPageState extends State<SelectCountyPage> {
                 100.verticalSpace,
                 Padding(
                   padding: HWEdgeInsets.symmetric(horizontal: 10),
-                  child: SizedBox(
-                    height: 50.h,
-                    width: 626.w,
-                    child: _CountryDropdown(
-                      onChanged: (v) => onFilter(v!),
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Worldwide toggle
+                      Row(
+                        children: [
+                          Switch.adaptive(
+                            value: _isWorldwide,
+                            onChanged: (val) {
+                              setState(() {
+                                _isWorldwide = val;
+                                if (val) {
+                                  _selectedCountry = LocationsData.countries.first;
+                                  _selectedRegion = null;
+                                }
+                              });
+                            },
+                          ),
+                          8.horizontalSpace,
+                          AppText('Worldwide', translation: false,
+                              style: context.textTheme.bodyMedium?.m.withColor(AppColors.white)),
+                        ],
+                      ),
+                      12.verticalSpace,
+                      // Country dropdown with flags
+                      SizedBox(
+                        height: 50.h,
+                        child: AppDropdownSearch<CountryOption>(
+                          items: LocationsData.countries,
+                          selectedItem: _selectedCountry ?? LocationsData.countries.first,
+                          itemAsString: (co) => co.name,
+                          hintText: 'Country',
+                          baseStyle: context.textTheme.titleSmall.b.withColor(AppColors.blackLight),
+                          dropdownBuilder: (context, co) {
+                            final code = (co?.code ?? 'WW').toUpperCase();
+                            final isWw = code == LocationsData.worldwideCode;
+                            return Row(
+                              children: [
+                                if (isWw)
+                                  const Icon(Icons.public, size: 18)
+                                else
+                                  CountryFlag.fromCountryCode(
+                                    code,
+                                    theme: const ImageTheme(
+                                      width: 20,
+                                      height: 14,
+                                      shape: RoundedRectangle(4),
+                                    ),
+                                  ),
+                                10.horizontalSpace,
+                                Text(co?.name ?? 'Worldwide', style: context.textTheme.titleSmall.b.withColor(AppColors.blackLight)),
+                              ],
+                            );
+                          },
+                          popupProps: PopupProps.menu(
+                            showSearchBox: true,
+                            itemBuilder: (context, co, isSelected) {
+                              final isWw = co.code == LocationsData.worldwideCode;
+                              return Padding(
+                                padding: HWEdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                child: Row(
+                                  children: [
+                                    if (isWw)
+                                      const Icon(Icons.public, size: 18)
+                                    else
+                                      CountryFlag.fromCountryCode(
+                                        co.code.toUpperCase(),
+                                        theme: const ImageTheme(
+                                          width: 20,
+                                          height: 14,
+                                          shape: RoundedRectangle(4),
+                                        ),
+                                      ),
+                                    10.horizontalSpace,
+                                    Expanded(child: Text(co.name)),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                          onChanged: (co) {
+                            setState(() {
+                              if (co == null) return;
+                              _selectedCountry = co;
+                              _isWorldwide = co.code == LocationsData.worldwideCode;
+                              _selectedRegion = null;
+                            });
+                          },
+                          filled: true,
+                          fillColor: const Color(0xffeff1f9),
+                          borderColor: Colors.transparent,
+                        ),
+                      ),
+                      10.verticalSpace,
+                      if (!_isWorldwide && (_selectedCountry?.secondLevel.isNotEmpty ?? false))
+                        AppDropdownSearch<String>(
+                          items: _selectedCountry!.secondLevel,
+                          selectedItem: _selectedRegion,
+                          hintText: _selectedCountry!.secondLevelLabel ?? 'Region',
+                          onChanged: (val) => setState(() => _selectedRegion = val),
+                          filled: true,
+                          fillColor: const Color(0xffeff1f9),
+                          borderColor: Colors.transparent,
+                        ),
+                    ],
                   ),
                 ),
                 65.verticalSpace,
                 TextButton(
                   onPressed: () async {
-                    if (selectedOption != null) {
-                      await GetIt.I<PrefsRepository>()
-                          .setSelectedCity(selectedOption!);
-                      GRouter.router.goNamed(GRouter.config.mainRoutes.home);
+                    final prefs = GetIt.I<PrefsRepository>();
+                    if (_isWorldwide) {
+                      await prefs.setWorldwide(true);
+                      await prefs.setSelectedCountryCode(null);
+                      await prefs.setSelectedRegionOrCity(null);
+                      await prefs.setSelectedCity('Worldwide'); // backward compatibility
+                    } else if (_selectedCountry != null) {
+                      await prefs.setWorldwide(false);
+                      await prefs.setSelectedCountryCode(_selectedCountry!.code);
+                      await prefs.setSelectedRegionOrCity(_selectedRegion);
+                      await prefs.setSelectedCity(_selectedRegion ?? _selectedCountry!.name);
                     }
+                    GRouter.router.goNamed(GRouter.config.mainRoutes.home);
                   },
                   style: ButtonStyle(
                     minimumSize: WidgetStatePropertyAll(Size(250.w, 55.h)),
@@ -138,74 +248,4 @@ class _SelectCountyPageState extends State<SelectCountyPage> {
   }
 }
 
-class _CountryDropdown extends StatelessWidget {
-  const _CountryDropdown({required this.onChanged});
-
-  final void Function(String?)? onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 87.h,
-      width: 400.w,
-      child: dropDown(context),
-    );
-  }
-
-  Widget dropDown(BuildContext context) {
-    return AppDropdownSearch<String?>(
-      items: const ["Dubie", "Germany"],
-      itemAsString: (item) => item!,
-      selectedItem: "Dubie",
-      onChanged: onChanged,
-      dropdownButtonProps: DropdownButtonProps(
-        alignment: Alignment.center,
-        icon: InkWell(
-          onTap: () {},
-          child: Icon(Icons.close_rounded,
-              size: 17, color: context.colorScheme.grey),
-        ),
-      ),
-      popupProps: PopupProps.menu(
-        showSearchBox: true,
-        menuProps: MenuProps(
-          borderRadius: BorderRadius.circular(15.r),
-        ),
-        itemBuilder: (context, item, isSelected) {
-          return Padding(
-            padding: HWEdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                AppText(item!, style: context.textTheme.labelLarge.m),
-                if (isSelected) const Icon(Icons.done_rounded)
-              ],
-            ),
-          );
-        },
-        searchFieldProps: TextFieldProps(
-          style: context.textTheme.bodyMedium.b.withColor(AppColors.blackLight),
-          maxLines: 1,
-          textAlignVertical: TextAlignVertical.top,
-          decoration: InputDecoration(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-              filled: true,
-              constraints: const BoxConstraints(minHeight: 40, maxHeight: 40),
-              fillColor: AppColors.grey.shade50,
-              border: InputBorder.none,
-              focusedErrorBorder: InputBorder.none,
-              focusedBorder: InputBorder.none,
-              enabledBorder: InputBorder.none,
-              hintText: "Search By Name",
-              hintStyle:
-                  context.textTheme.titleSmall.m.withColor(AppColors.grey)),
-        ),
-      ),
-      hintText: "Choose County",
-      filled: true,
-      fillColor: const Color(0xffeff1f9),
-      borderColor: Colors.transparent,
-      validator: (value) => value == null ? LocaleKeys.required : null,
-    );
-  }
-}
+// legacy _CountryDropdown removed

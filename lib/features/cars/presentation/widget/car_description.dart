@@ -68,7 +68,7 @@ class _CarDescriptionState extends State<CarDescription> {
                     style: ButtonStyle(
                       minimumSize: WidgetStatePropertyAll(Size(180.w, 35.h)),
                       backgroundColor: WidgetStatePropertyAll(
-                          AppColors.grey.withOpacity(0.2)),
+                          AppColors.grey.withValues(alpha: 0.2)),
                     ),
                     onPressed: () => isCollapsed.value = !isCollapsed.value,
                     child: AppText(

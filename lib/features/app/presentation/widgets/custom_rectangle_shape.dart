@@ -42,7 +42,7 @@ class NavCustomPainter extends CustomPainter {
     Paint paint0Stroke = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = size.width * 0.02500000;
-    paint0Stroke.color = Colors.white.withOpacity(1.0);
+    paint0Stroke.color = Colors.white.withValues(alpha: 1.0);
     canvas.drawPath(path_0, paint0Stroke);
 
     Paint paint0Fill = Paint()..style = PaintingStyle.fill;

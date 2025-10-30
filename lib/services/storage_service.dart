@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:path/path.dart' as path;
+// import 'package:path/path.dart' as path; // Commented out - not in dependencies
 import 'package:uuid/uuid.dart';
 
 class StorageService {
@@ -50,7 +50,7 @@ class StorageService {
         }
       } catch (e) {
         // Ignore errors when listing/deleting old avatars
-        print('⚠️ Could not clean old avatars: $e');
+        // Could not clean old avatars: $e
       }
       
       // Upload new avatar
@@ -70,10 +70,10 @@ class StorageService {
           .from(userAvatarsBucket)
           .getPublicUrl(uploadPath);
       
-      print('✅ Avatar uploaded successfully: $publicUrl');
+      // Avatar uploaded successfully
       return publicUrl;
     } catch (e) {
-      print('❌ Avatar upload failed: $e');
+      // Avatar upload failed: $e
       return null;
     }
   }
@@ -96,7 +96,7 @@ class StorageService {
         fileBytes = await imageFile.readAsBytes();
         // Use original extension if available
         if (customFileName == null) {
-          final ext = path.extension(imageFile.path);
+          final ext = imageFile.path.split('.').last;
           if (ext.isNotEmpty) {
             fileName = 'car_${DateTime.now().millisecondsSinceEpoch}_${_uuid.v4().substring(0, 8)}$ext';
           }
@@ -127,10 +127,10 @@ class StorageService {
           .from(carImagesBucket)
           .getPublicUrl(uploadPath);
       
-      print('✅ Car image uploaded successfully: $publicUrl');
+      // Car image uploaded successfully
       return publicUrl;
     } catch (e) {
-      print('❌ Car image upload failed: $e');
+      // Car image upload failed: $e
       return null;
     }
   }
@@ -178,7 +178,7 @@ class StorageService {
         fileBytes = await attachmentFile.readAsBytes();
         // Use original extension if available
         if (customFileName == null) {
-          final ext = path.extension(attachmentFile.path);
+          final ext = attachmentFile.path.split('.').last;
           if (ext.isNotEmpty) {
             fileName = 'attachment_${DateTime.now().millisecondsSinceEpoch}_${_uuid.v4().substring(0, 8)}$ext';
           }
@@ -209,10 +209,10 @@ class StorageService {
           .from(chatAttachmentsBucket)
           .createSignedUrl(uploadPath, 3600);
       
-      print('✅ Chat attachment uploaded successfully');
+      // Chat attachment uploaded successfully
       return signedUrl;
     } catch (e) {
-      print('❌ Chat attachment upload failed: $e');
+      // Chat attachment upload failed: $e
       return null;
     }
   }
@@ -237,10 +237,10 @@ class StorageService {
       await _client.storage
           .from(bucket)
           .remove([path]);
-      print('✅ File deleted successfully: $bucket/$path');
+      // File deleted successfully
       return true;
     } catch (e) {
-      print('❌ File deletion failed: $e');
+      // File deletion failed: $e
       return false;
     }
   }
@@ -251,9 +251,9 @@ class StorageService {
       await _client.storage
           .from(bucket)
           .remove(paths);
-      print('✅ Files deleted successfully from $bucket');
+      // Files deleted successfully
     } catch (e) {
-      print('❌ Files deletion failed: $e');
+      // Files deletion failed: $e
     }
   }
 
@@ -265,7 +265,7 @@ class StorageService {
           .list(path: path);
       return files;
     } catch (e) {
-      print('❌ Failed to list files: $e');
+      // Failed to list files: $e
       return [];
     }
   }
@@ -283,7 +283,7 @@ class StorageService {
         await deleteFiles(carImagesBucket, paths);
       }
     } catch (e) {
-      print('❌ Failed to delete car images: $e');
+      // Failed to delete car images: $e
     }
   }
 
@@ -307,7 +307,11 @@ class StorageService {
 
   /// Get file extension from file path
   static String getFileExtension(String filePath) {
-    return path.extension(filePath).toLowerCase();
+    final parts = filePath.split('.');
+    if (parts.length > 1) {
+      return '.${parts.last.toLowerCase()}';
+    }
+    return '';
   }
 
   /// Check if file is an image

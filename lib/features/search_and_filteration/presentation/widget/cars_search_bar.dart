@@ -34,7 +34,7 @@ class SearchItemsBar extends StatelessWidget {
             formControlName: "searchCars",
             hintText: LocaleKeys.searchHereForCars,
             hintTextStyle: context.textTheme.titleSmall?.s13.r
-                .withColor(AppColors.white.withOpacity(0.67)),
+                .withColor(AppColors.white.withValues(alpha: 0.67)),
             textInputAction: TextInputAction.search,
             maxLines: 1,
             borderWidth: 1.2.r,

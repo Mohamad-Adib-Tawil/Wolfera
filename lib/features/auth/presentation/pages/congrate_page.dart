@@ -37,7 +37,7 @@ class CongratsPage extends StatelessWidget {
                     LocaleKeys.auth_confirmed,
                     textAlign: TextAlign.center,
                     style: context.textTheme.headlineSmall.xb.withColor(
-                      AppColors.blackLight.withOpacity(0.85),
+                      AppColors.blackLight.withValues(alpha: 0.85),
                     ),
                   ),
                 ),

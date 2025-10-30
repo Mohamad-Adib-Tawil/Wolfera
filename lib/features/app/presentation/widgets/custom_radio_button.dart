@@ -48,7 +48,7 @@ class _CustomRadioButtonState extends State<CustomRadioButton> {
                 border: widget.isSelected == true
                     ? Border.all(color: const Color(0xff6080a0), width: 1.5)
                     : Border.all(
-                        color: const Color(0xff6080a0).withOpacity(0.88),
+                        color: const Color(0xff6080a0).withValues(alpha: 0.88),
                         width: 0.5),
               ),
               child: Padding(
@@ -68,7 +68,8 @@ class _CustomRadioButtonState extends State<CustomRadioButton> {
                         width: 47.0.w,
                         height: 47.0.h,
                         decoration: BoxDecoration(
-                          color: const Color(0xffFFFFFF).withOpacity(0.55),
+                          color:
+                              const Color(0xffFFFFFF).withValues(alpha: 0.55),
                           shape: BoxShape.circle,
                         ),
                         child: AppSvgPicture(

@@ -29,7 +29,7 @@ class ContectButton extends StatelessWidget {
                 offset: const Offset(0, 4),
                 blurRadius: 4,
                 spreadRadius: 4,
-                color: AppColors.black.withOpacity(0.25),
+                color: AppColors.black.withValues(alpha: 0.25),
               ),
             ]),
         child: Row(

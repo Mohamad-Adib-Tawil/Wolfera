@@ -92,6 +92,9 @@ class SellMyCarParams {
         .join(' ');
     final title = titleParts.isNotEmpty ? titleParts : 'Car for Sale';
     
+    final normalizedCity = (carLocation.trim().isEmpty) ? null : carLocation;
+    final normalizedCountry = (location.trim().isEmpty || location == 'Worldwide') ? null : location;
+
     return {
       // Required fields
       'user_id': userId,
@@ -123,9 +126,9 @@ class SellMyCarParams {
       'exterior_color': carExteriorColor.isNotEmpty ? carExteriorColor : null,
       
       // Location
-      'location': carLocation,
-      'city': carLocation,
-      'country': location,
+      'location': normalizedCity,
+      'city': normalizedCity,
+      'country': normalizedCountry,
       
       // Images
       'main_image_url': uploadedUrls.isNotEmpty ? uploadedUrls.first : null,

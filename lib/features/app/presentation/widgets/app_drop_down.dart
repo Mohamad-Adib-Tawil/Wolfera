@@ -80,7 +80,7 @@ class _AppDropdownButtonFormFieldState<T>
           ? AppText(
               widget.hint!,
               style: textTheme.titleSmall
-                  ?.copyWith(color: colorScheme.drawer.withOpacity(0.3)),
+                  ?.copyWith(color: colorScheme.drawer.withValues(alpha: 0.3)),
             )
           : null,
       borderRadius: BorderRadius.circular(8).r,
@@ -94,7 +94,7 @@ class _AppDropdownButtonFormFieldState<T>
         isDense: false,
         suffixIcon: Icon(Icons.arrow_drop_down_rounded,
             color: widget.items.isEmpty
-                ? colorScheme.primary.withOpacity(0.3)
+                ? colorScheme.primary.withValues(alpha: 0.3)
                 : colorScheme.primary),
       ),
     );

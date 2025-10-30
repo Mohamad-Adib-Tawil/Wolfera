@@ -28,10 +28,11 @@ class LocationsData {
       secondLevelLabel: 'Governorate',
       secondLevel: [
         'Damascus',
+        'Rif Dimashq',
         'Aleppo',
         'Homs',
         'Hama',
-        'Lattakia',
+        'Latakia',
         'Tartus',
         'Deir ez-Zor',
         'Hasakah',

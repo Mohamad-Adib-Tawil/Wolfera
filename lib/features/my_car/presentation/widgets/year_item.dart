@@ -35,7 +35,7 @@ class YearItem extends StatelessWidget {
           year.toString(),
           style: context.textTheme.bodyMedium?.b?.copyWith(shadows: [
             Shadow(
-              color: AppColors.primary.withOpacity(0.8),
+              color: AppColors.primary.withValues(alpha: 0.8),
               blurRadius: 5.0,
               offset: const Offset(2.0, 2.0),
             ),

@@ -25,8 +25,8 @@ class CustomTextContainer extends StatelessWidget {
       padding: HWEdgeInsets.only(left: 5, right: 6, top: 3, bottom: 3),
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4.r),
-          border:
-              Border.all(color: AppColors.white.withOpacity(0.6), width: 1.r)),
+          border: Border.all(
+              color: AppColors.white.withValues(alpha: 0.6), width: 1.r)),
       child: ConstrainedBox(
         constraints: BoxConstraints(minWidth: 0, maxWidth: maxWidth),
         child: IntrinsicWidth(
@@ -43,7 +43,7 @@ class CustomTextContainer extends StatelessWidget {
               AppText(
                 text,
                 style: context.textTheme.titleSmall?.s14.sb
-                    .withColor(AppColors.white.withOpacity(0.8)),
+                    .withColor(AppColors.white.withValues(alpha: 0.8)),
               ),
             ],
           ),

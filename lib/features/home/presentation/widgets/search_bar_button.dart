@@ -42,7 +42,7 @@ class SearchBarButton extends StatelessWidget {
             AppText(
               LocaleKeys.searchHereForCars,
               style: context.textTheme.bodyMedium?.r
-                  .withColor(AppColors.white.withOpacity(0.67)),
+                  .withColor(AppColors.white.withValues(alpha: 0.67)),
             ),
             const Spacer(),
             SizedBox(

@@ -23,6 +23,7 @@ class SearchCubit extends Cubit<SearchState> {
     this._searchFilterService,
   ) : super(SearchState.initial()) {
     _initStreams();
+    _loadAddressFromPrefs();
   }
 
   @override
@@ -80,6 +81,21 @@ class SearchCubit extends Cubit<SearchState> {
   }
 
   // ===================== Address Filters =====================
+  void _loadAddressFromPrefs() {
+    try {
+      final prefs = GetIt.I<PrefsRepository>();
+      final isWw = prefs.isWorldwide;
+      final code = prefs.selectedCountryCode;
+      final region = prefs.selectedRegionOrCity;
+      emit(state.copyWith(
+        isWorldwide: isWw,
+        selectedCountryCode: Nullable.value(code),
+        selectedRegionOrCity: Nullable.value(region),
+      ));
+      _applyFiltersAndSearch();
+    } catch (_) {}
+  }
+
   void setWorldwide(bool value) {
     // persist
     try { GetIt.I<PrefsRepository>().setWorldwide(value); } catch (_) {}

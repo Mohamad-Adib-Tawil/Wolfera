@@ -49,7 +49,7 @@ class DotsIndicator extends AnimatedWidget {
             boxShadow: selectedness > 0.5
                 ? [
                     BoxShadow(
-                      color: AppColors.white.withOpacity(0.85),
+                      color: AppColors.white.withValues(alpha: 0.85),
                       blurRadius: 6.0,
                       spreadRadius: 2.0,
                     ),

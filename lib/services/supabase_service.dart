@@ -61,12 +61,12 @@ class SupabaseService {
         idToken: idToken,
       );
 
-      print('✅ Google Sign-In successful: ${response.user?.email}');
+      // Google Sign-In successful
       return response;
     } catch (e) {
       // Handle specific Google Sign-In errors
       String errorMessage = e.toString();
-      print('❌ Google Sign-In error: $errorMessage');
+      // Google Sign-In error: $errorMessage
 
       if (errorMessage.contains('ApiException: 10')) {
         throw 'خطأ في إعداد Google Sign-In:\n'

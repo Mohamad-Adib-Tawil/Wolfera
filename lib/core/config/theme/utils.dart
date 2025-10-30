@@ -36,7 +36,7 @@ AppBarTheme _appBarTheme(ThemeData theme, ColorScheme scheme,
 
 DividerThemeData _dividerTheme(ThemeData theme, ColorScheme scheme) =>
     theme.dividerTheme
-        .copyWith(color: AppColors.grey.withOpacity(0.2), thickness: 1);
+        .copyWith(color: AppColors.grey.withValues(alpha: 0.2), thickness: 1);
 
 BottomSheetThemeData _bottomSheetThemeData(ThemeData theme) =>
     theme.bottomSheetTheme.copyWith(

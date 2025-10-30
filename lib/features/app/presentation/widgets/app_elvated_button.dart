@@ -123,7 +123,7 @@ class _AppElevatedButtonState extends ThemeState<AppElevatedButton> {
           backgroundColor: Colors.transparent,
           foregroundColor: colorScheme.onSurface,
           elevation: 0.0,
-          shadowColor: colorScheme.white.withOpacity(0.1),
+          shadowColor: colorScheme.white.withValues(alpha: 0.1),
           textStyle: widget.textStyle,
           side: const BorderSide(color: AppColors.primary, width: 0.7)),
     );

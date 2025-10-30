@@ -5,6 +5,7 @@ import 'package:wolfera/core/config/theme/colors_app.dart';
 import 'package:wolfera/core/config/theme/typography.dart';
 import 'package:wolfera/core/utils/extensions/build_context.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
+import 'package:country_flags/country_flags.dart';
 
 class LanguageDropdown extends StatelessWidget {
   const LanguageDropdown({super.key});
@@ -14,10 +15,10 @@ class LanguageDropdown extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
       decoration: BoxDecoration(
-        color: AppColors.white.withOpacity(0.1),
+        color: AppColors.white.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8.r),
         border: Border.all(
-          color: AppColors.white.withOpacity(0.3),
+          color: AppColors.white.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -37,9 +38,13 @@ class LanguageDropdown extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    '🇸🇦',
-                    style: TextStyle(fontSize: 16.sp),
+                  CountryFlag.fromCountryCode(
+                    'SY',
+                    theme: const ImageTheme(
+                      width: 20,
+                      height: 14,
+                      shape: RoundedRectangle(4),
+                    ),
                   ),
                   8.horizontalSpace,
                   AppText(
@@ -55,9 +60,13 @@ class LanguageDropdown extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    '🇺🇸',
-                    style: TextStyle(fontSize: 16.sp),
+                  CountryFlag.fromCountryCode(
+                    'US',
+                    theme: const ImageTheme(
+                      width: 20,
+                      height: 14,
+                      shape: RoundedRectangle(4),
+                    ),
                   ),
                   8.horizontalSpace,
                   AppText(

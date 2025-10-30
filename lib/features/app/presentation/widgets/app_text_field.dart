@@ -262,8 +262,8 @@ class _AppTextFieldState extends State<AppTextField> {
                   ? widget.hintText?.tr()
                   : widget.hintText,
               hintStyle: widget.hintTextStyle ??
-                  context.textTheme.bodyMedium?.s13
-                      .withColor(context.colorScheme.drawer.withOpacity(0.3)),
+                  context.textTheme.bodyMedium?.s13.withColor(
+                      context.colorScheme.drawer.withValues(alpha: 0.3)),
               labelText: widget.translateLabel
                   ? widget.labelText?.tr()
                   : widget.labelText,

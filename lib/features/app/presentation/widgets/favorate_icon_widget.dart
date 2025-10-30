@@ -79,7 +79,8 @@ class _FavorateIconWidgetState extends State<FavorateIconWidget>
                 child: Opacity(
                   opacity: isFav ? 1.0 : _fadeAnimation.value,
                   child: CircleAvatar(
-                    backgroundColor: AppColors.blackLight.withOpacity(0.7),
+                    backgroundColor:
+                        AppColors.blackLight.withValues(alpha: 0.7),
                     child: AppSvgPicture(
                       Assets.svgHeart,
                       height: 20.h,

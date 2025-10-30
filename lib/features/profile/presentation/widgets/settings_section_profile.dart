@@ -43,7 +43,7 @@ class SettingsSectionProfile extends StatelessWidget {
           onTap: () => GRouter.router.goNamed(GRouter.config.mainRoutes.myCars),
         ),
         ProfileItemSettingsWidget(
-          title: 'Notfications',
+          title: 'Notifications',
           svgIcon: Assets.svgBell,
           onTap: () => GRouter.router
               .pushNamed(GRouter.config.notificationsRoutes.notifications),

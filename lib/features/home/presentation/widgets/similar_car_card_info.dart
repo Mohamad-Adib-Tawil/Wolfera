@@ -32,7 +32,7 @@ class SimilarCarCardInfo extends StatelessWidget {
           child: AppText(
             "GTX 1.4 GDI PETROL",
             style: context.textTheme.titleMedium.s14.r
-                .withColor(AppColors.white.withOpacity(0.8)),
+                .withColor(AppColors.white.withValues(alpha: 0.8)),
           ),
         ),
         8.verticalSpace,

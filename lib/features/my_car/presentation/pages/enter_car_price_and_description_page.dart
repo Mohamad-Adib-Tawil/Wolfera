@@ -88,7 +88,7 @@ class _EnterCarPriceAndDescriptionPageState
               ],
             ),
             10.verticalSpace,
-            // Country dropdown
+            // Country dropdown (with flags)
             StatefulBuilder(builder: (context, setStateSB) {
               final isWorldwide = _myCarsBloc.descriptionSectionForm
                       .control(_myCarsBloc.kFromWorldwide)
@@ -97,20 +97,70 @@ class _EnterCarPriceAndDescriptionPageState
               final selectedCode = _myCarsBloc.descriptionSectionForm
                   .control(_myCarsBloc.kFromCountryCode)
                   .value as String?;
-              final selectedCountry = LocationsData.findByCode(selectedCode);
-              final countries = LocationsData.countryNames();
-              final selectedName = isWorldwide
-                  ? 'Worldwide'
-                  : (selectedCountry?.name ?? 'Worldwide');
+              final selectedCountry = isWorldwide
+                  ? LocationsData.countries.first
+                  : (LocationsData.findByCode(selectedCode) ??
+                      LocationsData.countries.first);
+              final countries = LocationsData.countries;
               return IgnorePointer(
                 ignoring: isWorldwide,
-                child: AppDropdownSearch<String>(
+                child: AppDropdownSearch<CountryOption>(
                   items: countries,
-                  selectedItem: selectedName,
+                  selectedItem: selectedCountry,
+                  itemAsString: (co) => co.name,
                   hintText: 'Country',
-                  onChanged: (val) {
-                    if (val == null) return;
-                    if (val == 'Worldwide') {
+                  dropdownBuilder: (context, co) {
+                    final code = (co?.code ?? 'WW').toUpperCase();
+                    final isWw = code == LocationsData.worldwideCode;
+                    return Row(
+                      children: [
+                        if (isWw)
+                          const Icon(Icons.public, size: 18)
+                        else
+                          CountryFlag.fromCountryCode(
+                            code,
+                            theme: const ImageTheme(
+                              width: 20,
+                              height: 14,
+                              shape: RoundedRectangle(4),
+                            ),
+                          ),
+                        8.horizontalSpace,
+                        Text(co?.name ?? 'Worldwide',
+                            style: context.textTheme.titleSmall.b
+                                .withColor(AppColors.blackLight)),
+                      ],
+                    );
+                  },
+                  popupProps: PopupProps.menu(
+                    showSearchBox: true,
+                    itemBuilder: (context, co, isSelected) {
+                      final isWw = co.code == LocationsData.worldwideCode;
+                      return Padding(
+                        padding: HWEdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        child: Row(
+                          children: [
+                            if (isWw)
+                              const Icon(Icons.public, size: 18)
+                            else
+                              CountryFlag.fromCountryCode(
+                                co.code.toUpperCase(),
+                                theme: const ImageTheme(
+                                  width: 20,
+                                  height: 14,
+                                  shape: RoundedRectangle(4),
+                                ),
+                              ),
+                            10.horizontalSpace,
+                            Expanded(child: Text(co.name)),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                  onChanged: (co) {
+                    if (co == null) return;
+                    if (co.code == LocationsData.worldwideCode) {
                       _myCarsBloc.descriptionSectionForm
                           .control(_myCarsBloc.kFromWorldwide)
                           .updateValue(true);
@@ -121,13 +171,12 @@ class _EnterCarPriceAndDescriptionPageState
                           .control(_myCarsBloc.kFromRegionOrCity)
                           .updateValue(null);
                     } else {
-                      final co = LocationsData.findByName(val);
                       _myCarsBloc.descriptionSectionForm
                           .control(_myCarsBloc.kFromWorldwide)
                           .updateValue(false);
                       _myCarsBloc.descriptionSectionForm
                           .control(_myCarsBloc.kFromCountryCode)
-                          .updateValue(co?.code);
+                          .updateValue(co.code);
                       _myCarsBloc.descriptionSectionForm
                           .control(_myCarsBloc.kFromRegionOrCity)
                           .updateValue(null);
