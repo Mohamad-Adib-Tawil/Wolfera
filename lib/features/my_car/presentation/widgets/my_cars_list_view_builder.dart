@@ -3,8 +3,8 @@ import 'package:wolfera/common/models/page_state/bloc_status.dart';
 import 'package:wolfera/core/utils/responsive_padding.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_empty_state_widet/app_empty_state.dart';
 import 'package:wolfera/features/home/presentation/widgets/car_mini_details_card_widget.dart';
-import 'package:wolfera/features/app/presentation/widgets/shimmer_loading.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:wolfera/features/app/presentation/widgets/app_loader_widget/app_loader.dart';
+import 'package:wolfera/core/config/theme/colors_app.dart';
 
 class MyCarsListViewBuilder extends StatelessWidget {
   const MyCarsListViewBuilder({
@@ -18,20 +18,20 @@ class MyCarsListViewBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // حالة التحميل (وأيضًا الحالة الابتدائية لمنع وميض الحالة الفارغة)
+    // حالة التحميل (وأيضًا الحالة الابتدائية)
     if (loadCarsStatus.isLoading() || loadCarsStatus.isInitial()) {
-      return Shimmer(
-        child: ListView.builder(
-          shrinkWrap: true,
-          scrollDirection: Axis.vertical,
-          itemCount: 4,
-          padding: HWEdgeInsets.only(bottom: 75),
-          itemBuilder: (context, index) => Padding(
-            padding: HWEdgeInsets.only(top: 20, right: 14, left: 14),
-            child: ShimmerLoading(
-              isLoading: true,
-              child: _MyCarCardSkeleton(),
-            ),
+      return Center(
+        child: TweenAnimationBuilder<double>(
+          tween: Tween(begin: 0.9, end: 1.0),
+          duration: const Duration(milliseconds: 450),
+          curve: Curves.easeOutBack,
+          builder: (context, t, child) => Transform.scale(
+            scale: t,
+            child: child,
+          ),
+          child: const AppLoader(
+            // لون اللودر Primary كما طلبت
+            color: AppColors.primary,
           ),
         ),
       );
@@ -96,76 +96,6 @@ class MyCarsListViewBuilder extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-}
-
-/// هيكل عظمي لكارت السيارة أثناء التحميل
-class _MyCarCardSkeleton extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final double h = 215.h;
-    return Container(
-      height: h,
-      width: 320.w,
-      decoration: BoxDecoration(
-        color: const Color(0xFFEFEFEF),
-        borderRadius: BorderRadius.circular(12.r),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // صورة علوية
-          Container(
-            height: 120.h,
-            decoration: BoxDecoration(
-              color: const Color(0xFFDCDCDC),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(12.r),
-                topRight: Radius.circular(12.r),
-              ),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _line(width: 180.w, height: 14.h),
-                SizedBox(height: 8.h),
-                Row(
-                  children: [
-                    _line(width: 80.w, height: 10.h),
-                    SizedBox(width: 12.w),
-                    _line(width: 60.w, height: 10.h),
-                    SizedBox(width: 12.w),
-                    _line(width: 50.w, height: 10.h),
-                  ],
-                ),
-                SizedBox(height: 10.h),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    _line(width: 100.w, height: 12.h),
-                    _line(width: 60.w, height: 12.h),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _line({required double width, required double height}) {
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        color: const Color(0xFFDCDCDC),
-        borderRadius: BorderRadius.circular(6.r),
-      ),
     );
   }
 }
