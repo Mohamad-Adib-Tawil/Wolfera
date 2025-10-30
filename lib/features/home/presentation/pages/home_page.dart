@@ -15,10 +15,16 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>
     with AutomaticKeepAliveClientMixin {
+  // Ensure entrance animation runs only once per app session
+  static bool _didAnimateOnce = false;
+  late final bool _shouldAnimateEntrance;
   late HomeCubit _homeCubit;
   @override
   void initState() {
     _homeCubit = GetIt.I<HomeCubit>()..getHomeData();
+    _shouldAnimateEntrance = !_didAnimateOnce;
+    // Mark as animated for subsequent visits
+    _didAnimateOnce = true;
     super.initState();
   }
 
@@ -31,13 +37,13 @@ class _HomePageState extends State<HomePage>
         child: Scaffold(
           body: RefreshListWidget(
             onRefresh: _homeCubit.getHomeData,
-            child: const CustomScrollView(
-              physics: AlwaysScrollableScrollPhysics(),
+            child: CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
                 // App Bar
-                HomeAppBar(),
+                HomeAppBar(animate: _shouldAnimateEntrance),
                 // Home Body
-                HomeBody(),
+                HomeBody(animate: _shouldAnimateEntrance),
               ],
             ),
           ),

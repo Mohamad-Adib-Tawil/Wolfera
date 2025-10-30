@@ -42,6 +42,9 @@ class BasePage extends StatefulWidget {
 }
 
 class _BasePageState extends State<BasePage> {
+  // Run bottom bar entrance animation only once per app session
+  static bool _didAnimateBottomOnce = false;
+  late final bool _shouldAnimateBottom;
   @override
   void initState() {
     // FirebaseService.onMessage(listen: (value) {
@@ -55,6 +58,8 @@ class _BasePageState extends State<BasePage> {
     //   }
     // });
     // FirebaseService.setupInteractedMessage();
+    _shouldAnimateBottom = !_didAnimateBottomOnce;
+    _didAnimateBottomOnce = true;
     super.initState();
   }
 
@@ -120,13 +125,62 @@ class _BasePageState extends State<BasePage> {
             bottom: 0,
             left: 0,
             right: 0,
-            child: CustomNavigationBar(
-              child: widget.child,
+            child: _AnimatedBottomOnce(
+              animate: _shouldAnimateBottom,
+              child: CustomNavigationBar(
+                child: widget.child,
+              ),
             ),
           ),
         ]),
         resizeToAvoidBottomInset: false,
         // bottomNavigationBar: ,
+      ),
+    );
+  }
+}
+
+class _AnimatedBottomOnce extends StatefulWidget {
+  const _AnimatedBottomOnce({
+    required this.child,
+    required this.animate,
+  });
+
+  final Widget child;
+  final bool animate;
+
+  @override
+  State<_AnimatedBottomOnce> createState() => _AnimatedBottomOnceState();
+}
+
+class _AnimatedBottomOnceState extends State<_AnimatedBottomOnce> {
+  bool _visible = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.animate) {
+      // slight delay to feel natural after first frame
+      Future.delayed(const Duration(milliseconds: 30), () {
+        if (mounted) setState(() => _visible = true);
+      });
+    } else {
+      _visible = true;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    const kDuration = Duration(milliseconds: 1000);
+    return AnimatedOpacity(
+      duration: kDuration,
+      curve: Curves.easeOutCubic,
+      opacity: _visible ? 1 : 0,
+      child: AnimatedSlide(
+        duration: kDuration,
+        curve: Curves.easeOutCubic,
+        offset: _visible ? Offset.zero : const Offset(0, 0.26),
+        child: widget.child,
       ),
     );
   }
