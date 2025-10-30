@@ -10,15 +10,31 @@ import 'package:wolfera/features/cars/presentation/widget/more_images_cars_list.
 import 'package:wolfera/features/cars/presentation/widget/seller_sction_detalis.dart';
 import 'package:wolfera/features/cars/presentation/widget/similar_car_list_view.dart';
 import 'package:wolfera/features/chat/presentation/widgets/white_divider.dart';
+import 'package:wolfera/features/app/presentation/widgets/animations/delayed_fade_slide.dart';
 
-class CarDetailsPage extends StatelessWidget {
+class CarDetailsPage extends StatefulWidget {
   final Map<String, dynamic>? carData;
-  
+
   const CarDetailsPage({super.key, this.carData});
 
   @override
+  State<CarDetailsPage> createState() => _CarDetailsPageState();
+}
+
+class _CarDetailsPageState extends State<CarDetailsPage> {
+  static bool _didAnimateOnce = false;
+  late final bool _shouldAnimateEntrance;
+
+  @override
+  void initState() {
+    _shouldAnimateEntrance = !_didAnimateOnce;
+    _didAnimateOnce = true;
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final data = carData ?? {};
+    final data = widget.carData ?? {};
     // Log car data for debugging purposes
     // ignore: avoid_print
     print('\n🚘 ========== CAR DETAILS PAGE ==========');
@@ -58,39 +74,58 @@ class CarDetailsPage extends StatelessWidget {
     final exteriorFeatures = (data['exterior_features'] as List?)?.cast<String>() ?? [];
     final description = data['description']?.toString() ?? '';
     
-    return Scaffold(
-      appBar: const CarDetalisAppbar(),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            8.verticalSpace,
-            MoreImagesCarsList(images: allImages),
-            10.verticalSpace,
-            CarDetailsSection(carData: data),
-            FeaturesListView(
-              safetyFeatures: safetyFeatures,
-              interiorFeatures: interiorFeatures,
-              exteriorFeatures: exteriorFeatures,
-            ),
-            Padding(
-              padding: HWEdgeInsets.symmetric(horizontal: 11),
-              child:
-                  CustomDivider(color: AppColors.whiteLess, thickness: 0.6.r),
-            ),
-            if (description.isNotEmpty)
-              CarDescription(description: description),
-            Padding(
-              padding:
-                  HWEdgeInsets.only(left: 11, right: 11, top: 10, bottom: 5),
-              child:
-                  CustomDivider(color: AppColors.whiteLess, thickness: 0.6.r),
-            ),
-            SellerSctionDetalis(carData: data),
-            const SimilarCarsListView()
-          ],
-        ),
+    final body = SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          8.verticalSpace,
+          MoreImagesCarsList(images: allImages),
+          10.verticalSpace,
+          CarDetailsSection(carData: data),
+          FeaturesListView(
+            safetyFeatures: safetyFeatures,
+            interiorFeatures: interiorFeatures,
+            exteriorFeatures: exteriorFeatures,
+          ),
+          Padding(
+            padding: HWEdgeInsets.symmetric(horizontal: 11),
+            child:
+                CustomDivider(color: AppColors.whiteLess, thickness: 0.6.r),
+          ),
+          if (description.isNotEmpty)
+            CarDescription(description: description),
+          Padding(
+            padding:
+                HWEdgeInsets.only(left: 11, right: 11, top: 10, bottom: 5),
+            child:
+                CustomDivider(color: AppColors.whiteLess, thickness: 0.6.r),
+          ),
+          SellerSctionDetalis(carData: data),
+          const SimilarCarsListView()
+        ],
       ),
+    );
+
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: _shouldAnimateEntrance
+            ? const DelayedFadeSlide(
+                delay: Duration(milliseconds: 100),
+                duration: Duration(milliseconds: 1000),
+                beginOffset: Offset(0, -0.24),
+                child: CarDetalisAppbar(),
+              )
+            : const CarDetalisAppbar(),
+      ),
+      body: _shouldAnimateEntrance
+          ? DelayedFadeSlide(
+              delay: const Duration(milliseconds: 260),
+              duration: const Duration(milliseconds: 1000),
+              beginOffset: const Offset(-0.24, 0),
+              child: body,
+            )
+          : body,
     );
   }
 }

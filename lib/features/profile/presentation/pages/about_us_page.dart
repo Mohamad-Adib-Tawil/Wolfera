@@ -7,63 +7,102 @@ import 'package:wolfera/core/utils/extensions/build_context.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_svg_picture.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
 import 'package:wolfera/features/app/presentation/widgets/custom_appbar.dart';
+import 'package:wolfera/features/app/presentation/widgets/animations/delayed_fade_slide.dart';
 import 'package:wolfera/generated/assets.dart';
 import 'package:wolfera/generated/locale_keys.g.dart';
 
-class AboutUsPage extends StatelessWidget {
+class AboutUsPage extends StatefulWidget {
   const AboutUsPage({
     super.key,
   });
 
   @override
+  State<AboutUsPage> createState() => _AboutUsPageState();
+}
+
+class _AboutUsPageState extends State<AboutUsPage> {
+  static bool _didAnimateOnce = false;
+  late final bool _shouldAnimateEntrance;
+
+  @override
+  void initState() {
+    _shouldAnimateEntrance = !_didAnimateOnce;
+    _didAnimateOnce = true;
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: const CustomAppbar(
-          text: LocaleKeys.settingsApp_aboutTheApplication,
-          automaticallyImplyLeading: true,
+    final body = Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        AppText(
+          'This App Developed by'.tr(),
+          style: context.textTheme.bodyLarge!.s18.xb
+              .withColor(AppColors.white),
         ),
-        body: Column(
+        AppSvgPicture(
+          Assets.svgAboutUsArrows,
+          height: 175.h,
+          width: 175.w,
+        ),
+        Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            AppText(
-              'This App Developed by'.tr(),
-              style: context.textTheme.bodyLarge!.s18.xb
-                  .withColor(AppColors.white),
-            ),
-            AppSvgPicture(
-              Assets.svgAboutUsArrows,
-              height: 175.h,
-              width: 175.w,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const SvgPersonWidget(),
-                    SizedBox(
-                        width: 100.w,
-                        child: const NameText(name: 'Mohamad Adib Tawil'))
-                  ],
-                ),
-                60.horizontalSpace,
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const SvgPersonWidget(),
-                    SizedBox(
-                      width: 100.w,
-                      child: const NameText(name: 'Mohamad Jrab'),
-                  )
-                  ],
+                const SvgPersonWidget(),
+                SizedBox(
+                    width: 100.w,
+                    child: const NameText(name: 'Mohamad Adib Tawil'))
+              ],
+            ),
+            60.horizontalSpace,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SvgPersonWidget(),
+                SizedBox(
+                  width: 100.w,
+                  child: const NameText(name: 'Mohamad Jrab'),
                 )
               ],
             )
           ],
-        ));
+        )
+      ],
+    );
+
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: _shouldAnimateEntrance
+            ? const DelayedFadeSlide(
+                delay: Duration(milliseconds: 100),
+                duration: Duration(milliseconds: 1000),
+                beginOffset: Offset(0, -0.24),
+                child: CustomAppbar(
+                  text: LocaleKeys.settingsApp_aboutTheApplication,
+                  automaticallyImplyLeading: true,
+                ),
+              )
+            : const CustomAppbar(
+                text: LocaleKeys.settingsApp_aboutTheApplication,
+                automaticallyImplyLeading: true,
+              ),
+      ),
+      body: _shouldAnimateEntrance
+          ? DelayedFadeSlide(
+              delay: const Duration(milliseconds: 260),
+              duration: const Duration(milliseconds: 1000),
+              beginOffset: const Offset(-0.24, 0),
+              child: body,
+            )
+          : body,
+    );
   }
 }
 
