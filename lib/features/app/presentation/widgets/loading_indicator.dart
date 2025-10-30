@@ -20,14 +20,15 @@ class LoadingIndicator extends StatelessWidget {
       dimension: dimension ?? 16.r,
       child: Platform.isAndroid
           ? CircularProgressIndicator(
-              backgroundColor:
-                  color ?? context.theme.colorScheme.primary.withOpacity(0.6),
+              backgroundColor: color ??
+                  context.theme.colorScheme.primary.withValues(alpha: 0.6),
               strokeWidth: 1.8,
               valueColor: AlwaysStoppedAnimation<Color>(
                   color != null ? context.colorScheme.primary : Colors.white70),
             )
           : CupertinoActivityIndicator(
-              color: color ?? context.colorScheme.primary.withOpacity(0.6)),
+              color:
+                  color ?? context.colorScheme.primary.withValues(alpha: 0.6)),
     );
   }
 }

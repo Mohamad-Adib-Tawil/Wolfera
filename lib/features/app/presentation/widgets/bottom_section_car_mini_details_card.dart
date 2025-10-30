@@ -43,6 +43,7 @@ class BottomSectionCarMiniDetailsCard extends StatelessWidget {
             children: [
               AppText(
                 title ?? '2021 KIA SELTOS',
+                translation: false,
                 style:
                     context.textTheme.titleSmall!.xb.withColor(AppColors.white),
               ),
@@ -51,12 +52,14 @@ class BottomSectionCarMiniDetailsCard extends StatelessWidget {
                 children: [
                   AppText(
                     spec1 ?? 'GTX 1.4 GDI PETROL',
+                    translation: false,
                     style: context.textTheme.titleSmall!.s13.b
                         .withColor(AppColors.white),
                   ),
                   const SpaceTextWidget(),
                   AppText(
                     spec2 ?? 'Manual',
+                    translation: false,
                     style: context.textTheme.titleSmall!.s13.sb
                         .withColor(AppColors.white),
                   ),
@@ -67,6 +70,7 @@ class BottomSectionCarMiniDetailsCard extends StatelessWidget {
                 children: [
                   AppText(
                     mileage ?? '99,488 KM',
+                    translation: false,
                     style: context.textTheme.titleSmall!.s13.sb
                         .withColor(AppColors.white),
                   ),
@@ -74,6 +78,7 @@ class BottomSectionCarMiniDetailsCard extends StatelessWidget {
 
                   AppText(
                     fuel ?? 'Petrol',
+                    translation: false,
                     style: context.textTheme.titleSmall!.s13.sb
                         .withColor(AppColors.white),
                   ),
@@ -89,6 +94,7 @@ class BottomSectionCarMiniDetailsCard extends StatelessWidget {
                   ),
                   AppText(
                     ' ${location ?? 'Germany'}',
+                    translation: false,
                     style: context.textTheme.titleSmall!.sb
                         .withColor(AppColors.white),
                   ),
@@ -99,6 +105,7 @@ class BottomSectionCarMiniDetailsCard extends StatelessWidget {
           const Spacer(),
           AppText(
             price ?? r'34,999$',
+            translation: false,
             style: context.textTheme.titleMedium!.xb.withColor(AppColors.white),
           ),
         ],

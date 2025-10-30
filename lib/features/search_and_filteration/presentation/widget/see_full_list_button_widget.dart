@@ -22,7 +22,7 @@ class SeeFullListButtonWidget extends StatelessWidget {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14.r),
-            color: AppColors.grey.withOpacity(.2),
+            color: AppColors.grey.withValues(alpha: .2),
           ),
           child: AppText(
             'See full list',

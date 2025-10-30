@@ -88,7 +88,7 @@ class _CarAddImageItemState extends State<CarAddImageItem> {
                                 fit: BoxFit.cover)
                             : null,
                         color: control.value == null
-                            ? AppColors.grey.withOpacity(.2)
+                            ? AppColors.grey.withValues(alpha: .2)
                             : null,
                         border: control.touched && control.invalid
                             ? Border.all(color: AppColors.red)

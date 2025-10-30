@@ -82,7 +82,7 @@ class SearchFilterService {
       final response = await queryBuilder.order('created_at', ascending: false);
       return (response as List).cast<Map<String, dynamic>>();
     } catch (e) {
-      print('🔴 Error in searchCars: $e');
+      // Error in searchCars: $e
       rethrow;
     }
   }

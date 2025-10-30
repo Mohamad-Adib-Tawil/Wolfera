@@ -95,6 +95,21 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
         dismissOnTap: false,
       );
       final String userId = SupabaseService.currentUser!.id;
+
+      // ===== Address validation (required unless Worldwide) =====
+      final bool isWorldwide =
+          descriptionSectionForm.control(kFromWorldwide).value as bool? ?? true;
+      final String? countryCode =
+          descriptionSectionForm.control(kFromCountryCode).value as String?;
+      // Region is optional. If not Worldwide, require country only.
+      if (!isWorldwide && countryCode == null) {
+        EasyLoading.dismiss();
+        emit(state.copyWith(
+            sellMyCarStatus: const BlocStatus.fail(
+                error: 'Please select country')));
+        EasyLoading.showError('Please select country');
+        return;
+      }
       final params = SellMyCarParams(
         userId: userId,
         // Use countryName for 'location' param (legacy mapping)

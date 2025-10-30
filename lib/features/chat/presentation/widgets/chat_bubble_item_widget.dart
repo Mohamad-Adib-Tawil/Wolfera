@@ -29,7 +29,7 @@ class ChatBubbleItemWidget extends StatelessWidget {
           width: context.mediaQuery.size.width * 0.6,
           decoration: BoxDecoration(
             color: isCurrent
-                ? AppColors.primary.withOpacity(0.8)
+                ? AppColors.primary.withValues(alpha: 0.8)
                 : AppColors.white,
             borderRadius: BorderRadius.only(
               bottomLeft:
@@ -62,7 +62,7 @@ class ChatBubbleItemWidget extends StatelessWidget {
             ),
             isCurrent
                 ? CircleAvatar(
-                    backgroundColor: AppColors.primary.withOpacity(0.8),
+                    backgroundColor: AppColors.primary.withValues(alpha: 0.8),
                     radius: 7.5.r,
                     child: AppSvgPicture(
                       Assets.svgCheck,

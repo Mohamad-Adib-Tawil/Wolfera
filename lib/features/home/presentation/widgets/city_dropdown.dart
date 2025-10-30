@@ -10,9 +10,10 @@ import 'package:wolfera/core/utils/responsive_padding.dart';
 import 'package:wolfera/features/app/domin/repositories/prefs_repository.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_dropdown_search.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_svg_picture.dart';
-import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
 import 'package:wolfera/generated/assets.dart';
 import 'package:wolfera/generated/locale_keys.g.dart';
+import 'package:wolfera/core/constants/locations_data.dart';
+import 'package:country_flags/country_flags.dart';
 
 class CityDropdown extends StatelessWidget {
   const CityDropdown({super.key, required this.onChanged});
@@ -37,13 +38,67 @@ class CityDropdown extends StatelessWidget {
   }
 
   Widget dropDown(BuildContext context) {
+    final prefs = GetIt.I<PrefsRepository>();
+    // Build combined list: Worldwide + Country + Country - Region
+    final List<String> items = [];
+    for (final co in LocationsData.countries) {
+      if (co.code == LocationsData.worldwideCode) {
+        items.add('Worldwide');
+        continue;
+      }
+      items.add(co.name);
+      for (final r in co.secondLevel) {
+        items.add('${co.name} - $r');
+      }
+    }
+
+    // Determine selected item from prefs
+    String selected;
+    if (prefs.isWorldwide) {
+      selected = 'Worldwide';
+    } else {
+      final co = LocationsData.findByCode(prefs.selectedCountryCode);
+      final region = prefs.selectedRegionOrCity;
+      if (co != null && region != null && region.isNotEmpty) {
+        selected = '${co.name} - $region';
+      } else if (co != null) {
+        selected = co.name;
+      } else {
+        selected = prefs.selectedCity ?? 'Worldwide';
+      }
+    }
+
+    String countryNameOf(String item) {
+      final idx = item.indexOf(' - ');
+      return idx == -1 ? item : item.substring(0, idx);
+    }
+
+    String? regionOf(String item) {
+      final idx = item.indexOf(' - ');
+      return idx == -1 ? null : item.substring(idx + 3);
+    }
+
     return AppDropdownSearch<String?> (
-      items: const ["Dubie", "Germany"],
-      itemAsString: (item) => item!.toUpperCase(),
-      selectedItem: GetIt.I<PrefsRepository>().selectedCity ?? "Germany",
+      items: items,
+      itemAsString: (item) => item!,
+      selectedItem: selected,
       onChanged: (value) async {
-        final v = value ?? "Germany";
-        await GetIt.I<PrefsRepository>().setSelectedCity(v);
+        final v = value ?? 'Worldwide';
+        final prefs = GetIt.I<PrefsRepository>();
+        if (v == 'Worldwide') {
+          await prefs.setWorldwide(true);
+          await prefs.setSelectedCountryCode(null);
+          await prefs.setSelectedRegionOrCity(null);
+          await prefs.setSelectedCity('Worldwide');
+        } else {
+          final cName = countryNameOf(v);
+          final reg = regionOf(v);
+          final co = LocationsData.findByName(cName);
+          await prefs.setWorldwide(false);
+          await prefs.setSelectedCountryCode(co?.code);
+          await prefs.setSelectedRegionOrCity(reg);
+          await prefs.setSelectedCity(reg ?? cName);
+        }
         onChanged?.call(value);
       },
       contentPadding: HWEdgeInsetsDirectional.only(start: 2, end: 0),
@@ -58,6 +113,54 @@ class CityDropdown extends StatelessWidget {
       ),
       baseStyle:
           context.textTheme.titleMedium?.s17.b.withColor(AppColors.white),
+      dropdownBuilder: (context, item) {
+        final label = item ?? 'Worldwide';
+        if (label == 'Worldwide') {
+          return Row(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              const Icon(Icons.public, size: 16, color: Colors.white),
+              6.horizontalSpace,
+              Expanded(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.textTheme.titleSmall.b.withColor(AppColors.white),
+                ),
+              ),
+            ],
+          );
+        }
+        final cName = countryNameOf(label);
+        final co = LocationsData.findByName(cName);
+        final code = (co?.code ?? 'WW').toUpperCase();
+        return Row(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            if (code == LocationsData.worldwideCode)
+              const Icon(Icons.public, size: 16, color: Colors.white)
+            else
+              CountryFlag.fromCountryCode(
+                code,
+                theme: const ImageTheme(
+                  width: 18,
+                  height: 12,
+                  shape: RoundedRectangle(3),
+                ),
+              ),
+            6.horizontalSpace,
+            Expanded(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: context.textTheme.titleSmall.b.withColor(AppColors.white),
+              ),
+            ),
+          ],
+        );
+      },
       popupProps: PopupProps.menu(
         showSearchBox: true,
         fit: FlexFit.loose,
@@ -65,12 +168,28 @@ class CityDropdown extends StatelessWidget {
           borderRadius: BorderRadius.circular(15.r),
         ),
         itemBuilder: (context, item, isSelected) {
+          final label = item!;
+          final isWw = label == 'Worldwide';
+          final cName = countryNameOf(label);
+          final co = LocationsData.findByName(cName);
+          final code = (co?.code ?? 'WW').toUpperCase();
           return Padding(
-            padding: HWEdgeInsets.symmetric(horizontal: 20.0, vertical: 15),
+            padding: HWEdgeInsets.symmetric(horizontal: 16.0, vertical: 12),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                AppText(item!, style: context.textTheme.labelLarge.m),
+                if (isWw)
+                  const Icon(Icons.public, size: 18)
+                else
+                  CountryFlag.fromCountryCode(
+                    code,
+                    theme: const ImageTheme(
+                      width: 20,
+                      height: 14,
+                      shape: RoundedRectangle(4),
+                    ),
+                  ),
+                10.horizontalSpace,
+                Expanded(child: Text(label, style: context.textTheme.labelLarge.m)),
                 if (isSelected) const Icon(Icons.done_rounded)
               ],
             ),

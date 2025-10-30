@@ -7,11 +7,13 @@ import 'package:wolfera/core/config/theme/typography.dart';
 import 'package:wolfera/core/utils/extensions/build_context.dart';
 import 'package:wolfera/core/utils/responsive_padding.dart';
 import 'package:wolfera/core/constants/locations_data.dart';
+import 'package:country_flags/country_flags.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_dropdown_search.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
 import 'package:wolfera/features/search_and_filteration/presentation/manager/search_cubit/search_cubit.dart';
 import 'package:wolfera/features/search_and_filteration/presentation/widget/filter_item.dart';
 import 'package:wolfera/features/search_and_filteration/presentation/widget/filter_with_bidge_widget.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 
 class SearchFiltersSection extends StatelessWidget {
   const SearchFiltersSection({
@@ -26,13 +28,11 @@ class SearchFiltersSection extends StatelessWidget {
       height: 48.h,
       child: BlocBuilder<SearchCubit, SearchState>(
         builder: (context, state) {
-          final countries = LocationsData.countryNames();
-          final selectedCountryName = state.isWorldwide
-              ? 'Worldwide'
-              : (LocationsData.findByCode(state.selectedCountryCode)?.name ?? 'Worldwide');
-          final selectedCountry = LocationsData.findByCode(state.selectedCountryCode) ??
-              (state.isWorldwide ? LocationsData.countries.first : null);
-          final regions = (selectedCountry?.secondLevel ?? const <String>[]);
+          final countries = LocationsData.countries;
+          final selectedCountry = state.isWorldwide
+              ? countries.first
+              : (LocationsData.findByCode(state.selectedCountryCode) ?? countries.first);
+          final regions = (selectedCountry.secondLevel);
           final hasRegions = !state.isWorldwide && regions.isNotEmpty;
 
           return ListView(
@@ -41,12 +41,64 @@ class SearchFiltersSection extends StatelessWidget {
             children: [
               // Country dropdown (with Worldwide)
               SizedBox(
-                width: 180.w,
-                child: AppDropdownSearch<String>(
+                width: 200.w,
+                child: AppDropdownSearch<CountryOption>(
                   items: countries,
-                  selectedItem: selectedCountryName,
+                  selectedItem: selectedCountry,
+                  itemAsString: (co) => co.name,
                   hintText: 'Worldwide',
-                  onChanged: (val) => bloc.selectCountryByName(val),
+                  baseStyle: context.textTheme.titleSmall.b
+                      .withColor(AppColors.white),
+                  dropdownBuilder: (context, co) {
+                    final code = (co?.code ?? 'WW').toUpperCase();
+                    final isWw = code == LocationsData.worldwideCode;
+                    return Row(
+                      children: [
+                        if (isWw)
+                          const Icon(Icons.public, size: 18)
+                        else
+                          CountryFlag.fromCountryCode(
+                            code,
+                            theme: const ImageTheme(
+                              width: 20,
+                              height: 14,
+                              shape: RoundedRectangle(4),
+                            ),
+                          ),
+                        8.horizontalSpace,
+                        Text(co?.name ?? 'Worldwide',
+                            style: context.textTheme.titleSmall.b
+                                .withColor(AppColors.white)),
+                      ],
+                    );
+                  },
+                  popupProps: PopupProps.menu(
+                    showSearchBox: true,
+                    itemBuilder: (context, co, isSelected) {
+                      final isWw = co.code == LocationsData.worldwideCode;
+                      return Padding(
+                        padding: HWEdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        child: Row(
+                          children: [
+                            if (isWw)
+                              const Icon(Icons.public, size: 18)
+                            else
+                              CountryFlag.fromCountryCode(
+                                co.code.toUpperCase(),
+                                theme: const ImageTheme(
+                                  width: 20,
+                                  height: 14,
+                                  shape: RoundedRectangle(4),
+                                ),
+                              ),
+                            10.horizontalSpace,
+                            Expanded(child: Text(co.name)),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                  onChanged: (co) => bloc.selectCountryByName(co?.name),
                   contentPadding: HWEdgeInsets.symmetric(horizontal: 8),
                   borderColor: Colors.transparent,
                   filled: false,
@@ -61,7 +113,9 @@ class SearchFiltersSection extends StatelessWidget {
                   child: AppDropdownSearch<String>(
                     items: regions,
                     selectedItem: state.selectedRegionOrCity,
-                    hintText: selectedCountry?.secondLevelLabel ?? 'Region',
+                    hintText: selectedCountry.secondLevelLabel ?? 'Region',
+                    baseStyle: context.textTheme.titleSmall.b
+                        .withColor(AppColors.white),
                     onChanged: (val) => bloc.selectRegionOrCity(val),
                     contentPadding: HWEdgeInsets.symmetric(horizontal: 8),
                     borderColor: Colors.transparent,

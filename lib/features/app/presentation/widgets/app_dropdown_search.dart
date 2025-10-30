@@ -152,7 +152,7 @@ class _AppDropdownSearchState<T> extends State<AppDropdownSearch<T>> {
         DropdownButtonProps(
           icon: Icon(Icons.keyboard_arrow_down_rounded,
               color: widget.items.isEmpty
-                  ? colorScheme.grey.withOpacity(0.3)
+                  ? colorScheme.grey.withValues(alpha: 0.3)
                   : colorScheme.grey),
         );
 
@@ -199,7 +199,7 @@ class _AppDropdownSearchState<T> extends State<AppDropdownSearch<T>> {
                   HWEdgeInsetsDirectional.only(start: 12, end: 12),
               suffixIcon: Icon(Icons.arrow_drop_down_rounded,
                   color: widget.items.isEmpty
-                      ? colorScheme.primary.withOpacity(0.3)
+                      ? colorScheme.primary.withValues(alpha: 0.3)
                       : colorScheme.primary),
             ),
             baseStyle: widget.baseStyle ??

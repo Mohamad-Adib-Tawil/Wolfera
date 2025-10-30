@@ -17,6 +17,7 @@ dependencies:
   supabase_flutter: ^2.8.2
   collection: ^1.17.2
   country_picker: ^2.0.26
+  country_flags: ^4.1.0
   cupertino_icons: ^1.0.2
   dartz: ^0.10.1
   dio: ^5.1.1
@@ -46,11 +47,10 @@ dependencies:
   fluttertoast: ^8.2.4
   freezed: ^2.3.2
   freezed_annotation: ^2.2.0
-  geocoding_resolver: ^0.0.3+2
   geolocator: ^11.0.0
   get_it: ^7.3.0
   go_router: ^7.0.0
-  google_fonts: 4.0.4
+  google_fonts: ^6.3.2
   google_maps_flutter: ^2.5.3
   google_sign_in: ^7.2.0
   group_button: ^5.3.3

@@ -240,8 +240,8 @@ class _CustomReactiveTextFieldState extends State<CustomReactiveTextField> {
             hintText:
                 widget.translateHint ? widget.hintText?.tr() : widget.hintText,
             hintStyle: widget.hintTextStyle ??
-                context.textTheme.bodyMedium?.s13
-                    .withColor(context.colorScheme.drawer.withOpacity(0.3)),
+                context.textTheme.bodyMedium?.s13.withColor(
+                    context.colorScheme.drawer.withValues(alpha: 0.3)),
             labelText: widget.translateLabel
                 ? widget.labelText?.tr()
                 : widget.labelText,
@@ -251,7 +251,7 @@ class _CustomReactiveTextFieldState extends State<CustomReactiveTextField> {
             floatingLabelStyle: context.textTheme.bodyMedium?.m.s15
                 .withColor(context.colorScheme.onSurface),
             errorStyle: context.textTheme.bodySmall?.m
-                .withColor(AppColors.red.withOpacity(0.8))),
+                .withColor(AppColors.red.withValues(alpha: 0.8))),
       ),
     );
   }

@@ -30,7 +30,7 @@ class CarAddImageItemEmptyOptional extends StatelessWidget {
               width: 150.w,
               height: 100.h,
               child: DottedBorder(
-                color: AppColors.greyStroke.withOpacity(0.8),
+                color: AppColors.greyStroke.withValues(alpha: 0.8),
                 strokeWidth: 1.5.w,
                 dashPattern: const [6, 3],
                 borderType: BorderType.RRect,

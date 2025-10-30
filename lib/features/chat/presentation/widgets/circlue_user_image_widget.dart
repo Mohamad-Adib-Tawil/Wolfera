@@ -28,7 +28,7 @@ class CirclueUserImageWidget extends StatelessWidget {
           BoxShadow(
             offset: const Offset(04, -2),
             blurRadius: 8,
-            color: AppColors.black.withOpacity(0.45),
+            color: AppColors.black.withValues(alpha: 0.45),
           )
         ],
       ),

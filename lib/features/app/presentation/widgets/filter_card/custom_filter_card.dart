@@ -46,7 +46,7 @@ class CustomFilterCard extends StatelessWidget {
                     borderThickness: isSelected == true ? 4.r : 3.r,
                     borderColor: isSelected == true
                         ? context.colorScheme.primary
-                        : context.colorScheme.primary.withOpacity(0.15)),
+                        : context.colorScheme.primary.withValues(alpha: 0.15)),
                 child: Center(
                   child: SizedBox(
                     width: width != null ? width! - 20.w : 78.w,
