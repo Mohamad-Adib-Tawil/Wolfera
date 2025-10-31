@@ -46,64 +46,20 @@ class _EnterCarPriceAndDescriptionPageState
             ),
             30.verticalSpace,
             AppText(
-              'Location',
+              'Country',
               translation: false,
               style: context.textTheme.titleMedium?.s13.m
                   .withColor(AppColors.white),
             ),
             10.verticalSpace,
-            // Worldwide toggle
-            Row(
-              children: [
-                StatefulBuilder(builder: (context, setStateSB) {
-                  final isWorldwide = _myCarsBloc.descriptionSectionForm
-                          .control(_myCarsBloc.kFromWorldwide)
-                          .value as bool? ??
-                      true;
-                  return Switch.adaptive(
-                    value: isWorldwide,
-                    onChanged: (val) {
-                      _myCarsBloc.descriptionSectionForm
-                          .control(_myCarsBloc.kFromWorldwide)
-                          .updateValue(val);
-                      if (val) {
-                        _myCarsBloc.descriptionSectionForm
-                            .control(_myCarsBloc.kFromCountryCode)
-                            .updateValue(null);
-                        _myCarsBloc.descriptionSectionForm
-                            .control(_myCarsBloc.kFromRegionOrCity)
-                            .updateValue(null);
-                      }
-                      setStateSB(() {});
-                    },
-                  );
-                }),
-                10.horizontalSpace,
-                AppText(
-                  'Worldwide',
-                  translation: false,
-                  style: context.textTheme.bodyMedium?.m
-                      .withColor(AppColors.white),
-                ),
-              ],
-            ),
-            10.verticalSpace,
             // Country dropdown (with flags)
             ReactiveValueListenableBuilder(
-              formControl: _myCarsBloc.descriptionSectionForm.control(_myCarsBloc.kFromWorldwide),
+              formControl: _myCarsBloc.descriptionSectionForm.control(_myCarsBloc.kFromCountryCode),
               builder: (context, control, child) {
-                final isWorldwide = control.value as bool? ?? true;
-                final selectedCode = _myCarsBloc.descriptionSectionForm
-                    .control(_myCarsBloc.kFromCountryCode)
-                    .value as String?;
-                final selectedCountry = isWorldwide
-                    ? LocationsData.countries.first
-                    : (LocationsData.findByCode(selectedCode) ??
-                        LocationsData.countries.first);
+                final selectedCode = control.value as String?;
+                final selectedCountry = LocationsData.findByCode(selectedCode) ?? LocationsData.countries.first;
                 final countries = LocationsData.countries;
-                return IgnorePointer(
-                  ignoring: isWorldwide,
-                  child: AppDropdownSearch<CountryOption>(
+                return AppDropdownSearch<CountryOption>(
                   items: countries,
                   selectedItem: selectedCountry,
                   itemAsString: (co) => co.name,
@@ -159,59 +115,63 @@ class _EnterCarPriceAndDescriptionPageState
                   ),
                   onChanged: (co) {
                     if (co == null) return;
-                    if (co.code == LocationsData.worldwideCode) {
-                      _myCarsBloc.descriptionSectionForm
-                          .control(_myCarsBloc.kFromWorldwide)
-                          .updateValue(true);
-                      _myCarsBloc.descriptionSectionForm
-                          .control(_myCarsBloc.kFromCountryCode)
-                          .updateValue(null);
-                      _myCarsBloc.descriptionSectionForm
-                          .control(_myCarsBloc.kFromRegionOrCity)
-                          .updateValue(null);
-                    } else {
-                      _myCarsBloc.descriptionSectionForm
-                          .control(_myCarsBloc.kFromWorldwide)
-                          .updateValue(false);
-                      _myCarsBloc.descriptionSectionForm
-                          .control(_myCarsBloc.kFromCountryCode)
-                          .updateValue(co.code);
-                      _myCarsBloc.descriptionSectionForm
-                          .control(_myCarsBloc.kFromRegionOrCity)
-                          .updateValue(null);
-                    }
+                    // تحديث الدولة ومسح المدينة
+                    _myCarsBloc.descriptionSectionForm
+                        .control(_myCarsBloc.kFromCountryCode)
+                        .updateValue(co.code == LocationsData.worldwideCode ? null : co.code);
+                    _myCarsBloc.descriptionSectionForm
+                        .control(_myCarsBloc.kFromRegionOrCity)
+                        .updateValue(null);
+                    // تحديث worldwide flag
+                    _myCarsBloc.descriptionSectionForm
+                        .control(_myCarsBloc.kFromWorldwide)
+                        .updateValue(co.code == LocationsData.worldwideCode);
                   },
                   borderColor: Colors.transparent,
                   filled: false,
                 ),
               );
             }),
-            10.verticalSpace,
-            // Region dropdown (depends on country)
+            // Region/City dropdown (depends on country)
             ReactiveValueListenableBuilder(
-              formControl: _myCarsBloc.descriptionSectionForm.control(_myCarsBloc.kFromWorldwide),
+              formControl: _myCarsBloc.descriptionSectionForm.control(_myCarsBloc.kFromCountryCode),
               builder: (context, control, child) {
-                final isWorldwide = control.value as bool? ?? true;
-                if (isWorldwide) return const SizedBox.shrink();
-                final selectedCode = _myCarsBloc.descriptionSectionForm
-                    .control(_myCarsBloc.kFromCountryCode)
-                    .value as String?;
+                final selectedCode = control.value as String?;
+                if (selectedCode == null || selectedCode == LocationsData.worldwideCode) {
+                  return const SizedBox.shrink();
+                }
                 final selectedCountry = LocationsData.findByCode(selectedCode);
                 final regions = selectedCountry?.secondLevel ?? const <String>[];
+                if (regions.isEmpty) return const SizedBox.shrink();
+                
                 final selectedRegion = _myCarsBloc.descriptionSectionForm
                     .control(_myCarsBloc.kFromRegionOrCity)
                     .value as String?;
-                return AppDropdownSearch<String>(
-                  items: regions,
-                  selectedItem: selectedRegion,
-                  hintText: selectedCountry?.secondLevelLabel ?? 'Region',
-                  onChanged: (val) {
-                    _myCarsBloc.descriptionSectionForm
-                        .control(_myCarsBloc.kFromRegionOrCity)
-                        .updateValue(val);
-                  },
-                  borderColor: Colors.transparent,
-                  filled: false,
+                
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    10.verticalSpace,
+                    AppText(
+                      selectedCountry?.secondLevelLabel ?? 'Region',
+                      translation: false,
+                      style: context.textTheme.titleMedium?.s13.m
+                          .withColor(AppColors.white),
+                    ),
+                    10.verticalSpace,
+                    AppDropdownSearch<String>(
+                      items: regions,
+                      selectedItem: selectedRegion,
+                      hintText: selectedCountry?.secondLevelLabel ?? 'Region',
+                      onChanged: (val) {
+                        _myCarsBloc.descriptionSectionForm
+                            .control(_myCarsBloc.kFromRegionOrCity)
+                            .updateValue(val);
+                      },
+                      borderColor: Colors.transparent,
+                      filled: false,
+                    ),
+                  ],
                 );
               },
             ),

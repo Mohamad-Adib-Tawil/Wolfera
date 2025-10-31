@@ -359,29 +359,36 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
     kFromRegionOrCity: FormControl<String?>(),
   });
   
-  /// تحميل القيم الافتراضية للموقع من بيانات المستخدم
+  /// تحميل القيم الافتراضية للموقع من عنوان المستخدم المحفوظ
   void loadDefaultLocationFromPrefs() {
     try {
       final prefs = GetIt.I<PrefsRepository>();
-      final isWorldwide = prefs.isWorldwide;
       final countryCode = prefs.selectedCountryCode;
       final regionOrCity = prefs.selectedRegionOrCity;
       
-      print('📍 Loading default location from prefs:');
-      print('   - isWorldwide: $isWorldwide');
+      print('📍 Loading user address as default location:');
       print('   - countryCode: $countryCode');
       print('   - regionOrCity: $regionOrCity');
       
-      // تعيين القيم في الفورم
-      descriptionSectionForm.control(kFromWorldwide).updateValue(isWorldwide);
-      descriptionSectionForm.control(kFromCountryCode).updateValue(countryCode);
-      descriptionSectionForm.control(kFromRegionOrCity).updateValue(regionOrCity);
-      
-      print('✅ Default location loaded successfully');
+      // تعيين القيم في الفورم (إذا كانت موجودة)
+      if (countryCode != null && countryCode.isNotEmpty && countryCode != 'WW') {
+        descriptionSectionForm.control(kFromCountryCode).updateValue(countryCode);
+        descriptionSectionForm.control(kFromWorldwide).updateValue(false);
+        if (regionOrCity != null && regionOrCity.isNotEmpty) {
+          descriptionSectionForm.control(kFromRegionOrCity).updateValue(regionOrCity);
+        }
+        print('✅ User address loaded: $countryCode - $regionOrCity');
+      } else {
+        // إذا لم يكن هناك عنوان محفوظ، استخدام Worldwide
+        descriptionSectionForm.control(kFromWorldwide).updateValue(true);
+        descriptionSectionForm.control(kFromCountryCode).updateValue(null);
+        descriptionSectionForm.control(kFromRegionOrCity).updateValue(null);
+        print('ℹ️ No saved address, using Worldwide');
+      }
     } catch (e, stackTrace) {
       print('⚠️ Failed to load default location: $e');
       print('Stack trace: $stackTrace');
-      // في حالة الفشل، استخدام القيم الافتراضية (Worldwide)
+      // في حالة الفشل، استخدام Worldwide
       descriptionSectionForm.control(kFromWorldwide).updateValue(true);
       descriptionSectionForm.control(kFromCountryCode).updateValue(null);
       descriptionSectionForm.control(kFromRegionOrCity).updateValue(null);
