@@ -20,6 +20,7 @@ import 'package:wolfera/features/home/presentation/manager/home_cubit/home_cubit
 import 'package:wolfera/features/my_car/presentation/pages/sell_my_car_page.dart';
 import 'package:wolfera/generated/locale_keys.g.dart';
 import 'package:wolfera/core/constants/locations_data.dart';
+import 'package:wolfera/features/app/domin/repositories/prefs_repository.dart';
 
 part 'my_cars_event.dart';
 part 'my_cars_state.dart';
