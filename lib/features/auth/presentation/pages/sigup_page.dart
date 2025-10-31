@@ -22,6 +22,7 @@ import 'package:simple_shadow/simple_shadow.dart';
 import '../../../../generated/locale_keys.g.dart';
 import '../bloc/auth_bloc.dart';
 import '../widgets/phone_text_field.dart';
+import 'package:wolfera/features/app/presentation/widgets/animations/delayed_fade_slide.dart';
 
 class SingUpPage extends StatefulWidget {
   const SingUpPage({
@@ -35,175 +36,186 @@ class SingUpPage extends StatefulWidget {
 class _SingUpPageState extends State<SingUpPage> {
   bool isChecked = true;
   late AuthBloc _authBloc;
+  static bool _didAnimateOnce = false;
+  late final bool _shouldAnimateEntrance;
 
   @override
   void initState() {
     _authBloc = GetIt.I<AuthBloc>();
+    _shouldAnimateEntrance = !_didAnimateOnce;
+    _didAnimateOnce = true;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    final content = SingleChildScrollView(
+      child: Padding(
+        padding:
+            HWEdgeInsets.only(top: 20, right: 26, left: 26, bottom: 30),
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            30.verticalSpace,
+            Align(
+              alignment: Alignment.center,
+              child: SimpleShadow(
+                color: AppColors.black,
+                opacity: 0.15,
+                offset: const Offset(0, 4),
+                sigma: 4,
+                child: AppText(LocaleKeys.auth_createAccount,
+                    textAlign: TextAlign.center,
+                    style: context.textTheme.headlineSmall.xb),
+              ),
+            ),
+            50.verticalSpace,
+            CustomTextField(
+              hint: LocaleKeys.enterNameHint,
+              formControlName: _authBloc.kFromName,
+              textInputAction: TextInputAction.next,
+              prefixIcon: const AppSvgPicture(
+                Assets.svgPerson,
+              ),
+            ),
+            24.verticalSpace,
+            CustomTextField(
+              hint: "Enter email",
+              formControlName: _authBloc.kFromEmail,
+              textInputAction: TextInputAction.next,
+              prefixIcon: const AppSvgPicture(
+                Assets.svgEmail,
+              ),
+            ),
+            24.verticalSpace,
+            PhoneTextField(
+              controlName: _authBloc.kFromPhone,
+              onSelect: (value) => _authBloc.singUpForm
+                  .control(_authBloc.kFromCountryCode)
+                  .value = value.phoneCode,
+              onInit: (value) => _authBloc.singUpForm
+                  .control(_authBloc.kFromCountryCode)
+                  .value = value.phoneCode,
+            ),
+            24.verticalSpace,
+            CustomTextField(
+              hint: LocaleKeys.enterPasswordHint,
+              isObscureText: true,
+              formControlName: _authBloc.kFromPassword,
+              textInputAction: TextInputAction.next,
+              prefixIcon: const AppSvgPicture(
+                Assets.svgLock,
+              ),
+            ),
+            24.verticalSpace,
+            CustomTextField(
+              hint: LocaleKeys.enterConfirmationPasswordHint,
+              isObscureText: true,
+              formControlName: _authBloc.kFromConfirmationPassword,
+              textInputAction: TextInputAction.send,
+              prefixIcon: const AppSvgPicture(
+                Assets.svgLock,
+              ),
+              onSubmitted: (control) {
+                _onSignUp();
+              },
+            ),
+            30.verticalSpace,
+            BlocBuilder<AuthBloc, AuthState>(
+              builder: (context, state) {
+                return SizedBox(
+                  width: 351.w,
+                  height: 54.h,
+                  child: AppElevatedButton(
+                      style: ButtonStyle(
+                          shape: WidgetStatePropertyAll(RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5).r)),
+                          textStyle: WidgetStatePropertyAll(
+                            context.textTheme.bodySmall!.s20.xb
+                                .withColor(AppColors.blackLight),
+                          ),
+                          backgroundColor:
+                              const WidgetStatePropertyAll(AppColors.white)),
+                      text: LocaleKeys.auth_createAccount,
+                      isLoading: state.registerStatus.isLoading(),
+                      onPressed: _onSignUp),
+                );
+              },
+            ),
+            12.verticalSpace,
+            Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    height: 2.h,
+                    color: AppColors.grey,
+                  ),
+                ),
+                5.horizontalSpace,
+                AppText(
+                  "OR",
+                  style:
+                      context.textTheme.bodyMedium.b.withColor(AppColors.grey),
+                ),
+                5.horizontalSpace,
+                Expanded(
+                  child: Container(
+                    height: 2.h,
+                    color: AppColors.grey,
+                  ),
+                ),
+              ],
+            ),
+            15.verticalSpace,
+            CustomButtonWithIcon(
+              text: "Sign up with Google".tr(),
+              icon: Assets.svgGoogle,
+              onTap: _onGoogleSignUp,
+            ),
+            20.verticalSpace,
+            InkWell(
+              overlayColor:
+                  const WidgetStatePropertyAll(Colors.transparent),
+              onTap: () => GRouter.router
+                  .push(GRouter.config.authRoutes.loginPage),
+              child: Row(
+                textDirection: LanguageService.textDirection,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  AppText(
+                    LocaleKeys.auth_youAlreadyHaveAnAccount,
+                    style: context.textTheme.titleMedium!.b
+                        .withColor(AppColors.whiteLess),
+                  ),
+                  8.horizontalSpace,
+                  AppText(
+                    LocaleKeys.auth_login,
+                    style: context.textTheme.titleMedium!.b
+                        .withColor(AppColors.orange),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+
     return BlocProvider.value(
-      value: GetIt.I<AuthBloc>(),
+      value: _authBloc,
       child: SafeArea(
         child: Scaffold(
           body: ReactiveForm(
             formGroup: _authBloc.singUpForm,
-            child: SingleChildScrollView(
-              child: Padding(
-                padding:
-                    HWEdgeInsets.only(top: 20, right: 26, left: 26, bottom: 30),
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    30.verticalSpace,
-                    Align(
-                      alignment: Alignment.center,
-                      child: SimpleShadow(
-                        color: AppColors.black,
-                        opacity: 0.15,
-                        offset: const Offset(0, 4),
-                        sigma: 4,
-                        child: AppText(LocaleKeys.auth_createAccount,
-                            textAlign: TextAlign.center,
-                            style: context.textTheme.headlineSmall.xb),
-                      ),
-                    ),
-                    50.verticalSpace,
-                    CustomTextField(
-                      hint: LocaleKeys.enterNameHint,
-                      formControlName: _authBloc.kFromName,
-                      textInputAction: TextInputAction.next,
-                      prefixIcon: const AppSvgPicture(
-                        Assets.svgPerson,
-                      ),
-                    ),
-                    24.verticalSpace,
-                    CustomTextField(
-                      hint: "Enter email",
-                      formControlName: _authBloc.kFromEmail,
-                      textInputAction: TextInputAction.next,
-                      prefixIcon: const AppSvgPicture(
-                        Assets.svgEmail,
-                      ),
-                    ),
-                    24.verticalSpace,
-                    PhoneTextField(
-                      controlName: _authBloc.kFromPhone,
-                      onSelect: (value) => _authBloc.singUpForm
-                          .control(_authBloc.kFromCountryCode)
-                          .value = value.phoneCode,
-                      onInit: (value) => _authBloc.singUpForm
-                          .control(_authBloc.kFromCountryCode)
-                          .value = value.phoneCode,
-                    ),
-                    24.verticalSpace,
-                    CustomTextField(
-                      hint: LocaleKeys.enterPasswordHint,
-                      isObscureText: true,
-                      formControlName: _authBloc.kFromPassword,
-                      textInputAction: TextInputAction.next,
-                      prefixIcon: const AppSvgPicture(
-                        Assets.svgLock,
-                      ),
-                    ),
-                    24.verticalSpace,
-                    CustomTextField(
-                      hint: LocaleKeys.enterConfirmationPasswordHint,
-                      isObscureText: true,
-                      formControlName: _authBloc.kFromConfirmationPassword,
-                      textInputAction: TextInputAction.send,
-                      prefixIcon: const AppSvgPicture(
-                        Assets.svgLock,
-                      ),
-                      onSubmitted: (control) {
-                        _onSignUp();
-                      },
-                    ),
-                    30.verticalSpace,
-                    BlocBuilder<AuthBloc, AuthState>(
-                      builder: (context, state) {
-                        return SizedBox(
-                          width: 351.w,
-                          height: 54.h,
-                          child: AppElevatedButton(
-                              style: ButtonStyle(
-                                  shape: WidgetStatePropertyAll(
-                                      RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(5).r)),
-                                  textStyle: WidgetStatePropertyAll(
-                                    context.textTheme.bodySmall!.s20.xb
-                                        .withColor(AppColors.blackLight),
-                                  ),
-                                  backgroundColor: const WidgetStatePropertyAll(
-                                      AppColors.white)),
-                              text: LocaleKeys.auth_createAccount,
-                              isLoading: state.registerStatus.isLoading(),
-                              onPressed: _onSignUp),
-                        );
-                      },
-                    ),
-                    12.verticalSpace,
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            height: 2.h,
-                            color: AppColors.grey,
-                          ),
-                        ),
-                        5.horizontalSpace,
-                        AppText(
-                          "OR",
-                          style: context.textTheme.bodyMedium.b
-                              .withColor(AppColors.grey),
-                        ),
-                        5.horizontalSpace,
-                        Expanded(
-                          child: Container(
-                            height: 2.h,
-                            color: AppColors.grey,
-                          ),
-                        ),
-                      ],
-                    ),
-                    15.verticalSpace,
-                    CustomButtonWithIcon(
-                      text: "Sign up with Google".tr(),
-                      icon: Assets.svgGoogle,
-                      onTap: _onGoogleSignUp,
-                    ),
-                    20.verticalSpace,
-                    InkWell(
-                      overlayColor:
-                          const WidgetStatePropertyAll(Colors.transparent),
-                      onTap: () => GRouter.router
-                          .push(GRouter.config.authRoutes.loginPage),
-                      child: Row(
-                        textDirection: LanguageService.textDirection,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          AppText(
-                            LocaleKeys.auth_youAlreadyHaveAnAccount,
-                            style: context.textTheme.titleMedium!.b
-                                .withColor(AppColors.whiteLess),
-                          ),
-                          8.horizontalSpace,
-                          AppText(
-                            LocaleKeys.auth_login,
-                            style: context.textTheme.titleMedium!.b
-                                .withColor(AppColors.orange),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ),
+            child: _shouldAnimateEntrance
+                ? DelayedFadeSlide(
+                    delay: const Duration(milliseconds: 200),
+                    duration: const Duration(milliseconds: 1000),
+                    beginOffset: const Offset(-0.24, 0),
+                    child: content,
+                  )
+                : content,
           ),
         ),
       ),

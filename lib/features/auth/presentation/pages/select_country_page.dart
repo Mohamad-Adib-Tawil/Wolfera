@@ -6,7 +6,6 @@ import 'package:wolfera/core/config/routing/router.dart';
 import 'package:get_it/get_it.dart';
 import 'package:wolfera/features/app/domin/repositories/prefs_repository.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
-import 'package:wolfera/core/config/theme/my_color_scheme.dart';
 import 'package:wolfera/core/config/theme/typography.dart';
 import 'package:wolfera/core/utils/extensions/build_context.dart';
 import 'package:wolfera/core/utils/responsive_padding.dart';
@@ -14,6 +13,7 @@ import 'package:wolfera/features/app/presentation/widgets/app_dropdown_search.da
 import 'package:wolfera/features/app/presentation/widgets/app_svg_picture.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
 import 'package:wolfera/features/app/presentation/widgets/custom_appbar.dart';
+import 'package:wolfera/features/app/presentation/widgets/animations/delayed_fade_slide.dart';
 import 'package:wolfera/generated/assets.dart';
 import 'package:wolfera/generated/locale_keys.g.dart';
 import 'package:simple_shadow/simple_shadow.dart';
@@ -32,10 +32,14 @@ class _SelectCountyPageState extends State<SelectCountyPage> {
   CountryOption? _selectedCountry;
   String? _selectedRegion;
   bool _isWorldwide = true;
+  static bool _didAnimateOnce = false;
+  late final bool _shouldAnimateEntrance;
 
   @override
   void initState() {
     _initFromPrefsOrArg();
+    _shouldAnimateEntrance = !_didAnimateOnce;
+    _didAnimateOnce = true;
     super.initState();
   }
 
@@ -59,16 +63,45 @@ class _SelectCountyPageState extends State<SelectCountyPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: CustomAppbar(
-          automaticallyImplyLeading: widget.country != null ? true : false,
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(kToolbarHeight),
+          child: _shouldAnimateEntrance
+              ? DelayedFadeSlide(
+                  delay: const Duration(milliseconds: 100),
+                  duration: const Duration(milliseconds: 1000),
+                  beginOffset: const Offset(0, -0.24),
+                  child: CustomAppbar(
+                    automaticallyImplyLeading:
+                        widget.country != null ? true : false,
+                  ),
+                )
+              : CustomAppbar(
+                  automaticallyImplyLeading:
+                      widget.country != null ? true : false,
+                ),
         ),
         body: SingleChildScrollView(
           child: Padding(
             padding:
                 HWEdgeInsets.only(top: 85, right: 40, left: 40, bottom: 30),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
+            child: (_shouldAnimateEntrance
+                ? DelayedFadeSlide(
+                    delay: const Duration(milliseconds: 220),
+                    duration: const Duration(milliseconds: 1000),
+                    beginOffset: const Offset(-0.24, 0),
+                    child: _buildBody(),
+                  )
+                : _buildBody()),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBody() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
                 Align(
                   alignment: Alignment.center,
                   child: SimpleShadow(
@@ -202,8 +235,22 @@ class _SelectCountyPageState extends State<SelectCountyPage> {
                   ),
                 ),
                 65.verticalSpace,
-                TextButton(
-                  onPressed: () async {
+                (_shouldAnimateEntrance
+                    ? DelayedFadeSlide(
+                        delay: const Duration(milliseconds: 420),
+                        duration: const Duration(milliseconds: 1000),
+                        beginOffset: const Offset(0, 0.24),
+                        child: _buildOkButton(context),
+                      )
+                    : _buildOkButton(context)),
+                26.horizontalSpace,
+              ],
+            );
+  }
+
+  Widget _buildOkButton(BuildContext context) {
+    return TextButton(
+      onPressed: () async {
                     final prefs = GetIt.I<PrefsRepository>();
                     if (_isWorldwide) {
                       await prefs.setWorldwide(true);
@@ -218,31 +265,23 @@ class _SelectCountyPageState extends State<SelectCountyPage> {
                     }
                     GRouter.router.goNamed(GRouter.config.mainRoutes.home);
                   },
-                  style: ButtonStyle(
-                    minimumSize: WidgetStatePropertyAll(Size(250.w, 55.h)),
-                    padding: const WidgetStatePropertyAll(
-                        EdgeInsets.symmetric(horizontal: 27)),
-                    backgroundColor:
-                        const WidgetStatePropertyAll(AppColors.primary),
-                    shape: WidgetStatePropertyAll(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(15.r),
-                        ),
-                      ),
-                    ),
-                  ),
-                  child: AppText(
-                    LocaleKeys.ok,
-                    style: context.textTheme.bodyLarge.b
-                        .withColor(AppColors.white),
-                  ),
-                ),
-                26.horizontalSpace,
-              ],
+      style: ButtonStyle(
+        minimumSize: WidgetStatePropertyAll(Size(250.w, 55.h)),
+        padding:
+            const WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 27)),
+        backgroundColor: const WidgetStatePropertyAll(AppColors.primary),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(15.r),
             ),
           ),
         ),
+      ),
+      child: AppText(
+        LocaleKeys.ok,
+        style:
+            context.textTheme.bodyLarge.b.withColor(AppColors.white),
       ),
     );
   }
