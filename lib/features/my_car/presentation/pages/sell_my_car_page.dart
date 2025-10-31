@@ -58,6 +58,8 @@ class _SellMyCarPageState extends State<SellMyCarPage> {
   void initState() {
     bloc = GetIt.I<MyCarsBloc>();
     _pageController = PageController();
+    // تحميل القيم الافتراضية للموقع من بيانات المستخدم
+    bloc.loadDefaultLocationFromPrefs();
     super.initState();
   }
 
