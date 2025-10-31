@@ -6,17 +6,22 @@ import 'package:wolfera/features/home/presentation/widgets/similar_car_card_imag
 import 'package:wolfera/features/home/presentation/widgets/similar_car_card_info.dart';
 
 class SimilarCarItem extends StatelessWidget {
+  final Map<String, dynamic>? carData;
+  final bool isFaviorateIcon;
+  
   const SimilarCarItem({
     super.key,
+    this.carData,
     this.isFaviorateIcon = true,
   });
-  final bool isFaviorateIcon;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () =>
-          GRouter.router.pushNamed(GRouter.config.homeRoutes.carDetails),
+      onTap: () => GRouter.router.pushNamed(
+        GRouter.config.homeRoutes.carDetails,
+        extra: carData,
+      ),
       child: Container(
         width: 335.w,
         decoration: BoxDecoration(
@@ -26,9 +31,12 @@ class SimilarCarItem extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const SimilarCarCardImage(isFaviorateIcon: true),
+            SimilarCarCardImage(
+              isFaviorateIcon: isFaviorateIcon,
+              carData: carData,
+            ),
             15.horizontalSpace,
-            const SimilarCarCardInfo(),
+            SimilarCarCardInfo(carData: carData),
           ],
         ),
       ),
