@@ -223,4 +223,84 @@ class SearchFilterService {
   SearchState resetConditionFilter(SearchState state) {
     return state.copyWith(seletedCondition: const Nullable.value(null));
   }
+
+  // جلب تفاصيل سيارة واحدة مع بيانات المالك
+  Future<Map<String, dynamic>?> getCarWithOwner(String carId) async {
+    try {
+      final response = await SupabaseService.client
+          .from('cars')
+          .select('''
+            *,
+            owner:user_id (
+              id,
+              full_name,
+              email,
+              phone_number,
+              avatar_url,
+              location,
+              city,
+              country,
+              is_dealer,
+              dealer_name,
+              rating,
+              total_reviews
+            )
+          ''')
+          .eq('id', carId)
+          .single();
+      
+      return response;
+    } catch (e) {
+      // Error fetching car with owner: $e
+      return null;
+    }
+  }
+
+  // جلب سيارات مشابهة بناءً على معايير محددة
+  Future<List<Map<String, dynamic>>> getSimilarCars({
+    required String currentCarId,
+    String? brand,
+    String? country,
+    String? city,
+    double? minPrice,
+    double? maxPrice,
+    int limit = 4,
+  }) async {
+    try {
+      var queryBuilder = SupabaseService.client
+          .from('cars')
+          .select('*')
+          .neq('id', currentCarId) // استبعاد السيارة الحالية
+          .eq('status', 'active'); // فقط السيارات النشطة
+
+      // فلترة حسب الماركة
+      if (brand != null && brand.isNotEmpty) {
+        queryBuilder = queryBuilder.eq('brand', brand);
+      }
+
+      // فلترة حسب الموقع (الدولة أو المدينة)
+      if (country != null && country.isNotEmpty) {
+        queryBuilder = queryBuilder.eq('country', country);
+      }
+      if (city != null && city.isNotEmpty) {
+        queryBuilder = queryBuilder.eq('city', city);
+      }
+
+      // فلترة حسب نطاق السعر (±20% من السعر الأصلي)
+      if (minPrice != null && maxPrice != null) {
+        queryBuilder = queryBuilder
+            .gte('price', minPrice)
+            .lte('price', maxPrice);
+      }
+
+      final response = await queryBuilder
+          .order('created_at', ascending: false)
+          .limit(limit);
+
+      return (response as List).cast<Map<String, dynamic>>();
+    } catch (e) {
+      // Error fetching similar cars: $e
+      return [];
+    }
+  }
 }

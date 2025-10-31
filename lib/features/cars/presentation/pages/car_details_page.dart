@@ -101,22 +101,31 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                 CustomDivider(color: AppColors.whiteLess, thickness: 0.6.r),
           ),
           SellerSctionDetalis(carData: data),
-          const SimilarCarsListView()
+          SimilarCarsListView(currentCarData: data)
         ],
       ),
     );
 
+    final carId = data['id']?.toString();
+    final isFavorite = data['is_favorite'] == true || data['is_favourited'] == true;
+    
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: _shouldAnimateEntrance
-            ? const DelayedFadeSlide(
-                delay: Duration(milliseconds: 100),
-                duration: Duration(milliseconds: 1000),
-                beginOffset: Offset(0, -0.24),
-                child: CarDetalisAppbar(),
+            ? DelayedFadeSlide(
+                delay: const Duration(milliseconds: 100),
+                duration: const Duration(milliseconds: 1000),
+                beginOffset: const Offset(0, -0.24),
+                child: CarDetalisAppbar(
+                  carId: carId,
+                  initialIsFavorite: isFavorite,
+                ),
               )
-            : const CarDetalisAppbar(),
+            : CarDetalisAppbar(
+                carId: carId,
+                initialIsFavorite: isFavorite,
+              ),
       ),
       body: _shouldAnimateEntrance
           ? DelayedFadeSlide(

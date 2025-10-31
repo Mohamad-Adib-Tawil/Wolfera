@@ -18,18 +18,36 @@ class UserSectionWithLocation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Fetch user data from user_id in carData
-    // For now, use placeholder data
-    final userName = carData['seller_name']?.toString() ?? 'Car Owner';
-    final userLocation = carData['country']?.toString() ?? 
-                        carData['city']?.toString() ?? 
-                        carData['location']?.toString() ?? 
-                        'Unknown Location';
+    // استخراج بيانات المالك من owner object أو من carData مباشرة
+    final owner = carData['owner'] as Map<String, dynamic>?;
+    
+    final userName = owner?['full_name']?.toString() ?? 
+                     carData['seller_name']?.toString() ?? 
+                     'Car Owner';
+    
+    final userCity = owner?['city']?.toString() ?? carData['city']?.toString();
+    final userCountry = owner?['country']?.toString() ?? carData['country']?.toString();
+    final userLocation = owner?['location']?.toString() ?? carData['location']?.toString();
+    
+    // بناء نص الموقع
+    String locationText = 'Unknown Location';
+    if (userCity != null && userCountry != null) {
+      locationText = '$userCity, $userCountry';
+    } else if (userCity != null) {
+      locationText = userCity;
+    } else if (userCountry != null) {
+      locationText = userCountry;
+    } else if (userLocation != null) {
+      locationText = userLocation;
+    }
+    
+    final avatarUrl = owner?['avatar_url']?.toString();
     
     return Row(
       children: [
-        const CirclueUserImageWidget(
+        CirclueUserImageWidget(
           width: 80,
+          userImage: avatarUrl,
         ),
         25.horizontalSpace,
         Column(
@@ -58,7 +76,7 @@ class UserSectionWithLocation extends StatelessWidget {
                 SizedBox(
                   width: 200.w,
                   child: AppText(
-                    userLocation,
+                    locationText,
                     translation: false,
                     style: context.textTheme.bodyLarge!.s17.r
                         .withColor(AppColors.grey),
