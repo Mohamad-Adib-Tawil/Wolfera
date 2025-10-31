@@ -7,6 +7,7 @@ import 'package:wolfera/core/config/theme/colors_app.dart';
 import 'package:wolfera/core/utils/responsive_padding.dart';
 import 'package:wolfera/features/app/presentation/widgets/custom_appbar.dart';
 import 'package:wolfera/features/faviorate/presentation/manager/favorite_cubit.dart';
+import 'package:wolfera/features/faviorate/presentation/manager/favorite_state.dart';
 
 class CarDetalisAppbar extends StatefulWidget implements PreferredSizeWidget {
   final Map<String, dynamic>? carData;
