@@ -89,22 +89,21 @@ class _EnterCarPriceAndDescriptionPageState
             ),
             10.verticalSpace,
             // Country dropdown (with flags)
-            StatefulBuilder(builder: (context, setStateSB) {
-              final isWorldwide = _myCarsBloc.descriptionSectionForm
-                      .control(_myCarsBloc.kFromWorldwide)
-                      .value as bool? ??
-                  true;
-              final selectedCode = _myCarsBloc.descriptionSectionForm
-                  .control(_myCarsBloc.kFromCountryCode)
-                  .value as String?;
-              final selectedCountry = isWorldwide
-                  ? LocationsData.countries.first
-                  : (LocationsData.findByCode(selectedCode) ??
-                      LocationsData.countries.first);
-              final countries = LocationsData.countries;
-              return IgnorePointer(
-                ignoring: isWorldwide,
-                child: AppDropdownSearch<CountryOption>(
+            ReactiveValueListenableBuilder(
+              formControl: _myCarsBloc.descriptionSectionForm.control(_myCarsBloc.kFromWorldwide),
+              builder: (context, control, child) {
+                final isWorldwide = control.value as bool? ?? true;
+                final selectedCode = _myCarsBloc.descriptionSectionForm
+                    .control(_myCarsBloc.kFromCountryCode)
+                    .value as String?;
+                final selectedCountry = isWorldwide
+                    ? LocationsData.countries.first
+                    : (LocationsData.findByCode(selectedCode) ??
+                        LocationsData.countries.first);
+                final countries = LocationsData.countries;
+                return IgnorePointer(
+                  ignoring: isWorldwide,
+                  child: AppDropdownSearch<CountryOption>(
                   items: countries,
                   selectedItem: selectedCountry,
                   itemAsString: (co) => co.name,
@@ -181,7 +180,6 @@ class _EnterCarPriceAndDescriptionPageState
                           .control(_myCarsBloc.kFromRegionOrCity)
                           .updateValue(null);
                     }
-                    setStateSB(() {});
                   },
                   borderColor: Colors.transparent,
                   filled: false,
@@ -190,34 +188,33 @@ class _EnterCarPriceAndDescriptionPageState
             }),
             10.verticalSpace,
             // Region dropdown (depends on country)
-            StatefulBuilder(builder: (context, setStateSB) {
-              final isWorldwide = _myCarsBloc.descriptionSectionForm
-                      .control(_myCarsBloc.kFromWorldwide)
-                      .value as bool? ??
-                  true;
-              if (isWorldwide) return const SizedBox.shrink();
-              final selectedCode = _myCarsBloc.descriptionSectionForm
-                  .control(_myCarsBloc.kFromCountryCode)
-                  .value as String?;
-              final selectedCountry = LocationsData.findByCode(selectedCode);
-              final regions = selectedCountry?.secondLevel ?? const <String>[];
-              final selectedRegion = _myCarsBloc.descriptionSectionForm
-                  .control(_myCarsBloc.kFromRegionOrCity)
-                  .value as String?;
-              return AppDropdownSearch<String>(
-                items: regions,
-                selectedItem: selectedRegion,
-                hintText: selectedCountry?.secondLevelLabel ?? 'Region',
-                onChanged: (val) {
-                  _myCarsBloc.descriptionSectionForm
-                      .control(_myCarsBloc.kFromRegionOrCity)
-                      .updateValue(val);
-                  setStateSB(() {});
-                },
-                borderColor: Colors.transparent,
-                filled: false,
-              );
-            }),
+            ReactiveValueListenableBuilder(
+              formControl: _myCarsBloc.descriptionSectionForm.control(_myCarsBloc.kFromWorldwide),
+              builder: (context, control, child) {
+                final isWorldwide = control.value as bool? ?? true;
+                if (isWorldwide) return const SizedBox.shrink();
+                final selectedCode = _myCarsBloc.descriptionSectionForm
+                    .control(_myCarsBloc.kFromCountryCode)
+                    .value as String?;
+                final selectedCountry = LocationsData.findByCode(selectedCode);
+                final regions = selectedCountry?.secondLevel ?? const <String>[];
+                final selectedRegion = _myCarsBloc.descriptionSectionForm
+                    .control(_myCarsBloc.kFromRegionOrCity)
+                    .value as String?;
+                return AppDropdownSearch<String>(
+                  items: regions,
+                  selectedItem: selectedRegion,
+                  hintText: selectedCountry?.secondLevelLabel ?? 'Region',
+                  onChanged: (val) {
+                    _myCarsBloc.descriptionSectionForm
+                        .control(_myCarsBloc.kFromRegionOrCity)
+                        .updateValue(val);
+                  },
+                  borderColor: Colors.transparent,
+                  filled: false,
+                );
+              },
+            ),
           ],
         ),
       ),

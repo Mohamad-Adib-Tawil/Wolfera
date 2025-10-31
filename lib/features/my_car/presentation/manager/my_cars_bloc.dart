@@ -367,15 +367,24 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
       final countryCode = prefs.selectedCountryCode;
       final regionOrCity = prefs.selectedRegionOrCity;
       
+      print('📍 Loading default location from prefs:');
+      print('   - isWorldwide: $isWorldwide');
+      print('   - countryCode: $countryCode');
+      print('   - regionOrCity: $regionOrCity');
+      
       // تعيين القيم في الفورم
       descriptionSectionForm.control(kFromWorldwide).updateValue(isWorldwide);
       descriptionSectionForm.control(kFromCountryCode).updateValue(countryCode);
       descriptionSectionForm.control(kFromRegionOrCity).updateValue(regionOrCity);
       
-      print('📍 Loaded default location: worldwide=$isWorldwide, country=$countryCode, region=$regionOrCity');
-    } catch (e) {
+      print('✅ Default location loaded successfully');
+    } catch (e, stackTrace) {
       print('⚠️ Failed to load default location: $e');
+      print('Stack trace: $stackTrace');
       // في حالة الفشل، استخدام القيم الافتراضية (Worldwide)
+      descriptionSectionForm.control(kFromWorldwide).updateValue(true);
+      descriptionSectionForm.control(kFromCountryCode).updateValue(null);
+      descriptionSectionForm.control(kFromRegionOrCity).updateValue(null);
     }
   }
   late final imagesSectionForm = FormGroup({
@@ -410,6 +419,9 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
     imagesSectionForm.reset();
     descriptionSectionForm.reset();
     sellMyCarForm.reset();
+    
+    // إعادة تحميل القيم الافتراضية للموقع بعد الـ reset
+    loadDefaultLocationFromPrefs();
   }
 
   // جلب السيارات الخاصة بالمستخدم الحالي
