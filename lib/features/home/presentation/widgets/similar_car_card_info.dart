@@ -98,10 +98,10 @@ class SimilarCarCardInfo extends StatelessWidget {
   
   String _formatNumber(dynamic number) {
     if (number == null) return '0';
-    final num = number is num ? number : (num.tryParse(number.toString()) ?? 0);
-    if (num >= 1000) {
-      return '${(num / 1000).toStringAsFixed(num % 1000 == 0 ? 0 : 1)}K';
+    final numValue = number is num ? number : (num.tryParse(number.toString()) ?? 0);
+    if (numValue >= 1000) {
+      return '${(numValue / 1000).toStringAsFixed(numValue % 1000 == 0 ? 0 : 1)}K';
     }
-    return num.toStringAsFixed(0);
+    return numValue.toStringAsFixed(0);
   }
 }
