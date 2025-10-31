@@ -10,7 +10,6 @@ import 'package:wolfera/core/config/theme/colors_app.dart';
 import 'package:wolfera/core/config/theme/typography.dart';
 import 'package:wolfera/core/utils/extensions/build_context.dart';
 import 'package:wolfera/core/utils/responsive_padding.dart';
-import 'package:wolfera/features/app/domin/repositories/prefs_repository.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_elvated_button.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_svg_picture.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';

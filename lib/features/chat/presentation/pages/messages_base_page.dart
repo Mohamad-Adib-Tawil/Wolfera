@@ -27,10 +27,16 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
     'Hello, how are you?',
     "Hello, how are you",
   ];
+
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
     _shouldAnimateEntrance = !_didAnimateOnce;
     _didAnimateOnce = true;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
           backgroundColor: AppColors.blackLight,
