@@ -129,9 +129,9 @@ class _EnterCarPriceAndDescriptionPageState
                   },
                   borderColor: Colors.transparent,
                   filled: false,
-                ),
-              );
-            }),
+                );
+              },
+            ),
             // Region/City dropdown (depends on country)
             ReactiveValueListenableBuilder(
               formControl: _myCarsBloc.descriptionSectionForm.control(_myCarsBloc.kFromCountryCode),
