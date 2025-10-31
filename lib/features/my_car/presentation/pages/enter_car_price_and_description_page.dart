@@ -163,6 +163,8 @@ class _EnterCarPriceAndDescriptionPageState
                       items: regions,
                       selectedItem: selectedRegion,
                       hintText: selectedCountry?.secondLevelLabel ?? 'Region',
+                      baseStyle: context.textTheme.titleSmall.b
+                          .withColor(AppColors.white),
                       onChanged: (val) {
                         _myCarsBloc.descriptionSectionForm
                             .control(_myCarsBloc.kFromRegionOrCity)
