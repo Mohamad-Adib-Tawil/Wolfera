@@ -41,17 +41,31 @@ class ContectButton extends StatelessWidget {
               width: 20.w,
             ),
             10.horizontalSpace,
-            SizedBox(
-              width: textWidth,
-              child: AppText(
-                title,
-                translation: false,
-                textAlign: TextAlign.center,
-                style: context.textTheme.bodyLarge!.s18.b
-                    .withColor(AppColors.blackLight),
-                // overflow: TextOverflow.ellipsis,
+            if (textWidth != null)
+              SizedBox(
+                width: textWidth,
+                child: AppText(
+                  title,
+                  translation: false,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: context.textTheme.bodyLarge!.s18.b
+                      .withColor(AppColors.blackLight),
+                ),
+              )
+            else
+              Expanded(
+                child: AppText(
+                  title,
+                  translation: false,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: context.textTheme.bodyLarge!.s18.b
+                      .withColor(AppColors.blackLight),
+                ),
               ),
-            ),
           ],
         ),
       ),
