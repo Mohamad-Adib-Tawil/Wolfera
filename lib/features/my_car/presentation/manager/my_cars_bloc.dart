@@ -352,11 +352,31 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
     kFromCarPrice: FormControl<String>(validators: [Validators.required], value: "15000"),
     // legacy location field (unused now in mapping, kept to avoid breaking)
     kFromCarLocation: FormControl<String>(value: ''),
-    // Address selections (new)
+    // Address selections (new) - will be initialized from user prefs
     kFromWorldwide: FormControl<bool>(value: true),
     kFromCountryCode: FormControl<String?>(),
     kFromRegionOrCity: FormControl<String?>(),
   });
+  
+  /// تحميل القيم الافتراضية للموقع من بيانات المستخدم
+  void loadDefaultLocationFromPrefs() {
+    try {
+      final prefs = GetIt.I<PrefsRepository>();
+      final isWorldwide = prefs.isWorldwide;
+      final countryCode = prefs.selectedCountryCode;
+      final regionOrCity = prefs.selectedRegionOrCity;
+      
+      // تعيين القيم في الفورم
+      descriptionSectionForm.control(kFromWorldwide).updateValue(isWorldwide);
+      descriptionSectionForm.control(kFromCountryCode).updateValue(countryCode);
+      descriptionSectionForm.control(kFromRegionOrCity).updateValue(regionOrCity);
+      
+      print('📍 Loaded default location: worldwide=$isWorldwide, country=$countryCode, region=$regionOrCity');
+    } catch (e) {
+      print('⚠️ Failed to load default location: $e');
+      // في حالة الفشل، استخدام القيم الافتراضية (Worldwide)
+    }
+  }
   late final imagesSectionForm = FormGroup({
     kFromCarImageFullRight:
         FormControl<File?>(validators: [Validators.required]),
