@@ -106,9 +106,6 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
       ),
     );
 
-    final carId = data['id']?.toString();
-    final isFavorite = data['is_favorite'] == true || data['is_favourited'] == true;
-    
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
@@ -117,15 +114,9 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
                 delay: const Duration(milliseconds: 100),
                 duration: const Duration(milliseconds: 1000),
                 beginOffset: const Offset(0, -0.24),
-                child: CarDetalisAppbar(
-                  carId: carId,
-                  initialIsFavorite: isFavorite,
-                ),
+                child: CarDetalisAppbar(carData: data),
               )
-            : CarDetalisAppbar(
-                carId: carId,
-                initialIsFavorite: isFavorite,
-              ),
+            : CarDetalisAppbar(carData: data),
       ),
       body: _shouldAnimateEntrance
           ? DelayedFadeSlide(

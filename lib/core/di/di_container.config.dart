@@ -44,6 +44,7 @@ import '../../features/profile/domain/use_cases/update_profile.dart' as _i308;
 import '../../features/profile/presentation/manager/profile_bloc.dart' as _i750;
 import '../../features/search_and_filteration/presentation/manager/search_cubit/search_cubit.dart'
     as _i761;
+import '../../services/favorites_service.dart' as _i562;
 import '../../services/search_and_filters_service.dart' as _i749;
 import '../api/client.dart' as _i265;
 import '../storage/prefs_repository.dart' as _i866;
@@ -72,6 +73,7 @@ Future<_i174.GetIt> $initGetIt(
   );
   gh.lazySingleton<_i535.HomeCubit>(() => _i535.HomeCubit());
   gh.lazySingleton<_i243.ChatBloc>(() => _i243.ChatBloc());
+  gh.lazySingleton<_i562.FavoritesService>(() => _i562.FavoritesService());
   gh.lazySingleton<_i749.SearchFilterService>(
       () => _i749.SearchFilterService());
   gh.factory<_i308.UpdateProfileUsecase>(
