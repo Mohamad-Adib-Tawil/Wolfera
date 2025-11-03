@@ -201,5 +201,13 @@
   "Safety": "Safety",
   "Exterior": "Exterior",
   "Interior": "Interior",
-  "Seller": "Seller"
+  "Seller": "Seller",
+  "Newest": "Newest",
+  "Oldest": "Oldest",
+  "Price: Low to High": "Price: Low to High",
+  "Price: High to Low": "Price: High to Low",
+  "Year: New to Old": "Year: New to Old",
+  "Year: Old to New": "Year: Old to New",
+  "Mileage: Low to High": "Mileage: Low to High",
+  "Mileage: High to Low": "Mileage: High to Low"
 }

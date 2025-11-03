@@ -78,8 +78,11 @@ class SearchFilterService {
         }
       }
 
-      // ترتيب حسب تاريخ الإنشاء
-      final response = await queryBuilder.order('created_at', ascending: false);
+      // ترتيب حسب اختيار المستخدم
+      final response = await queryBuilder.order(
+        (filters.sortBy).isNotEmpty ? filters.sortBy : 'created_at',
+        ascending: filters.sortAsc,
+      );
       return (response as List).cast<Map<String, dynamic>>();
     } catch (e) {
       // Error in searchCars: $e
