@@ -25,9 +25,10 @@ class CarTypeItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 400),
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
         alignment: Alignment.center,
-        width: 100.w,
+        width: isSelected ? 110.w : 100.w,
         margin: HWEdgeInsets.only(left: 10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10.r),
@@ -36,6 +37,15 @@ class CarTypeItem extends StatelessWidget {
             color: isSelected ? AppColors.primary : Colors.transparent,
             width: 1.2.r,
           ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.18),
+                    blurRadius: 8.r,
+                    spreadRadius: 0.18,
+                  )
+                ]
+              : null,
         ),
         child: SizedBox(
           height: 50.h,
@@ -57,13 +67,30 @@ class CarTypeItem extends StatelessWidget {
                 bottom: 4.h,
                 left: 0,
                 right: 0,
-                child: Center(
-                  child: AppText(
-                    vehicleType.name,
-                    style: context.textTheme.bodySmall.s10.sb,
-                  ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AppText(
+                      vehicleType.name,
+                      style: context.textTheme.bodySmall.s10.sb,
+                    ),
+                    3.verticalSpace,
+                    AnimatedOpacity(
+                      duration: const Duration(milliseconds: 180),
+                      curve: Curves.easeOutCubic,
+                      opacity: isSelected ? 1 : 0,
+                      child: Container(
+                        height: 2,
+                        width: 36,
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              )
+              ),
             ],
           ),
         ),
