@@ -1,0 +1,32 @@
+/// This is a template file for Supabase configuration
+/// 
+/// To use this file:
+/// 1. Copy this file and rename it to `supabase_config.dart`
+/// 2. Replace the placeholder values with your actual Supabase project details
+/// 3. Never commit the actual `supabase_config.dart` file to version control
+/// 
+/// You can find these values in your Supabase project dashboard:
+/// - Go to https://app.supabase.com
+/// - Select your project
+/// - Go to Settings > API
+/// - Copy the URL and anon key
+
+class SupabaseConfig {
+  /// Your Supabase project URL
+  /// Example: 'https://your-project-id.supabase.co'
+  static const String supabaseUrl = 'YOUR_SUPABASE_URL_HERE';
+  
+  /// Your Supabase anon key (public key)
+  /// This is safe to expose in client applications
+  /// Example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+  static const String supabaseAnonKey = 'YOUR_SUPABASE_ANON_KEY_HERE';
+  
+  /// Google OAuth Web Client ID (for Google Sign-In)
+  /// Get this from Google Cloud Console:
+  /// 1. Go to https://console.cloud.google.com
+  /// 2. Select your project
+  /// 3. Go to APIs & Services > Credentials
+  /// 4. Find your OAuth 2.0 Client ID (Web client)
+  /// Example: '123456789-abcdefg.apps.googleusercontent.com'
+  static const String googleWebClientId = 'YOUR_GOOGLE_WEB_CLIENT_ID_HERE';
+}
