@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get_it/get_it.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
 import 'package:wolfera/core/utils/responsive_padding.dart';
 import 'package:wolfera/features/cars/presentation/widget/car_description.dart';
@@ -11,6 +12,8 @@ import 'package:wolfera/features/cars/presentation/widget/seller_sction_detalis.
 import 'package:wolfera/features/cars/presentation/widget/similar_car_list_view.dart';
 import 'package:wolfera/features/chat/presentation/widgets/white_divider.dart';
 import 'package:wolfera/features/app/presentation/widgets/animations/delayed_fade_slide.dart';
+import 'package:wolfera/services/search_and_filters_service.dart';
+import 'package:wolfera/services/supabase_service.dart';
 
 class CarDetailsPage extends StatefulWidget {
   final Map<String, dynamic>? carData;
@@ -24,17 +27,66 @@ class CarDetailsPage extends StatefulWidget {
 class _CarDetailsPageState extends State<CarDetailsPage> {
   static bool _didAnimateOnce = false;
   late final bool _shouldAnimateEntrance;
+  Map<String, dynamic>? _enrichedData;
+  bool _loadingOwner = false;
 
   @override
   void initState() {
     _shouldAnimateEntrance = !_didAnimateOnce;
     _didAnimateOnce = true;
+    // Try to enrich car data with owner info
+    final id = widget.carData?['id']?.toString();
+    if (id != null && id.isNotEmpty) {
+      _loadingOwner = true;
+      _fetchOwner(id);
+    }
     super.initState();
+  }
+
+  Future<void> _fetchOwner(String carId) async {
+    try {
+      final svc = GetIt.I.isRegistered<SearchFilterService>()
+          ? GetIt.I<SearchFilterService>()
+          : SearchFilterService();
+      final res = await svc.getCarWithOwner(carId);
+      if (res != null && res.isNotEmpty && res['owner'] != null) {
+        setState(() {
+          _enrichedData = res;
+          _loadingOwner = false;
+        });
+        return;
+      }
+      // Fallback: fetch user by user_id directly if join didn't return owner
+      final userId = widget.carData?['user_id']?.toString();
+      if (userId != null && userId.isNotEmpty) {
+        final user = await SupabaseService.client
+            .from('users')
+            .select('id, full_name, email, phone_number, location, city, country, is_dealer, dealer_name, rating, total_reviews')
+            .eq('id', userId)
+            .maybeSingle();
+        if (user != null) {
+          setState(() {
+            _enrichedData = {
+              ...?widget.carData,
+              'owner': user,
+            };
+            _loadingOwner = false;
+          });
+          return;
+        }
+      }
+    } catch (_) {
+      // ignore: avoid_print
+      print('⚠️ Failed to fetch owner for car $carId');
+    }
+    if (mounted) {
+      setState(() => _loadingOwner = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final data = widget.carData ?? {};
+    final data = _enrichedData ?? widget.carData ?? {};
     // Log car data for debugging purposes
     // ignore: avoid_print
     print('\n🚘 ========== CAR DETAILS PAGE ==========');

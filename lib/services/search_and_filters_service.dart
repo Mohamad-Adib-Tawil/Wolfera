@@ -230,29 +230,33 @@ class SearchFilterService {
   // جلب تفاصيل سيارة واحدة مع بيانات المالك
   Future<Map<String, dynamic>?> getCarWithOwner(String carId) async {
     try {
-      final response = await SupabaseService.client
+      // 1) Fetch the car
+      final car = await SupabaseService.client
           .from('cars')
-          .select('''
-            *,
-            owner:user_id (
-              id,
-              full_name,
-              email,
-              phone_number,
-              avatar_url,
-              location,
-              city,
-              country,
-              is_dealer,
-              dealer_name,
-              rating,
-              total_reviews
-            )
-          ''')
+          .select('*')
           .eq('id', carId)
-          .single();
-      
-      return response;
+          .maybeSingle();
+
+      if (car == null) return null;
+
+      // 2) Fetch owner by user_id
+      final userId = car['user_id']?.toString();
+      Map<String, dynamic>? owner;
+      if (userId != null && userId.isNotEmpty) {
+        owner = await SupabaseService.client
+            .from('users')
+            .select('*')
+            .eq('id', userId)
+            .maybeSingle();
+      }
+
+      if (owner != null) {
+        return {
+          ...car,
+          'owner': owner,
+        };
+      }
+      return car;
     } catch (e) {
       // Error fetching car with owner: $e
       return null;
