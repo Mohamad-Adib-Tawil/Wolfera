@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:wolfera/features/home/presentation/widgets/combined_filters_bar.dart';
 import 'package:wolfera/features/home/presentation/widgets/recommended_section.dart';
 import 'package:wolfera/features/home/presentation/widgets/search_bar_button.dart';
+import 'package:wolfera/features/home/presentation/widgets/search_results_vertical_list.dart';
 
 class HomeBody extends StatelessWidget {
   const HomeBody({
@@ -24,6 +25,8 @@ class HomeBody extends StatelessWidget {
               onTap: () => StatefulNavigationShell.of(context).goBranch(1)),
           const RecommendedSection(),
           const CombinedFiltersBar(),
+          8.verticalSpace,
+          const SearchResultsVerticalList(),
           35.verticalSpace,
         ]),
       );
@@ -52,6 +55,14 @@ class HomeBody extends StatelessWidget {
           delay: const Duration(milliseconds: 360),
           beginOffset: const Offset(0.18, 0),
           child: const CombinedFiltersBar(),
+        ),
+        8.verticalSpace,
+        // Vertical cars list from LEFT (reactive to filters)
+        _DelayedFadeSlide(
+          delay: const Duration(milliseconds: 520),
+          beginOffset: const Offset(-0.18, 0),
+          duration: const Duration(milliseconds: 1000),
+          child: const SearchResultsVerticalList(),
         ),
         35.verticalSpace,
       ]),

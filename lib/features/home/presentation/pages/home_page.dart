@@ -5,6 +5,7 @@ import 'package:wolfera/features/app/presentation/widgets/refresh_list_widget.da
 import 'package:wolfera/features/home/presentation/manager/home_cubit/home_cubit.dart';
 import 'package:wolfera/features/home/presentation/widgets/home_app_bar.dart';
 import 'package:wolfera/features/home/presentation/widgets/home_body.dart';
+import 'package:wolfera/features/search_and_filteration/presentation/manager/search_cubit/search_cubit.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -25,6 +26,8 @@ class _HomePageState extends State<HomePage>
     _shouldAnimateEntrance = !_didAnimateOnce;
     // Mark as animated for subsequent visits
     _didAnimateOnce = true;
+    // Ensure initial search results are loaded for the vertical list under filters
+    GetIt.I<SearchCubit>().searchCars();
     super.initState();
   }
 
