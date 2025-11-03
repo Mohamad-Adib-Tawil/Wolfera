@@ -1,6 +1,5 @@
-import 'dart:developer';
-
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -25,6 +24,9 @@ class CirclueUserImageWidget extends StatelessWidget {
             (Uri.tryParse(userImage!)?.hasScheme == true))
         ? userImage
         : null;
+    if (kDebugMode) {
+      print('[Avatar] Image URL: $url');
+    }
     return Container(
       width: width.w,
       height: (height?.h ?? width.w),
@@ -57,7 +59,9 @@ class CirclueUserImageWidget extends StatelessWidget {
                   ),
                 ),
                 errorWidget: (context, failedUrl, error) {
-                  log('Avatar load error: $error | url: $failedUrl');
+                  if (kDebugMode) {
+                    print('[Avatar] Load error: $error | URL: $failedUrl');
+                  }
                   return AppSvgPicture(
                     Assets.svgNoProfilePicture,
                     width: width.w,

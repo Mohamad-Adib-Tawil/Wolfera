@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
@@ -80,47 +81,37 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
       print('⚠️ Failed to fetch owner for car $carId');
     }
     if (mounted) {
-      setState(() => _loadingOwner = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final data = _enrichedData ?? widget.carData ?? {};
-    // Log car data for debugging purposes
-    // ignore: avoid_print
-    print('\n🚘 ========== CAR DETAILS PAGE ==========');
-    // ignore: avoid_print
-    print('🆔 Car ID: ${data['id']}');
-    // ignore: avoid_print
-    print('📝 Title: ${data['title']}');
-    // ignore: avoid_print
-    print('🏷️ Brand: ${data['brand']}');
-    // ignore: avoid_print
-    print('🏷️ Model: ${data['model']}');
-    // ignore: avoid_print
-    print('💰 Price: ${data['price']} ${data['currency']}');
-    // ignore: avoid_print
-    print('📍 Location: ${data['location']}');
-    // ignore: avoid_print
-    print('🛠️ Condition: ${data['condition']}');
-    // ignore: avoid_print
-    print('🧩 Full data payload:');
-    data.forEach((key, value) {
-      if (value is List) {
-        // ignore: avoid_print
-        print('   ▸ $key (${value.length} items): $value');
-      } else {
-        // ignore: avoid_print
-        print('   ▸ $key: $value');
-      }
-    });
+    final data = widget.carData ?? {};
+    
+    // Debug info about the car (only in debug mode)
+    if (kDebugMode) {
+      print('🚘 ========== CAR DETAILS PAGE ==========');
+      print('🆔 Car ID: ${data['id']}');
+      print('📝 Title: ${data['title']}');
+      print('🏷️ Brand: ${data['brand']}');
+      print('🏷️ Model: ${data['model']}');
+      print('💰 Price: ${data['price']} ${data['currency']}');
+      print('📍 Location: ${data['location']}');
+      print('🛠️ Condition: ${data['condition']}');
+      print('🧩 Full data payload:');
+      data.forEach((key, value) {
+        if (value is List) {
+          print('   ▸ $key (${value.length} items): $value');
+        } else {
+          print('   ▸ $key: $value');
+        }
+      });
+    }
 
     // Extract all car data
     final imageUrls = (data['image_urls'] as List?)?.map((e) => e.toString()).toList() ?? [];
     final mainImage = data['main_image_url']?.toString();
     final allImages = imageUrls.isNotEmpty ? imageUrls : (mainImage != null ? [mainImage] : <String>[]);
-    
     final safetyFeatures = (data['safety_features'] as List?)?.cast<String>() ?? [];
     final interiorFeatures = (data['interior_features'] as List?)?.cast<String>() ?? [];
     final exteriorFeatures = (data['exterior_features'] as List?)?.cast<String>() ?? [];
@@ -133,7 +124,7 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
           8.verticalSpace,
           MoreImagesCarsList(images: allImages),
           10.verticalSpace,
-          CarDetailsSection(carData: data),
+          CarDetailsSection(carData: widget.carData ?? {}),
           FeaturesListView(
             safetyFeatures: safetyFeatures,
             interiorFeatures: interiorFeatures,
@@ -152,8 +143,8 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
             child:
                 CustomDivider(color: AppColors.whiteLess, thickness: 0.6.r),
           ),
-          SellerSctionDetalis(carData: data),
-          SimilarCarsListView(currentCarData: data)
+          SellerSctionDetalis(carData: widget.carData ?? {}),
+          SimilarCarsListView(currentCarData: widget.carData ?? {}),
         ],
       ),
     );
