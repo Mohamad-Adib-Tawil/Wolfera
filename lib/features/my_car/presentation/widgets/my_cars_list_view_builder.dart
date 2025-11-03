@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wolfera/common/models/page_state/bloc_status.dart';
 import 'package:wolfera/core/utils/responsive_padding.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_empty_state_widet/app_empty_state.dart';
 import 'package:wolfera/features/home/presentation/widgets/car_mini_details_card_widget.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_loader_widget/app_loader.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
+import 'package:wolfera/features/my_car/presentation/manager/my_cars_bloc.dart';
 
 class MyCarsListViewBuilder extends StatelessWidget {
   const MyCarsListViewBuilder({
@@ -38,6 +40,7 @@ class MyCarsListViewBuilder extends StatelessWidget {
         padding: HWEdgeInsets.only(bottom: 75),
         itemBuilder: (context, index) {
           final car = myCars[index];
+          final carId = car['id']?.toString();
 
           // استخراج البيانات من carData
           final imageUrls =
@@ -66,19 +69,59 @@ class MyCarsListViewBuilder extends StatelessWidget {
 
           return Padding(
             padding: HWEdgeInsets.only(top: 20, right: 14, left: 14),
-            child: CarMiniDetailsCardWidget(
-              isFaviorateIcon: false,
-              isStatus: true,
-              image: imageUrl,
-              title: title.isNotEmpty ? title : null,
-              spec1: spec1,
-              spec2: spec2,
-              mileage: mileage,
-              fuel: fuel,
-              location: location,
-              price: price,
-              carData: car,
-              fullWidth: true,
+            child: Stack(
+              children: [
+                CarMiniDetailsCardWidget(
+                  isFaviorateIcon: false,
+                  isStatus: true,
+                  image: imageUrl,
+                  title: title.isNotEmpty ? title : null,
+                  spec1: spec1,
+                  spec2: spec2,
+                  mileage: mileage,
+                  fuel: fuel,
+                  location: location,
+                  price: price,
+                  carData: car,
+                  fullWidth: true,
+                ),
+                if (carId != null)
+                  Positioned(
+                    top: 10,
+                    right: 10,
+                    child: Material(
+                      color: Colors.black54,
+                      shape: const CircleBorder(),
+                      child: IconButton(
+                        tooltip: 'Delete',
+                        icon: const Icon(Icons.delete_outline, color: Colors.white),
+                        onPressed: () async {
+                          final confirmed = await showDialog<bool>(
+                                context: context,
+                                builder: (ctx) => AlertDialog(
+                                  title: const Text('Delete car?'),
+                                  content: const Text('Are you sure you want to delete this car? This action cannot be undone.'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.of(ctx).pop(false),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => Navigator.of(ctx).pop(true),
+                                      child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                                    ),
+                                  ],
+                                ),
+                              ) ??
+                              false;
+                          if (confirmed) {
+                            context.read<MyCarsBloc>().add(DeleteMyCarEvent(carId));
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+              ],
             ),
           );
         },
