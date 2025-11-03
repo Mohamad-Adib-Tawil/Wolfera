@@ -1,9 +1,9 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:fancy_shimmer_image/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_svg_picture.dart';
 import 'package:wolfera/generated/assets.dart';
 
@@ -19,43 +19,57 @@ class CirclueUserImageWidget extends StatelessWidget {
   final String? userImage;
   @override
   Widget build(BuildContext context) {
+    final String? url = (userImage != null &&
+            userImage!.trim().isNotEmpty &&
+            (Uri.tryParse(userImage!)?.hasScheme == true))
+        ? userImage
+        : null;
     return Container(
       width: width.w,
-      height: height?.h,
+      height: (height?.h ?? width.w),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
             offset: const Offset(04, -2),
-            blurRadius: 8,
             color: AppColors.black.withValues(alpha: 0.45),
           )
         ],
       ),
       child: ClipOval(
-        child: userImage != null
+        child: url != null
             ? CachedNetworkImage(
+                key: ValueKey(url),
                 fit: BoxFit.cover,
-                imageUrl: userImage!,
-                progressIndicatorBuilder: (context, url, progress) {
-                  return ImageShimmerWidget(
-                    backColor: AppColors.white,
-                    baseColor: AppColors.grey,
-                    shimmerDirection: ShimmerDirection.ltr,
-                    shimmerDuration: const Duration(seconds: 5),
-                    highlightColor: AppColors.white,
+                imageUrl: url,
+                width: width.w,
+                height: (height?.h ?? width.w),
+                fadeInDuration: const Duration(milliseconds: 200),
+                progressIndicatorBuilder: (context, _, progress) => Center(
+                  child: SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      value: progress.progress,
+                      color: AppColors.primary,
+                      strokeWidth: 2,
+                    ),
+                  ),
+                ),
+                errorWidget: (context, failedUrl, error) {
+                  log('Avatar load error: $error | url: $failedUrl');
+                  return AppSvgPicture(
+                    Assets.svgNoProfilePicture,
+                    width: width.w,
+                    height: (height?.h ?? width.w),
+                    fit: BoxFit.cover,
                   );
                 },
-                errorWidget: (context, url, error) => Container(
-                  width: width,
-                  color: AppColors.grey,
-                  child: const Icon(Icons.error),
-                ),
               )
             : AppSvgPicture(
                 Assets.svgNoProfilePicture,
                 width: width.w,
-                height: height?.h,
+                height: (height?.h ?? width.w),
                 fit: BoxFit.cover,
               ),
       ),

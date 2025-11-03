@@ -7,6 +7,7 @@ import 'package:wolfera/features/app/presentation/widgets/app_svg_picture.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
 import 'package:wolfera/features/chat/presentation/widgets/circlue_user_image_widget.dart';
 import 'package:wolfera/generated/assets.dart';
+import 'package:wolfera/services/supabase_service.dart';
 
 class UserSectionWithLocation extends StatelessWidget {
   final Map<String, dynamic> carData;
@@ -30,7 +31,7 @@ class UserSectionWithLocation extends StatelessWidget {
     final userLocation = owner?['location']?.toString() ?? carData['location']?.toString();
     
     // بناء نص الموقع
-    String locationText = 'Unknown Location';
+    String locationText = 'WorldWide';
     if (userCity != null && userCountry != null) {
       locationText = '$userCity, $userCountry';
     } else if (userCity != null) {
@@ -41,7 +42,23 @@ class UserSectionWithLocation extends StatelessWidget {
       locationText = userLocation;
     }
     
-    final avatarUrl = owner?['avatar_url']?.toString();
+    // Read avatar from multiple possible keys and ignore empty values
+    String? avatarUrl = (owner?['avatar_url'] ?? owner?['picture'] ?? owner?['image_url'] ?? owner?['avatar'] ?? owner?['photo_url'])?.toString();
+    if (avatarUrl != null && avatarUrl.trim().isEmpty) {
+      avatarUrl = null;
+    }
+    // Fallback to Supabase Auth metadata if the owner is the current user
+    if (avatarUrl == null) {
+      final ownerId = owner?['id']?.toString() ?? carData['user_id']?.toString();
+      final current = SupabaseService.currentUser;
+      if (current != null && current.id == ownerId) {
+        final meta = current.userMetadata ?? {};
+        final fromAuth = (meta['avatar_url'] ?? meta['picture'])?.toString();
+        if (fromAuth != null && fromAuth.trim().isNotEmpty) {
+          avatarUrl = fromAuth;
+        }
+      }
+    }
     
     return Row(
       children: [

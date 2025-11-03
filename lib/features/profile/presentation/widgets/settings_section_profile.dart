@@ -34,7 +34,7 @@ class SettingsSectionProfile extends StatelessWidget {
           svgIcon: Assets.svgMapPin,
           onTap: () => GRouter.router.pushNamed(
             GRouter.config.profileRoutes.addressPage,
-            extra: GetIt.I<PrefsRepository>().selectedCity ?? "Germany",
+            extra: GetIt.I<PrefsRepository>().selectedCity ?? "WorldWide",
           ),
         ),
         ProfileItemSettingsWidget(

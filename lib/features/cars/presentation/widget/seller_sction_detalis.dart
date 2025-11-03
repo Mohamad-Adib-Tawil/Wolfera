@@ -24,9 +24,17 @@ class SellerSctionDetalis extends StatelessWidget {
   // استخراج بيانات المالك
   Map<String, dynamic>? get owner => carData['owner'] as Map<String, dynamic>?;
   
-  String? get phoneNumber => owner?['phone_number']?.toString() ?? carData['phone_number']?.toString();
+  String? get phoneNumber =>
+      owner?['phone_number']?.toString() ??
+      owner?['phone']?.toString() ??
+      carData['phone_number']?.toString();
   String? get email => owner?['email']?.toString() ?? carData['email']?.toString();
-  String get sellerName => owner?['full_name']?.toString() ?? carData['seller_name']?.toString() ?? 'Seller';
+  String get sellerName =>
+      owner?['full_name']?.toString() ??
+      owner?['display_name']?.toString() ??
+      owner?['name']?.toString() ??
+      carData['seller_name']?.toString() ??
+      'Seller';
 
   // وظيفة الاتصال بالهاتف
   Future<void> _makePhoneCall() async {

@@ -93,7 +93,7 @@ class BottomSectionCarMiniDetailsCard extends StatelessWidget {
                     ),
                   ),
                   AppText(
-                    ' ${location ?? 'Germany'}',
+                    ' ${location ?? 'WorldWide'}',
                     translation: false,
                     style: context.textTheme.titleSmall!.sb
                         .withColor(AppColors.white),
