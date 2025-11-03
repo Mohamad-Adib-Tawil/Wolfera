@@ -1,23 +1,17 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:collection/collection.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:equatable/equatable.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:wolfera/services/supabase_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:wolfera/common/models/page_state/bloc_status.dart';
-import 'package:wolfera/common/models/page_state/page_state.dart';
-import 'package:wolfera/core/api/api_utils.dart';
 import 'package:wolfera/core/config/routing/router.dart';
-import 'package:wolfera/core/utils/nullable.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:wolfera/features/my_car/domain/usecases/sell_my_car_usecase.dart';
 import 'package:wolfera/features/home/presentation/manager/home_cubit/home_cubit.dart';
-import 'package:wolfera/features/my_car/presentation/pages/sell_my_car_page.dart';
 import 'package:wolfera/generated/locale_keys.g.dart';
 import 'package:wolfera/core/constants/locations_data.dart';
 import 'package:wolfera/features/app/domin/repositories/prefs_repository.dart';
@@ -36,6 +30,7 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
     on<SellMyCarEvent>(sellMyCar);
     on<LoadMyCarsEvent>(_onLoadMyCars);
     on<DeleteMyCarEvent>(_onDeleteMyCar);
+    on<DeleteAllMyCarsEvent>(_onDeleteAllMyCars);
   }
   final SellMyCarUsecase _sellMyCarUsecase;
   final String kFromCarMaker = 'carMaker';
@@ -84,6 +79,40 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
       return LocationsData.findByCode(code)?.name ?? 'Worldwide';
     } catch (_) {
       return 'Worldwide';
+    }
+  }
+
+  // حذف جميع سيارات المستخدم الحالي
+  Future<void> _onDeleteAllMyCars(
+    DeleteAllMyCarsEvent event,
+    Emitter<MyCarsState> emit,
+  ) async {
+    try {
+      EasyLoading.show(status: 'Deleting all cars...');
+
+      final userId = SupabaseService.currentUser?.id;
+      if (userId == null) {
+        EasyLoading.dismiss();
+        EasyLoading.showError('User not logged in');
+        return;
+      }
+
+      await SupabaseService.client.from('cars').delete().eq('user_id', userId);
+
+      // إعادة تحميل القائمة بعد الحذف
+      add(LoadMyCarsEvent());
+
+      // تحديث قائمة السيارات في الصفحة الرئيسية بعد الحذف الكلي
+      try {
+        GetIt.I<HomeCubit>().getHomeData();
+      } catch (e) {
+        print('⚠️ Failed to refresh home after delete-all: $e');
+      }
+
+      EasyLoading.showSuccess('All cars deleted successfully');
+    } catch (e) {
+      print('🔴 Error deleting all cars: $e');
+      EasyLoading.showError('Failed to delete all cars');
     }
   }
 
@@ -483,6 +512,13 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
 
       // إعادة تحميل القائمة بعد الحذف
       add(LoadMyCarsEvent());
+
+      // تحديث قائمة السيارات في الصفحة الرئيسية بعد الحذف
+      try {
+        GetIt.I<HomeCubit>().getHomeData();
+      } catch (e) {
+        print('⚠️ Failed to refresh home after delete: $e');
+      }
 
       EasyLoading.showSuccess('Car deleted successfully');
     } catch (e) {

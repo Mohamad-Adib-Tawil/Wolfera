@@ -86,10 +86,64 @@ class _MyCarsPageState extends State<MyCarsPage> {
                   beginOffset: const Offset(0, -0.24),
                   child: CustomAppbar(
                     text: 'My Cars'.tr(),
+                    action: IconButton(
+                      tooltip: 'Delete all',
+                      icon: const Icon(Icons.delete_forever_outlined, color: Colors.white),
+                      onPressed: () async {
+                        final confirmed = await showDialog<bool>(
+                              context: context,
+                              builder: (ctx) => AlertDialog(
+                                title: const Text('Delete all cars?'),
+                                content: const Text('Are you sure you want to delete all your cars? This action cannot be undone.'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.of(ctx).pop(false),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () => Navigator.of(ctx).pop(true),
+                                    child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                                  ),
+                                ],
+                              ),
+                            ) ??
+                            false;
+                        if (confirmed) {
+                          context.read<MyCarsBloc>().add(DeleteAllMyCarsEvent());
+                        }
+                      },
+                    ),
                   ),
                 )
               : CustomAppbar(
                   text: 'My Cars'.tr(),
+                  action: IconButton(
+                    tooltip: 'Delete all',
+                    icon: const Icon(Icons.delete_forever_outlined, color: Colors.white),
+                    onPressed: () async {
+                      final confirmed = await showDialog<bool>(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              title: const Text('Delete all cars?'),
+                              content: const Text('Are you sure you want to delete all your cars? This action cannot be undone.'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.of(ctx).pop(false),
+                                  child: const Text('Cancel'),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.of(ctx).pop(true),
+                                  child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                                ),
+                              ],
+                            ),
+                          ) ??
+                          false;
+                      if (confirmed) {
+                        context.read<MyCarsBloc>().add(DeleteAllMyCarsEvent());
+                      }
+                    },
+                  ),
                 ),
         ),
         body: BlocBuilder<MyCarsBloc, MyCarsState>(

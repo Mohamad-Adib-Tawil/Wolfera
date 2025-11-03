@@ -24,3 +24,6 @@ class DeleteMyCarEvent extends MyCarsEvent {
   final String carId;
   DeleteMyCarEvent(this.carId);
 }
+
+// حدث حذف جميع سيارات المستخدم
+class DeleteAllMyCarsEvent extends MyCarsEvent {}
