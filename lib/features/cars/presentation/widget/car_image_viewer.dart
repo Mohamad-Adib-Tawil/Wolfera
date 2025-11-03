@@ -10,17 +10,19 @@ class CarImageViewer extends StatelessWidget {
     this.height = 176,
     this.isSelected = false,
     required this.imagePath,
+    this.heroTag,
   });
   final double width;
   final double height;
   final bool isSelected;
+  final String? heroTag;
 
   @override
   Widget build(BuildContext context) {
     // Check if image is a network URL or local asset
     final isNetworkImage = imagePath.startsWith('http://') || imagePath.startsWith('https://');
     
-    return Container(
+    final imageWidget = Container(
       alignment: Alignment.center,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10).r,
@@ -66,5 +68,9 @@ class CarImageViewer extends StatelessWidget {
               ),
       ),
     );
+    if (heroTag != null && heroTag!.isNotEmpty) {
+      return Hero(tag: heroTag!, child: imageWidget);
+    }
+    return imageWidget;
   }
 }

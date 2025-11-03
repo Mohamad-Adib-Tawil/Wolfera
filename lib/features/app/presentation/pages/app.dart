@@ -58,13 +58,16 @@ class _AppRouteState extends State<_AppRoute> {
         localizationsDelegates: context.localizationDelegates,
         supportedLocales: context.supportedLocales,
         builder: (context, child) {
+          final wrapped = EasyLoading.init()(context, child ?? const SizedBox.shrink());
+          final baseMq = MediaQuery.maybeOf(context);
+          if (baseMq == null) return wrapped;
           return MediaQuery(
-            data: MediaQuery.of(context).copyWith(
+            data: baseMq.copyWith(
               textScaler: TextScaler.linear(
                 context.locale.languageCode == 'ar' ? 0.85 : 1.0,
               ),
             ),
-            child: EasyLoading.init()(context, child),
+            child: wrapped,
           );
         },
       ),
