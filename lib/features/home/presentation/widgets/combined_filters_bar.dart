@@ -12,6 +12,16 @@ import 'package:wolfera/features/search_and_filteration/presentation/manager/sea
 import 'package:wolfera/features/search_and_filteration/presentation/widget/budget_list_view.dart';
 import 'package:wolfera/features/search_and_filteration/presentation/widget/car_body_type_list_view.dart';
 import 'package:wolfera/features/search_and_filteration/presentation/widget/makers_list_view_filter.dart';
+import 'package:wolfera/features/search_and_filteration/presentation/widget/transmission_list_view.dart';
+import 'package:wolfera/features/search_and_filteration/presentation/widget/fuel_type_list_view_state.dart';
+import 'package:wolfera/features/search_and_filteration/presentation/widget/cylinders_list_view.dart';
+import 'package:wolfera/features/search_and_filteration/presentation/widget/seats_list_view.dart';
+import 'package:wolfera/features/search_and_filteration/presentation/widget/colors_list_view_state.dart';
+import 'package:wolfera/features/search_and_filteration/presentation/widget/condition_list_view_state.dart';
+import 'package:wolfera/features/search_and_filteration/presentation/widget/year_item_widget_state.dart';
+import 'package:wolfera/features/app/presentation/widgets/animated_dialog.dart';
+import 'package:wolfera/features/app/presentation/widgets/year_picker_dialog.dart';
+import 'package:wolfera/features/search_and_filteration/presentation/widget/kilometers_dialog.dart';
 
 /// A compact, professional filter bar showing categories in a row and the
 /// selected category content right below it. Reuses existing search widgets.
@@ -30,6 +40,14 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
     _FilterTab('Location', Icons.place_outlined),
     _FilterTab('Budget', Icons.attach_money_rounded),
     _FilterTab('Body type', Icons.directions_car_filled_outlined),
+    _FilterTab('Year', Icons.calendar_month_outlined),
+    _FilterTab('Kilometers', Icons.speed),
+    _FilterTab('Transmission', Icons.swap_horiz),
+    _FilterTab('Fuel', Icons.local_gas_station_outlined),
+    _FilterTab('Cylinders', Icons.blur_circular),
+    _FilterTab('Seats', Icons.airline_seat_recline_normal),
+    _FilterTab('Colors', Icons.color_lens_outlined),
+    _FilterTab('Condition', Icons.check_circle_outline),
   ];
 
   SearchCubit get _searchCubit => GetIt.I<SearchCubit>();
@@ -152,14 +170,51 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
         return const Offset(0, 0.22);
       case 3: // Body type: from right
         return const Offset(0.22, 0);
+      case 4: // Year: from left
+        return const Offset(-0.22, 0);
+      case 5: // Kilometers: from right
+        return const Offset(0.22, 0);
+      case 6: // Transmission: from bottom
+        return const Offset(0, 0.22);
+      case 7: // Fuel: from top
+        return const Offset(0, -0.22);
+      case 8: // Cylinders: from right
+        return const Offset(0.22, 0);
+      case 9: // Seats: from left
+        return const Offset(-0.22, 0);
+      case 10: // Colors: from right
+        return const Offset(0.22, 0);
+      case 11: // Condition: from bottom
+        return const Offset(0, 0.22);
       default:
         return const Offset(0.18, 0);
     }
   }
 
   double _contentHeightForIndex(int index) {
-    // Fixed height for all tabs to avoid layout jumps and overflow
-    return 70.h;
+    switch (index) {
+      case 0: // Makers
+        return 70.h;
+      case 1: // Location
+        return 60.h;
+      case 2: // Budget
+        return 60.h;
+      case 3: // Body type
+        return 60.h;
+      case 4: // Year
+        return 56.h;
+      case 5: // Kilometers
+        return 56.h;
+      case 6: // Transmission
+      case 7: // Fuel
+      case 8: // Cylinders
+      case 9: // Seats
+      case 10: // Colors
+      case 11: // Condition
+        return 56.h;
+      default:
+        return 60.h;
+    }
   }
 
   Widget _buildContentForIndex(int index) {
@@ -175,6 +230,137 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
         return const BudgetListView();
       case 3: // Body Type
         return const CarBodyTypeListView();
+      case 4: // Year quick controls
+        return Padding(
+          padding: HWEdgeInsets.symmetric(horizontal: 10),
+          child: BlocBuilder<SearchCubit, SearchState>(
+            bloc: _searchCubit,
+            builder: (context, state) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  YearItemWidget(
+                    key: const Key('MinYearQuick'),
+                    selectedYear: state.selectedCarMinYear?.toString(),
+                    onTap: () => AnimatedDialog.show(
+                      context,
+                      insetPadding:
+                          HWEdgeInsets.only(top: 60, left: 40, right: 40, bottom: 30),
+                      child: YearPickerDialog(
+                        currentYear: state.selectedCarMinYear,
+                        onYearChanged: (minYear) =>
+                            _searchCubit.changeCarYearFilter(minYear: minYear),
+                        onReset: () {
+                          _searchCubit.resetYearFilter(resetMinYear: true);
+                          context.pop();
+                        },
+                      ),
+                      barrierDismissible: true,
+                      barrierLabel: 'YearPickerDialogMin',
+                    ),
+                  ),
+                  Container(width: 30.w, height: 0.5.h, color: AppColors.whiteLess),
+                  YearItemWidget(
+                    key: const Key('MaxYearQuick'),
+                    selectedYear: state.selectedCarMaxYear?.toString(),
+                    onTap: () => AnimatedDialog.show(
+                      context,
+                      insetPadding:
+                          HWEdgeInsets.only(top: 60, left: 40, right: 40, bottom: 30),
+                      child: YearPickerDialog(
+                        currentYear: state.selectedCarMaxYear,
+                        onYearChanged: (maxYear) {
+                          if (state.selectedCarMinYear != null
+                              ? maxYear > state.selectedCarMinYear!
+                              : true) {
+                            _searchCubit.changeCarYearFilter(maxYear: maxYear);
+                          }
+                        },
+                        onReset: () {
+                          _searchCubit.resetYearFilter(resetMaxYear: true);
+                          context.pop();
+                        },
+                      ),
+                      barrierDismissible: true,
+                      barrierLabel: 'YearPickerDialogMax',
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        );
+      case 5: // Kilometers quick controls
+        return Padding(
+          padding: HWEdgeInsets.symmetric(horizontal: 10),
+          child: BlocBuilder<SearchCubit, SearchState>(
+            bloc: _searchCubit,
+            builder: (context, state) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  YearItemWidget(
+                    key: const Key('MinKilometersQuick'),
+                    selectedYear: state.selectedCarMinKilometers,
+                    onTap: () => AnimatedDialog.show(
+                      context,
+                      insetPadding:
+                          HWEdgeInsets.only(top: 60, left: 40, right: 40, bottom: 30),
+                      child: KilometersDialog(
+                        isMin: true,
+                        onSelectionConfirmed: (val) {
+                          _searchCubit.changeCarKilometersFilter(minKilometers: val);
+                          context.pop();
+                        },
+                        onReset: () {
+                          _searchCubit.resetKilometersFilter(resetMinKilometers: true);
+                          context.pop();
+                        },
+                      ),
+                      barrierDismissible: true,
+                      barrierLabel: 'MinKilometersPickerDialog',
+                    ),
+                  ),
+                  Container(width: 30.w, height: 0.5.h, color: AppColors.whiteLess),
+                  YearItemWidget(
+                    key: const Key('MaxKilometersQuick'),
+                    selectedYear: state.selectedCarMaxKilometers,
+                    onTap: () => AnimatedDialog.show(
+                      context,
+                      insetPadding:
+                          HWEdgeInsets.only(top: 60, left: 40, right: 40, bottom: 30),
+                      child: KilometersDialog(
+                        isMin: false,
+                        onSelectionConfirmed: (val) {
+                          _searchCubit.changeCarKilometersFilter(maxKilometers: val);
+                          context.pop();
+                        },
+                        onReset: () {
+                          _searchCubit.resetKilometersFilter(resetMaxKilometers: true);
+                          context.pop();
+                        },
+                      ),
+                      barrierDismissible: true,
+                      barrierLabel: 'MaxKilometersPickerDialog',
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        );
+      case 6: // Transmission
+        return const TransmissionListView();
+      case 7: // Fuel Type
+        return const FuelTypeListView();
+      case 8: // Cylinders
+        return const CylindersListView();
+      case 9: // Seats
+        return const SeatsListView();
+      case 10: // Colors
+        return const ColorsListView();
+      case 11: // Condition
+        return const ConditionListView();
       default:
         return const SizedBox.shrink();
     }
