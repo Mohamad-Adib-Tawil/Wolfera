@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:wolfera/core/utils/responsive_padding.dart';
 import 'package:wolfera/features/home/presentation/widgets/car_mini_details_card_widget.dart';
 import 'package:wolfera/generated/assets.dart';
+import 'package:wolfera/core/utils/money_formatter.dart';
 
 class CarsListViewBuilder extends StatelessWidget {
   final Axis scrollDirection;
@@ -58,9 +59,7 @@ class CarsListViewBuilder extends StatelessWidget {
         final fuel = car['fuel_type']?.toString();
         final location = (car['city'] ?? car['location'])?.toString();
         final priceVal = car['price']?.toString();
-        final price = priceVal != null && priceVal.isNotEmpty
-            ? '${priceVal}\$'
-            : null;
+        final price = MoneyFormatter.compactFromString(priceVal, symbol: '\$');
 
         return Padding(
           padding: padding,

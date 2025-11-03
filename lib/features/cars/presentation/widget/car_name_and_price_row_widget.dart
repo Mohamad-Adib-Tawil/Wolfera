@@ -6,6 +6,7 @@ import 'package:wolfera/core/utils/extensions/build_context.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_svg_picture.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
 import 'package:wolfera/generated/assets.dart';
+import 'package:wolfera/core/utils/money_formatter.dart';
 
 class CarNameAndPriceRowWidget extends StatelessWidget {
   final Map<String, dynamic> carData;
@@ -19,8 +20,9 @@ class CarNameAndPriceRowWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final brand = carData['brand']?.toString() ?? '';
     final model = carData['model']?.toString() ?? '';
-    final price = carData['price']?.toString() ?? '0';
+    final priceRaw = carData['price']?.toString();
     final currency = carData['currency']?.toString() ?? '\$';
+    final compactPrice = MoneyFormatter.compactFromString(priceRaw, symbol: currency) ?? '0\$';
     
     return Row(
       children: [
@@ -46,7 +48,7 @@ class CarNameAndPriceRowWidget extends StatelessWidget {
         ),
         10.horizontalSpace,
         AppText(
-          '$price $currency',
+          compactPrice,
           translation: false,
           style:
               context.textTheme.bodyLarge!.s20.xb.withColor(AppColors.primary),
