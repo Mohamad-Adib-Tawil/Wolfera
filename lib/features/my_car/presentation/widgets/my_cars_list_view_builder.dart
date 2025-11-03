@@ -65,7 +65,8 @@ class MyCarsListViewBuilder extends StatelessWidget {
           final fuel = car['fuel_type']?.toString();
           final location = (car['city'] ?? car['location'])?.toString();
           final priceVal = car['price']?.toString();
-          final price = MoneyFormatter.compactFromString(priceVal, symbol: '\$');
+          final currency = car['currency']?.toString() ?? '\$';
+          final price = MoneyFormatter.compactFromString(priceVal, symbol: currency);
 
           return Padding(
             padding: HWEdgeInsets.only(top: 20, right: 14, left: 14),
