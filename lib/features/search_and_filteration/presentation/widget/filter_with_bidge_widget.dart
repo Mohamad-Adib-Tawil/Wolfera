@@ -40,7 +40,9 @@ class FilterWithBidgeWidget extends StatelessWidget {
             child: badges.Badge(
               position: badges.BadgePosition.bottomEnd(end: -8),
               showBadge: true,
-              onTap: () {},
+              onTap: () {
+                GRouter.router.pushNamed(GRouter.config.filterRoutes.filter);
+              },
               badgeContent: Center(
                 child: AppText(
                   state.activeFilterCount().toString(),

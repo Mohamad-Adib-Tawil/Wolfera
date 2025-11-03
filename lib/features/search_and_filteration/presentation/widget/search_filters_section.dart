@@ -35,116 +35,151 @@ class SearchFiltersSection extends StatelessWidget {
           final regions = (selectedCountry.secondLevel);
           final hasRegions = !state.isWorldwide && regions.isNotEmpty;
 
-          return ListView(
-            scrollDirection: Axis.horizontal,
+          return Padding(
             padding: HWEdgeInsets.only(left: 23, right: 10),
-            children: [
-              // Country dropdown (with Worldwide)
-              SizedBox(
-                width: 200.w,
-                child: AppDropdownSearch<CountryOption>(
-                  items: countries,
-                  selectedItem: selectedCountry,
-                  itemAsString: (co) => co.name,
-                  hintText: 'Worldwide',
-                  baseStyle: context.textTheme.titleSmall.b
-                      .withColor(AppColors.white),
-                  dropdownBuilder: (context, co) {
-                    final code = (co?.code ?? 'WW').toUpperCase();
-                    final isWw = code == LocationsData.worldwideCode;
-                    return Row(
-                      children: [
-                        if (isWw)
-                          const Icon(Icons.public, size: 18)
-                        else
-                          CountryFlag.fromCountryCode(
-                            code,
-                            theme: const ImageTheme(
-                              width: 20,
-                              height: 14,
-                              shape: RoundedRectangle(4),
-                            ),
-                          ),
-                        8.horizontalSpace,
-                        Text(co?.name ?? 'Worldwide',
-                            style: context.textTheme.titleSmall.b
-                                .withColor(AppColors.white)),
-                      ],
-                    );
-                  },
-                  popupProps: PopupProps.menu(
-                    showSearchBox: true,
-                    itemBuilder: (context, co, isSelected) {
-                      final isWw = co.code == LocationsData.worldwideCode;
-                      return Padding(
-                        padding: HWEdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                        child: Row(
-                          children: [
-                            if (isWw)
-                              const Icon(Icons.public, size: 18)
-                            else
-                              CountryFlag.fromCountryCode(
-                                co.code.toUpperCase(),
-                                theme: const ImageTheme(
-                                  width: 20,
-                                  height: 14,
-                                  shape: RoundedRectangle(4),
-                                ),
-                              ),
-                            10.horizontalSpace,
-                            Expanded(child: Text(co.name)),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                  onChanged: (co) => bloc.selectCountryByName(co?.name),
-                  contentPadding: HWEdgeInsets.symmetric(horizontal: 8),
-                  borderColor: Colors.transparent,
-                  filled: false,
-                ),
-              ),
-              10.horizontalSpace,
-
-              // Region / City dropdown (depends on country)
-              if (hasRegions) ...[
-                SizedBox(
-                  width: 170.w,
-                  child: AppDropdownSearch<String>(
-                    items: regions,
-                    selectedItem: state.selectedRegionOrCity,
-                    hintText: selectedCountry.secondLevelLabel ?? 'Region',
-                    baseStyle: context.textTheme.titleSmall.b
-                        .withColor(AppColors.white),
-                    onChanged: (val) => bloc.selectRegionOrCity(val),
-                    contentPadding: HWEdgeInsets.symmetric(horizontal: 8),
-                    borderColor: Colors.transparent,
-                    filled: false,
-                  ),
-                ),
+            child: Row(
+              children: [
+                // Always-visible Filters button with badge
+                const FilterWithBidgeWidget(),
                 10.horizontalSpace,
-              ],
 
-              const FilterWithBidgeWidget(),
-              10.horizontalSpace,
-              const FilterItem(title: "Make"),
-              10.horizontalSpace,
-              const FilterItem(title: "Price"),
-              10.horizontalSpace,
-              const FilterItem(title: "Year"),
-              10.horizontalSpace,
-              const FilterItem(title: "Mileage"),
-              10.horizontalSpace,
-              TextButton(
-                onPressed: () => bloc.resetAllFilters(),
-                child: AppText(
-                  "Reset",
-                  style: context.textTheme.titleMedium?.s13.m
-                      .withColor(AppColors.primary),
+                // Scrollable filters area
+                Expanded(
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      // Country dropdown (with Worldwide)
+                      SizedBox(
+                        width: 145.w,
+                        child: AppDropdownSearch<CountryOption>(
+                          items: countries,
+                          selectedItem: selectedCountry,
+                          itemAsString: (co) => co.name,
+                          hintText: 'Worldwide',
+                          baseStyle: context.textTheme.titleSmall.b
+                              .withColor(AppColors.white),
+                          dropdownBuilder: (context, co) {
+                            final code = (co?.code ?? 'WW').toUpperCase();
+                            final isWw = code == LocationsData.worldwideCode;
+                            return Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (isWw)
+                                  const Icon(Icons.public, size: 16)
+                                else
+                                  CountryFlag.fromCountryCode(
+                                    code,
+                                    theme: const ImageTheme(
+                                      width: 18,
+                                      height: 12,
+                                      shape: RoundedRectangle(4),
+                                    ),
+                                  ),
+                                4.horizontalSpace,
+                                Flexible(
+                                  child: Text(
+                                    co?.name ?? 'Worldwide',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: context.textTheme.titleSmall.b
+                                        .withColor(AppColors.white),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                          popupProps: PopupProps.menu(
+                            showSearchBox: true,
+                            itemBuilder: (context, co, isSelected) {
+                              final isWw = co.code == LocationsData.worldwideCode;
+                              return Padding(
+                                padding: HWEdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                child: Row(
+                                  children: [
+                                    if (isWw)
+                                      const Icon(Icons.public, size: 18)
+                                    else
+                                      CountryFlag.fromCountryCode(
+                                        co.code.toUpperCase(),
+                                        theme: const ImageTheme(
+                                          width: 20,
+                                          height: 14,
+                                          shape: RoundedRectangle(4),
+                                        ),
+                                      ),
+                                    10.horizontalSpace,
+                                    Expanded(child: Text(co.name)),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                          onChanged: (co) => bloc.selectCountryByName(co?.name),
+                          contentPadding: HWEdgeInsets.symmetric(horizontal: 6),
+                          borderColor: Colors.transparent,
+                          filled: false,
+                        ),
+                      ),
+                      10.horizontalSpace,
+
+                      // Region / City dropdown (depends on country)
+                      if (hasRegions) ...[
+                        SizedBox(
+                          width: 125.w,
+                          child: AppDropdownSearch<String>(
+                            items: regions,
+                            selectedItem: state.selectedRegionOrCity,
+                            hintText: selectedCountry.secondLevelLabel ?? 'Region',
+                            baseStyle: context.textTheme.titleSmall.b
+                                .withColor(AppColors.white),
+                            dropdownBuilder: (context, val) {
+                              final text = val ?? (selectedCountry.secondLevelLabel ?? 'Region');
+                              return Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      text,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: context.textTheme.titleSmall.b
+                                          .withColor(AppColors.white),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                            onChanged: (val) => bloc.selectRegionOrCity(val),
+                            contentPadding: HWEdgeInsets.symmetric(horizontal: 6),
+                            borderColor: Colors.transparent,
+                            filled: false,
+                          ),
+                        ),
+                        10.horizontalSpace,
+                      ],
+
+                      const FilterItem(title: "Make"),
+                      10.horizontalSpace,
+                      const FilterItem(title: "Price"),
+                      10.horizontalSpace,
+                      const FilterItem(title: "Year"),
+                      10.horizontalSpace,
+                      const FilterItem(title: "Mileage"),
+                      10.horizontalSpace,
+                      TextButton(
+                        onPressed: () => bloc.resetAllFilters(),
+                        child: AppText(
+                          "Reset",
+                          style: context.textTheme.titleMedium?.s13.m
+                              .withColor(AppColors.primary),
+                        ),
+                      ),
+                      14.horizontalSpace,
+                    ],
+                  ),
                 ),
-              ),
-              14.horizontalSpace,
-            ],
+              ],
+            ),
           );
         },
       ),

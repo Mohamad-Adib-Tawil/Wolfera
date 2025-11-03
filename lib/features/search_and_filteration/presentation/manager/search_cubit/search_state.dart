@@ -25,6 +25,9 @@ class SearchState {
   final String searchQuery;
   final List<Map<String, dynamic>> searchResults;
   final String? searchError;
+  // ترتيب النتائج
+  final String sortBy; // e.g., 'created_at', 'price', 'year', 'mileage'
+  final bool sortAsc;
   @override
   List<Object?> get props => [
         selectedPrice,
@@ -44,6 +47,8 @@ class SearchState {
         searchQuery,
         searchResults,
         searchError,
+        sortBy,
+        sortAsc,
       ];
   const SearchState({
     this.selectedPrice,
@@ -66,6 +71,8 @@ class SearchState {
     this.searchQuery = '',
     this.searchResults = const [],
     this.searchError,
+    this.sortBy = 'created_at',
+    this.sortAsc = false,
   });
 
   factory SearchState.initial() {
@@ -90,6 +97,8 @@ class SearchState {
       searchQuery: '',
       searchResults: [],
       searchError: null,
+      sortBy: 'created_at',
+      sortAsc: false,
     );
   }
 
@@ -114,6 +123,8 @@ class SearchState {
     String? searchQuery,
     List<Map<String, dynamic>>? searchResults,
     Nullable<String?>? searchError,
+    String? sortBy,
+    bool? sortAsc,
   }) {
     return SearchState(
       selectedPrice:
@@ -162,6 +173,8 @@ class SearchState {
       searchQuery: searchQuery ?? this.searchQuery,
       searchResults: searchResults ?? this.searchResults,
       searchError: searchError != null ? searchError.value : this.searchError,
+      sortBy: sortBy ?? this.sortBy,
+      sortAsc: sortAsc ?? this.sortAsc,
     );
   }
 

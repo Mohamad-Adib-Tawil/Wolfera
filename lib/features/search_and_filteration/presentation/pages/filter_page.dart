@@ -59,7 +59,7 @@ class _FilterPageState extends State<FilterPage> {
           SeatsSection(searchCubit: bloc),
           ColorsSection(searchCubit: bloc),
           ConditionSection(searchCubit: bloc),
-          50.verticalSpace,
+          90.verticalSpace,
         ],
       ),
     );

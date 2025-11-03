@@ -222,6 +222,12 @@ class SearchCubit extends Cubit<SearchState> {
     _applyFiltersAndSearch();
   }
 
+  // ===================== Sorting =====================
+  void setSort(String sortBy, bool asc) {
+    emit(state.copyWith(sortBy: sortBy, sortAsc: asc));
+    _applyFiltersAndSearch();
+  }
+
   // Reset Filters Section
   void resetMakerSelectionFilter() {
     final updatedState = _searchFilterService.resetMakerSelectionFilter(state);

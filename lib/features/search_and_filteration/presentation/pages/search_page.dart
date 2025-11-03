@@ -134,8 +134,9 @@ class _SearcgPageState extends State<SearchPage> {
                               children: [
                                 AppText(
                                   state.searchQuery.isEmpty
-                                      ? "Search for cars".tr()
-                                      : "$resultsCount Cars found".tr(),
+                                      ? LocaleKeys.searchForCars.tr()
+                                      : '$resultsCount ${'Cars found'.tr()}',
+                                  translation: false,
                                   style: context.textTheme.titleMedium?.s13.m
                                       .withColor(AppColors.white),
                                 ),
@@ -176,15 +177,33 @@ class _SearcgPageState extends State<SearchPage> {
                                       ),
                                       12.horizontalSpace,
                                     ],
-                                    Icon(
-                                      Icons.sort_outlined,
-                                      size: 12.r,
-                                    ),
-                                    5.horizontalSpace,
-                                    AppText(
-                                      "Sort by".tr(),
-                                      style: context.textTheme.titleMedium?.s13.m
-                                          .withColor(AppColors.white),
+                                    InkWell(
+                                      borderRadius: BorderRadius.circular(18).r,
+                                      onTap: () => _showSortSheet(context),
+                                      child: Padding(
+                                        padding: HWEdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(
+                                              Icons.sort_outlined,
+                                              size: 14.r,
+                                            ),
+                                            6.horizontalSpace,
+                                            AppText(
+                                              "Sort by".tr(),
+                                              style: context.textTheme.titleMedium?.s13.m
+                                                  .withColor(AppColors.white),
+                                            ),
+                                            2.horizontalSpace,
+                                            Icon(
+                                              Icons.expand_more,
+                                              size: 14.r,
+                                              color: AppColors.white,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
                                     ),
                                   ],
                                 )
@@ -208,8 +227,9 @@ class _SearcgPageState extends State<SearchPage> {
                             children: [
                               AppText(
                                 state.searchQuery.isEmpty
-                                    ? "Search for cars".tr()
-                                    : "$resultsCount Cars found".tr(),
+                                    ? LocaleKeys.searchForCars.tr()
+                                    : '$resultsCount ${'Cars found'.tr()}',
+                                translation: false,
                                 style: context.textTheme.titleMedium?.s13.m
                                     .withColor(AppColors.white),
                               ),
@@ -250,15 +270,33 @@ class _SearcgPageState extends State<SearchPage> {
                                     ),
                                     12.horizontalSpace,
                                   ],
-                                  Icon(
-                                    Icons.sort_outlined,
-                                    size: 12.r,
-                                  ),
-                                  5.horizontalSpace,
-                                  AppText(
-                                    "Sort by".tr(),
-                                    style: context.textTheme.titleMedium?.s13.m
-                                        .withColor(AppColors.white),
+                                  InkWell(
+                                    borderRadius: BorderRadius.circular(18).r,
+                                    onTap: () => _showSortSheet(context),
+                                    child: Padding(
+                                      padding: HWEdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.sort_outlined,
+                                            size: 14.r,
+                                          ),
+                                          6.horizontalSpace,
+                                          AppText(
+                                            "Sort by".tr(),
+                                            style: context.textTheme.titleMedium?.s13.m
+                                                .withColor(AppColors.white),
+                                          ),
+                                          2.horizontalSpace,
+                                          Icon(
+                                            Icons.expand_more,
+                                            size: 14.r,
+                                            color: AppColors.white,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ),
                                 ],
                               )
@@ -452,6 +490,91 @@ class _SearcgPageState extends State<SearchPage> {
           ),
         ),
       ),
+    );
+  }
+
+  void _showSortSheet(BuildContext context) {
+    final st = _searchCubit.state;
+    final groupValue = '${st.sortBy}|${st.sortAsc}';
+    final options = [
+      {'title': 'Newest', 'by': 'created_at', 'asc': false},
+      {'title': 'Oldest', 'by': 'created_at', 'asc': true},
+      {'title': 'Price: Low to High', 'by': 'price', 'asc': true},
+      {'title': 'Price: High to Low', 'by': 'price', 'asc': false},
+      {'title': 'Year: New to Old', 'by': 'year', 'asc': false},
+      {'title': 'Year: Old to New', 'by': 'year', 'asc': true},
+      {'title': 'Mileage: Low to High', 'by': 'mileage', 'asc': true},
+      {'title': 'Mileage: High to Low', 'by': 'mileage', 'asc': false},
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.grey.shade900,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
+      ),
+      builder: (ctx) {
+        final maxH = MediaQuery.of(ctx).size.height * 0.7;
+        return SafeArea(
+          child: Padding(
+            padding: HWEdgeInsets.only(
+              left: 16,
+              right: 16,
+              top: 12,
+              bottom: MediaQuery.of(ctx).viewInsets.bottom + 12,
+            ),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: maxH),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      AppText(
+                        'Sort by'.tr(),
+                        style: context.textTheme.titleMedium?.s13.m
+                            .withColor(AppColors.white),
+                      ),
+                      IconButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        icon: const Icon(Icons.close),
+                      ),
+                    ],
+                  ),
+                  6.verticalSpace,
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: options.length,
+                      itemBuilder: (c, i) {
+                        final o = options[i];
+                        final id = '${o['by']}|${o['asc']}';
+                        return RadioListTile<String>(
+                          value: id,
+                          groupValue: groupValue,
+                          onChanged: (val) {
+                            _searchCubit.setSort(o['by'] as String, o['asc'] as bool);
+                            Navigator.pop(ctx);
+                          },
+                          activeColor: AppColors.primary,
+                          title: AppText(
+                            (o['title'] as String).tr(),
+                            style: context.textTheme.titleSmall?.s13.m
+                                .withColor(AppColors.white),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  8.verticalSpace,
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
