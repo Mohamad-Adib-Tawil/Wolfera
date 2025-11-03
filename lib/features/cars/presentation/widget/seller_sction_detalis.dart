@@ -102,19 +102,27 @@ class SellerSctionDetalis extends StatelessWidget {
 
   // وظيفة فتح الشات الداخلي
   void _openInAppChat(BuildContext context) {
-    final ownerId = owner?['id']?.toString() ?? carData['user_id']?.toString();
-    if (ownerId == null || ownerId.isEmpty) {
+    // Prefer Supabase user_id from carData; then try owner.user_id; then owner.id (if looks like uuid)
+    String? sellerId = carData['user_id']?.toString();
+    sellerId ??= owner?['user_id']?.toString();
+    final rawOwnerId = owner?['id']?.toString();
+    if (sellerId == null && rawOwnerId != null && rawOwnerId.contains('-')) {
+      sellerId = rawOwnerId; // likely a UUID
+    }
+
+    if (sellerId == null || sellerId.isEmpty) {
       showMessage('Cannot start chat: seller information not available',
           isSuccess: false);
       return;
     }
-    // TODO: تمرير معلومات المالك والسيارة إلى صفحة الشات
+    // تمرير معلومات المالك والسيارة إلى صفحة الشات
     GRouter.router.pushNamed(
       GRouter.config.chatsRoutes.chatPage,
       extra: {
-        'seller_id': ownerId,
+        'seller_id': sellerId,
         'seller_name': sellerName,
-        'car_title': carData['title'],
+        'car_id': carData['id']?.toString(),
+        'car_title': carData['title']?.toString(),
       },
     );
   }

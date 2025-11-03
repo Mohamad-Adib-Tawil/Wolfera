@@ -10,8 +10,15 @@ import 'package:wolfera/features/chat/presentation/widgets/circlue_user_image_wi
 import 'package:wolfera/generated/assets.dart';
 
 class ChatAppbar extends StatelessWidget implements PreferredSizeWidget {
+  final String? otherUserName;
+  final String? carTitle;
+  final String? otherUserAvatar;
+  
   const ChatAppbar({
     super.key,
+    this.otherUserName,
+    this.carTitle,
+    this.otherUserAvatar,
   });
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -26,14 +33,35 @@ class ChatAppbar extends StatelessWidget implements PreferredSizeWidget {
           backgroundColor: Colors.transparent,
           title: Row(
             children: [
-              const Padding(
-                padding: EdgeInsets.only(top: 3.5),
-                child: CirclueUserImageWidget(width: 42),
+              Padding(
+                padding: const EdgeInsets.only(top: 3.5),
+                child: CirclueUserImageWidget(
+                  width: 42,
+                  userImage: otherUserAvatar,
+                ),
               ),
               14.horizontalSpace,
-              AppText(
-                "Mohamad Adib Tawil",
-                style: context.textTheme.titleMedium?.s20.m,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    AppText(
+                      otherUserName ?? 'البائع',
+                      style: context.textTheme.titleMedium?.s18.m,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (carTitle != null && carTitle!.isNotEmpty)
+                      AppText(
+                        carTitle!,
+                        style: context.textTheme.bodySmall?.s13,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        translation: false,
+                      ),
+                  ],
+                ),
               ),
             ],
           ),

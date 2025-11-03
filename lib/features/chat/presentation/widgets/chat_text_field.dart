@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wolfera/core/utils/responsive_padding.dart';
+import 'package:wolfera/features/chat/presentation/manager/chat_cubit.dart';
 import 'package:wolfera/features/chat/presentation/widgets/chat_text_field_input.dart';
 import 'package:wolfera/features/chat/presentation/widgets/emoji_picker_widget.dart';
 import 'send_button.dart';
@@ -73,7 +75,9 @@ class ChatTextFieldState extends State<ChatTextField> {
                   ),
                 ),
                 8.horizontalSpace,
-                const SendButton(),
+                SendButton(
+                  onTap: () => _sendMessage(context),
+                ),
               ],
             ),
           ),
@@ -86,10 +90,22 @@ class ChatTextFieldState extends State<ChatTextField> {
     );
   }
 
+  void _sendMessage(BuildContext context) {
+    final message = _controller.text.trim();
+    if (message.isNotEmpty) {
+      context.read<ChatCubit>().sendMessage(message);
+      _controller.clear();
+      setState(() {
+        _isEmojiPickerVisible = false;
+      });
+    }
+  }
+  
   @override
   void dispose() {
     _focusNode.removeListener(_handleFocusChange);
     _focusNode.dispose();
+    _controller.dispose();
     super.dispose();
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 import 'package:wolfera/core/config/theme/typography.dart';
 import 'package:wolfera/core/utils/extensions/build_context.dart';
 import 'package:wolfera/core/utils/responsive_padding.dart';
@@ -8,10 +9,27 @@ import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
 class DateTimeWidgetMessageItem extends StatelessWidget {
   const DateTimeWidgetMessageItem({
     super.key,
+    required this.dateTime,
   });
+  
+  final DateTime dateTime;
 
   @override
   Widget build(BuildContext context) {
+    final now = DateTime.now();
+    final difference = now.difference(dateTime);
+    
+    String displayText;
+    if (difference.inDays == 0) {
+      displayText = 'اليوم';
+    } else if (difference.inDays == 1) {
+      displayText = 'أمس';
+    } else if (difference.inDays < 7) {
+      displayText = 'منذ ${difference.inDays} أيام';
+    } else {
+      displayText = DateFormat('d MMM yyyy').format(dateTime);
+    }
+    
     return Container(
       width: 144.w,
       padding: HWEdgeInsets.symmetric(vertical: 9, horizontal: 16),
@@ -22,10 +40,11 @@ class DateTimeWidgetMessageItem extends StatelessWidget {
         color: const Color(0xffF4F5FA),
       ),
       child: AppText(
-        '8 Jun 2024',
+        displayText,
         maxLines: 1,
         style:
             context.textTheme.labelLarge.b.withColor(const Color(0xff1C1D22)),
+        translation: false,
       ),
     );
   }
