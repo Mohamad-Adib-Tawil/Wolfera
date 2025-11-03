@@ -8,8 +8,13 @@ import 'package:wolfera/features/app/presentation/widgets/animations/delayed_fad
 import 'package:wolfera/generated/assets.dart';
 
 class CarImagesPreviewer extends StatefulWidget {
+  final List<String> images;
+  final int initialIndex;
+
   const CarImagesPreviewer({
     super.key,
+    required this.images,
+    this.initialIndex = 0,
   });
 
   @override
@@ -18,22 +23,16 @@ class CarImagesPreviewer extends StatefulWidget {
 
 class _CarImagesPreviewerState extends State<CarImagesPreviewer> {
   late PageController pageController;
-  final List<String> images = [
-    Assets.imagesCar1,
-    Assets.imagesCar2,
-    Assets.imagesCar1,
-    Assets.imagesCar2,
-    Assets.imagesCar1,
-    Assets.imagesCar2,
-  ];
-
-  int selectedIndex = 0;
+  late int selectedIndex;
   static bool _didAnimateOnce = false;
   late final bool _shouldAnimateEntrance;
 
   @override
   void initState() {
     super.initState();
+    selectedIndex = (widget.initialIndex >= 0 && widget.initialIndex < _images.length)
+        ? widget.initialIndex
+        : 0;
     pageController = PageController(initialPage: selectedIndex);
     _shouldAnimateEntrance = !_didAnimateOnce;
     _didAnimateOnce = true;
@@ -48,7 +47,7 @@ class _CarImagesPreviewerState extends State<CarImagesPreviewer> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.black,
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(kToolbarHeight),
           child: _shouldAnimateEntrance
@@ -81,18 +80,24 @@ class _CarImagesPreviewerState extends State<CarImagesPreviewer> {
       children: [
         Expanded(
           child: PhotoViewGallery.builder(
-            backgroundDecoration: const BoxDecoration(
-              color: Colors.transparent,
-            ),
+            backgroundDecoration: const BoxDecoration(color: Colors.black),
             scrollPhysics: const BouncingScrollPhysics(),
             builder: (BuildContext context, int index) {
+              final src = _images[index];
+              final isNetwork = src.startsWith('http://') || src.startsWith('https://');
+              final ImageProvider<Object> provider = (isNetwork
+                      ? NetworkImage(src)
+                      : AssetImage(src))
+                  as ImageProvider<Object>;
               return PhotoViewGalleryPageOptions(
-                imageProvider: AssetImage(images[index]),
+                imageProvider: provider,
                 initialScale: PhotoViewComputedScale.contained,
-                heroAttributes: PhotoViewHeroAttributes(tag: images[index]),
+                heroAttributes: PhotoViewHeroAttributes(tag: src),
+                minScale: PhotoViewComputedScale.contained,
+                maxScale: PhotoViewComputedScale.covered * 3,
               );
             },
-            itemCount: images.length,
+            itemCount: _images.length,
             loadingBuilder: (context, event) => Center(
               child: SizedBox(
                 width: 20.0,
@@ -118,9 +123,11 @@ class _CarImagesPreviewerState extends State<CarImagesPreviewer> {
           height: 70.h,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            itemCount: images.length,
+            itemCount: _images.length,
             itemBuilder: (context, index) {
               final isSelected = selectedIndex == index;
+              final src = _images[index];
+              final isNetwork = src.startsWith('http://') || src.startsWith('https://');
               return GestureDetector(
                 onTap: () {
                   setState(() {
@@ -142,12 +149,19 @@ class _CarImagesPreviewerState extends State<CarImagesPreviewer> {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: Image.asset(
-                      images[index],
-                      width: 110.w,
-                      height: 70.h,
-                      fit: BoxFit.cover,
-                    ),
+                    child: isNetwork
+                        ? Image.network(
+                            src,
+                            width: 110.w,
+                            height: 70.h,
+                            fit: BoxFit.cover,
+                          )
+                        : Image.asset(
+                            src,
+                            width: 110.w,
+                            height: 70.h,
+                            fit: BoxFit.cover,
+                          ),
                   ),
                 ),
               );
@@ -158,4 +172,13 @@ class _CarImagesPreviewerState extends State<CarImagesPreviewer> {
       ],
     );
   }
+
+  List<String> get _images => widget.images.isNotEmpty
+      ? widget.images
+      : [
+          Assets.imagesCar1,
+          Assets.imagesCar2,
+          Assets.imagesCar1,
+          Assets.imagesCar2,
+        ];
 }

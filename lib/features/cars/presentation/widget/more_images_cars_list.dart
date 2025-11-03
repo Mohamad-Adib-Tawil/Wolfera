@@ -34,8 +34,13 @@ class _MoreImagesCarsListState extends State<MoreImagesCarsList> {
     return Column(
       children: [
         GestureDetector(
-          onTap: () => GRouter.router
-              .pushNamed(GRouter.config.carRoutes.carImagesPreviewer),
+          onTap: () => GRouter.router.pushNamed(
+            GRouter.config.carRoutes.carImagesPreviewer,
+            extra: {
+              'images': carImages,
+              'initialIndex': selectedIndex,
+            },
+          ),
           child: AnimatedSwitcher(
             duration: const Duration(milliseconds: 500),
             switchInCurve: Curves.easeIn,
@@ -49,6 +54,7 @@ class _MoreImagesCarsListState extends State<MoreImagesCarsList> {
             child: CarImageViewer(
               key: ValueKey<String>(carImages[selectedIndex]),
               imagePath: carImages[selectedIndex],
+              heroTag: carImages[selectedIndex],
             ),
           ),
         ),

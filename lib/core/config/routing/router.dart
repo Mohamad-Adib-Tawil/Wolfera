@@ -226,8 +226,17 @@ class GRouter {
                         parentNavigatorKey: _rootNavigatorKey,
                         pageBuilder:
                             (BuildContext context, GoRouterState state) {
+                          final extra = state.extra as Map<String, dynamic>?;
+                          final images = (extra?['images'] as List?)
+                                  ?.map((e) => e.toString())
+                                  .toList() ??
+                              const <String>[];
+                          final initialIndex = extra?['initialIndex'] as int? ?? 0;
                           return _builderPage(
-                            child: const CarImagesPreviewer(),
+                            child: CarImagesPreviewer(
+                              images: images,
+                              initialIndex: initialIndex,
+                            ),
                             state: state,
                           );
                         },
