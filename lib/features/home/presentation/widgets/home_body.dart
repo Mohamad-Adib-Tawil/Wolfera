@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
-import 'package:wolfera/features/home/presentation/widgets/body_types_filter_section.dart';
-import 'package:wolfera/features/home/presentation/widgets/budget_filter_section.dart';
-import 'package:wolfera/features/home/presentation/widgets/makers_filter_home_section.dart';
+// Removed legacy separate filter sections in favor of CombinedFiltersBar
+import 'package:wolfera/features/home/presentation/widgets/combined_filters_bar.dart';
 import 'package:wolfera/features/home/presentation/widgets/recommended_section.dart';
 import 'package:wolfera/features/home/presentation/widgets/search_bar_button.dart';
 
@@ -24,9 +23,7 @@ class HomeBody extends StatelessWidget {
           SearchBarButton(
               onTap: () => StatefulNavigationShell.of(context).goBranch(1)),
           const RecommendedSection(),
-          const BodyTypesFilterSection(),
-          const BudgetFilterSection(),
-          const MakersFilterHomeSection(),
+          const CombinedFiltersBar(),
           35.verticalSpace,
         ]),
       );
@@ -50,21 +47,11 @@ class HomeBody extends StatelessWidget {
           beginOffset: const Offset(-0.18, 0),
           child: const RecommendedSection(),
         ),
-        // Other sections from RIGHT
+        // Combined filters row + content below cars
         _DelayedFadeSlide(
           delay: const Duration(milliseconds: 360),
           beginOffset: const Offset(0.18, 0),
-          child: const BodyTypesFilterSection(),
-        ),
-        _DelayedFadeSlide(
-          delay: const Duration(milliseconds: 500),
-          beginOffset: const Offset(0.18, 0),
-          child: const BudgetFilterSection(),
-        ),
-        _DelayedFadeSlide(
-          delay: const Duration(milliseconds: 640),
-          beginOffset: const Offset(0.18, 0),
-          child: const MakersFilterHomeSection(),
+          child: const CombinedFiltersBar(),
         ),
         35.verticalSpace,
       ]),

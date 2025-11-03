@@ -24,26 +24,47 @@ class BudgetItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 400),
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
         height: 50.h,
-        padding: HWEdgeInsets.symmetric(horizontal: 20, vertical: 6),
+        padding: HWEdgeInsets.symmetric(
+          horizontal: isSelected ? 28 : 20,
+          vertical: 6,
+        ),
         margin: HWEdgeInsets.only(left: 8),
         decoration: BoxDecoration(
-            border: Border.all(
-                color: isSelected ? AppColors.primary : AppColors.greyStroke,
-                width: 1.5.r),
-            borderRadius: BorderRadius.circular(8).r),
+          color: isSelected
+              ? AppColors.primary.withValues(alpha: 0.08)
+              : Colors.transparent,
+          border: Border.all(
+            color: isSelected ? AppColors.primary : AppColors.greyStroke,
+            width: 1.5.r,
+          ),
+          borderRadius: BorderRadius.circular(8).r,
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.16),
+                    blurRadius: 6.r,
+                    spreadRadius: 0.15,
+                  )
+                ]
+              : null,
+        ),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             AppText(
               item.title,
               style:
                   context.textTheme.titleSmall.s10.b.withColor(AppColors.grey),
             ),
-            6.verticalSpace,
-            AppText(item.range,
-                style: context.textTheme.titleSmall.s10.sb
-                    .withColor(AppColors.white)),
+            4.verticalSpace,
+            AppText(
+              item.range,
+              style:
+                  context.textTheme.titleSmall.s10.sb.withColor(AppColors.white),
+            ),
           ],
         ),
       ),
