@@ -62,6 +62,7 @@ class ChatItem extends StatelessWidget {
         style: context.textTheme.titleSmall.s13.l.withColor(AppColors.grey),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
+        translation: false,
       ),
     );
   }
@@ -78,12 +79,14 @@ class ChatItem extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: context.textTheme.titleMedium.s15.r,
+              translation: false,
             ),
           ),
           const Spacer(),
           AppText(
             _formatTime(),
             style: context.textTheme.titleMedium?.copyWith(fontSize: 15),
+            translation: false,
           ),
         ],
       ),
