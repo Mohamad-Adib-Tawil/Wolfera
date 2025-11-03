@@ -71,7 +71,10 @@ class _AppElevatedButtonState extends ThemeState<AppElevatedButton> {
 
     final child = ElevatedButton(
       onPressed: widget.isLoading ? null : onTap,
-      style: widget.style ?? _buttonTheme?.style,
+      style: (widget.style ?? _buttonTheme?.style)?.copyWith(
+        minimumSize: MaterialStateProperty.all(const Size(0, 0)),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      ),
       child: AnimatedCrossFade(
         firstChild: firstChild,
         secondChild: secondChild,
@@ -87,31 +90,27 @@ class _AppElevatedButtonState extends ThemeState<AppElevatedButton> {
     return child;
   }
 
-  Widget get secondChild => FittedBox(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            AppText(
-              LocaleKeys.requestIsInProgress,
-              style: context.textTheme.bodySmall!.s20.xb
-                  .withColor(AppColors.blackLight),
-            ),
-            if (widget.isLoading) ...{
-              8.horizontalSpace,
-              const LoadingIndicator(),
-              4.horizontalSpace,
-            },
+  Widget get secondChild => Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          AppText(
+            LocaleKeys.requestIsInProgress,
+            style: context.textTheme.bodySmall!.s20.xb
+                .withColor(AppColors.blackLight),
+          ),
+          if (widget.isLoading) ...[
+            8.horizontalSpace,
+            const LoadingIndicator(),
+            4.horizontalSpace,
           ],
-        ),
+        ],
       );
 
-  Widget get firstChild => FittedBox(
-        fit: BoxFit.fitWidth,
-        child: widget.child ??
-            AppText(
-              widget.text!.tr(),
-              style: widget.textStyle,
-            ),
+  Widget get firstChild => widget.child ??
+      AppText(
+        widget.text!.tr(),
+        style: widget.textStyle,
       );
 
   void setButtonStyle() {
