@@ -16,6 +16,10 @@ class SearchFilterService {
           .from('cars')
           .select('*');
 
+      // ملاحظة: لا نقيّد الحالة هنا لضمان إرجاع كل السيارات
+      // RecommendedSection يفضّل 'available' ولكن يعود لقائمة كاملة عند عدم توفرها
+      // إذا رغبت بتفضيل 'available' يمكننا تطبيق ذلك لاحقاً كلوجيك بعد الجلب
+
       // البحث في العنوان أو الماركة أو الموديل
       if (query.isNotEmpty) {
         queryBuilder = queryBuilder.or(
@@ -44,16 +48,18 @@ class SearchFilterService {
         queryBuilder = queryBuilder.eq('condition', filters.seletedCondition!);
       }
 
-      // فلاتر العنوان: الدولة + المنطقة/المدينة
-      final countryName = filters.selectedCountryCode != null
-          ? LocationsData.findByCode(filters.selectedCountryCode!)?.name
-          : null;
-      if (countryName != null && countryName != 'Worldwide') {
-        queryBuilder = queryBuilder.eq('country', countryName);
-      }
-      if (filters.selectedRegionOrCity != null &&
-          filters.selectedRegionOrCity!.trim().isNotEmpty) {
-        queryBuilder = queryBuilder.eq('city', filters.selectedRegionOrCity!);
+      // فلاتر العنوان: الدولة + المنطقة/المدينة (تُطبّق فقط إذا كان الوضع ليس Worldwide)
+      if (!filters.isWorldwide) {
+        final countryName = filters.selectedCountryCode != null
+            ? LocationsData.findByCode(filters.selectedCountryCode!)?.name
+            : null;
+        if (countryName != null && countryName != 'Worldwide') {
+          queryBuilder = queryBuilder.eq('country', countryName);
+        }
+        if (filters.selectedRegionOrCity != null &&
+            filters.selectedRegionOrCity!.trim().isNotEmpty) {
+          queryBuilder = queryBuilder.eq('city', filters.selectedRegionOrCity!);
+        }
       }
 
       if (filters.selectedCarMinYear != null) {

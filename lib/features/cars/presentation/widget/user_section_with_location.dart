@@ -8,6 +8,7 @@ import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
 import 'package:wolfera/features/chat/presentation/widgets/circlue_user_image_widget.dart';
 import 'package:wolfera/generated/assets.dart';
 import 'package:wolfera/services/supabase_service.dart';
+import 'package:wolfera/features/app/presentation/widgets/shimmer_loading.dart';
 
 class UserSectionWithLocation extends StatelessWidget {
   final Map<String, dynamic> carData;
@@ -21,6 +22,7 @@ class UserSectionWithLocation extends StatelessWidget {
   Widget build(BuildContext context) {
     // استخراج بيانات المالك من owner object أو من carData مباشرة
     final owner = carData['owner'] as Map<String, dynamic>?;
+    final bool loadingOwner = owner == null;
     
     final userName = owner?['full_name']?.toString() ?? 
                      carData['seller_name']?.toString() ?? 
@@ -67,43 +69,111 @@ class UserSectionWithLocation extends StatelessWidget {
           userImage: avatarUrl,
         ),
         25.horizontalSpace,
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SizedBox(
-              width: 200.w,
-              child: AppText(
-                userName,
-                translation: false,
-                style: context.textTheme.bodyLarge!.s17.xb
-                    .withColor(AppColors.white),
-              ),
-            ),
-            7.verticalSpace,
-            Row(
-              children: [
-                AppSvgPicture(
-                  Assets.svgLocationPin,
-                  height: 15.h,
-                  width: 15.w,
-                  color: AppColors.grey,
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 1000),
+          switchInCurve: Curves.easeOutCubic,
+          switchOutCurve: Curves.easeOutCubic,
+          transitionBuilder: (child, animation) {
+            final offset = Tween<Offset>(
+              begin: const Offset(0.12, 0),
+              end: Offset.zero,
+            ).chain(CurveTween(curve: Curves.easeOutCubic)).animate(animation);
+            return FadeTransition(
+              opacity: animation,
+              child: SlideTransition(position: offset, child: child),
+            );
+          },
+          child: loadingOwner
+              ? const _SkeletonNameLocation(key: ValueKey('skel-name'))
+              : Column(
+                  key: const ValueKey('real-name'),
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: 200.w,
+                      child: AppText(
+                        userName,
+                        translation: false,
+                        style: context.textTheme.bodyLarge!.s17.xb
+                            .withColor(AppColors.white),
+                      ),
+                    ),
+                    7.verticalSpace,
+                    Row(
+                      children: [
+                        AppSvgPicture(
+                          Assets.svgLocationPin,
+                          height: 15.h,
+                          width: 15.w,
+                          color: AppColors.grey,
+                        ),
+                        9.horizontalSpace,
+                        SizedBox(
+                          width: 200.w,
+                          child: AppText(
+                            locationText,
+                            translation: false,
+                            style: context.textTheme.bodyLarge!.s17.r
+                                .withColor(AppColors.grey),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                9.horizontalSpace,
-                SizedBox(
-                  width: 200.w,
-                  child: AppText(
-                    locationText,
-                    translation: false,
-                    style: context.textTheme.bodyLarge!.s17.r
-                        .withColor(AppColors.grey),
-                  ),
-                ),
-              ],
-            ),
-          ],
         )
       ],
+    );
+  }
+}
+
+class _SkeletonNameLocation extends StatelessWidget {
+  const _SkeletonNameLocation({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer(
+      linearGradient: LinearGradient(
+        colors: [
+          AppColors.primary.withOpacity(0.08),
+          AppColors.primary.withOpacity(0.16),
+          AppColors.primary.withOpacity(0.08),
+        ],
+        stops: const [0.1, 0.3, 0.4],
+        begin: Alignment.centerLeft,
+        end: Alignment.centerRight,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const ShimmerLoading(
+            isLoading: true,
+            child: _Bar(width: 180),
+          ),
+          10.verticalSpace,
+          const ShimmerLoading(
+            isLoading: true,
+            child: _Bar(width: 140),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Bar extends StatelessWidget {
+  const _Bar({required this.width});
+  final double width;
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width.w,
+      height: 12.h,
+      decoration: BoxDecoration(
+        color: AppColors.greyStroke.withOpacity(0.35),
+        borderRadius: BorderRadius.circular(6.r),
+      ),
     );
   }
 }

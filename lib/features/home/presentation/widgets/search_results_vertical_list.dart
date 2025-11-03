@@ -6,6 +6,7 @@ import 'package:wolfera/core/config/theme/colors_app.dart';
 import 'package:wolfera/core/utils/money_formatter.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
 import 'package:wolfera/features/home/presentation/widgets/car_mini_details_card_widget.dart';
+import 'package:wolfera/features/app/presentation/widgets/shimmer_loading.dart';
 import 'package:wolfera/features/search_and_filteration/presentation/manager/search_cubit/search_cubit.dart';
 
 class SearchResultsVerticalList extends StatefulWidget {
@@ -13,6 +14,73 @@ class SearchResultsVerticalList extends StatefulWidget {
 
   @override
   State<SearchResultsVerticalList> createState() => _SearchResultsVerticalListState();
+}
+
+class _SkeletonCarMiniCard extends StatelessWidget {
+  const _SkeletonCarMiniCard({this.fullWidth = false});
+
+  final bool fullWidth;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 215.h,
+      width: fullWidth ? double.infinity : 320.w,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(color: AppColors.greyStroke, width: 1.5.r),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // صورة السيارة (Placeholder)
+          Container(
+            height: 140.h,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: AppColors.greyStroke.withOpacity(0.3),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(12.r),
+                topRight: Radius.circular(12.r),
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _bar(width: fullWidth ? 180.w : 140.w, height: 12.h),
+                8.verticalSpace,
+                Row(
+                  children: [
+                    _bar(width: 80.w, height: 10.h),
+                    10.horizontalSpace,
+                    _bar(width: 60.w, height: 10.h),
+                    const Spacer(),
+                    _bar(width: 70.w, height: 12.h),
+                  ],
+                ),
+                8.verticalSpace,
+                _bar(width: 120.w, height: 10.h),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _bar({required double width, required double height}) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: AppColors.greyStroke.withOpacity(0.35),
+        borderRadius: BorderRadius.circular(6.r),
+      ),
+    );
+  }
 }
 
 class _SearchResultsVerticalListState extends State<SearchResultsVerticalList> {
@@ -33,10 +101,28 @@ class _SearchResultsVerticalListState extends State<SearchResultsVerticalList> {
       builder: (context, state) {
         Widget content;
         if (state.isSearching) {
-          content = SizedBox(
-            height: 140.h,
-            child: const Center(
-              child: CircularProgressIndicator(color: AppColors.primary),
+          // سكلتون احترافي أثناء التحميل
+          content = Shimmer(
+            linearGradient: LinearGradient(
+              colors: [
+                AppColors.primary.withOpacity(0.08),
+                AppColors.primary.withOpacity(0.16),
+                AppColors.primary.withOpacity(0.08),
+              ],
+              stops: const [0.1, 0.3, 0.4],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
+            child: Column(
+              children: List.generate(4, (index) {
+                return Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                  child: const ShimmerLoading(
+                    isLoading: true,
+                    child: _SkeletonCarMiniCard(fullWidth: true),
+                  ),
+                );
+              }),
             ),
           );
         } else if (state.searchError != null && state.searchError!.isNotEmpty) {

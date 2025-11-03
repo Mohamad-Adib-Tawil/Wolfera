@@ -12,6 +12,7 @@ import 'package:wolfera/features/cars/presentation/widget/contect_button.dart';
 import 'package:wolfera/features/cars/presentation/widget/user_section_with_location.dart';
 import 'package:wolfera/features/chat/presentation/widgets/white_divider.dart';
 import 'package:wolfera/generated/assets.dart';
+import 'package:wolfera/features/app/presentation/widgets/shimmer_loading.dart';
 
 class SellerSctionDetalis extends StatelessWidget {
   final Map<String, dynamic> carData;
@@ -120,6 +121,7 @@ class SellerSctionDetalis extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool loadingOwner = owner == null;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -132,35 +134,54 @@ class SellerSctionDetalis extends StatelessWidget {
           14.verticalSpace,
           UserSectionWithLocation(carData: carData),
           29.verticalSpace,
-          if (hasUsablePhone)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: GestureDetector(
-                    onTap: _makePhoneCall,
-                    child: const ContectButton(
-                        svg: Assets.svgPhone, title: 'Call'),
-                  ),
-                ),
-                8.horizontalSpace,
-                Expanded(
-                  child: GestureDetector(
-                    onTap: _openWhatsApp,
-                    child: const ContectButton(
-                        svg: Assets.svgWhatsapp, title: 'Chat'),
-                  ),
-                ),
-                8.horizontalSpace,
-                Expanded(
-                  child: GestureDetector(
-                    onTap: _sendSms,
-                    child: const ContectButton(
-                        svg: Assets.svgMessageSquare, title: 'SMS'),
-                  ),
-                ),
-              ],
-            ),
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 1000),
+            switchInCurve: Curves.easeOutCubic,
+            switchOutCurve: Curves.easeOutCubic,
+            transitionBuilder: (child, animation) {
+              final offset = Tween<Offset>(
+                begin: const Offset(0.12, 0),
+                end: Offset.zero,
+              ).chain(CurveTween(curve: Curves.easeOutCubic)).animate(animation);
+              return FadeTransition(
+                opacity: animation,
+                child: SlideTransition(position: offset, child: child),
+              );
+            },
+            child: loadingOwner
+                ? const _ContactButtonsSkeleton(key: ValueKey('skel-contact'))
+                : hasUsablePhone
+                    ? Row(
+                        key: const ValueKey('real-contact'),
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: _makePhoneCall,
+                              child: const ContectButton(
+                                  svg: Assets.svgPhone, title: 'Call'),
+                            ),
+                          ),
+                          8.horizontalSpace,
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: _openWhatsApp,
+                              child: const ContectButton(
+                                  svg: Assets.svgWhatsapp, title: 'Chat'),
+                            ),
+                          ),
+                          8.horizontalSpace,
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: _sendSms,
+                              child: const ContectButton(
+                                  svg: Assets.svgMessageSquare, title: 'SMS'),
+                            ),
+                          ),
+                        ],
+                      )
+                    : const SizedBox.shrink(),
+          ),
           18.verticalSpace,
           GestureDetector(
             onTap: () => _openInAppChat(context),
@@ -173,6 +194,90 @@ class SellerSctionDetalis extends StatelessWidget {
           15.verticalSpace,
           CustomDivider(color: AppColors.grey, thickness: 1.r),
           10.verticalSpace,
+        ],
+      ),
+    );
+  }
+}
+
+class _ContactButtonsSkeleton extends StatelessWidget {
+  const _ContactButtonsSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Shimmer(
+      linearGradient: LinearGradient(
+        colors: [
+          AppColors.primary.withOpacity(0.08),
+          AppColors.primary.withOpacity(0.16),
+          AppColors.primary.withOpacity(0.08),
+        ],
+        stops: const [0.1, 0.3, 0.4],
+        begin: Alignment.centerLeft,
+        end: Alignment.centerRight,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(child: _buttonBar()),
+          8.horizontalSpace,
+          Expanded(child: _buttonBar()),
+          8.horizontalSpace,
+          Expanded(child: _buttonBar()),
+        ],
+      ),
+    );
+  }
+
+  Widget _buttonBar() {
+    return const ShimmerLoading(
+      isLoading: true,
+      child: _ButtonSkeleton(),
+    );
+  }
+}
+
+class _ButtonSkeleton extends StatelessWidget {
+  const _ButtonSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: HWEdgeInsets.only(left: 18, top: 10, bottom: 10, right: 20),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(10.r),
+        boxShadow: [
+          BoxShadow(
+            offset: const Offset(0, 4),
+            blurRadius: 4,
+            spreadRadius: 4,
+            color: AppColors.black.withValues(alpha: 0.18),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          // دائرة لأيقونة الاتصال
+          Container(
+            width: 20.w,
+            height: 20.h,
+            decoration: BoxDecoration(
+              color: AppColors.greyStroke.withOpacity(0.35),
+              shape: BoxShape.circle,
+            ),
+          ),
+          10.horizontalSpace,
+          // شريط يمثل النص
+          Expanded(
+            child: Container(
+              height: 14.h,
+              decoration: BoxDecoration(
+                color: AppColors.greyStroke.withOpacity(0.35),
+                borderRadius: BorderRadius.circular(6.r),
+              ),
+            ),
+          ),
         ],
       ),
     );

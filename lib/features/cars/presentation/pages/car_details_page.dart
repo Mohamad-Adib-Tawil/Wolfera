@@ -80,13 +80,17 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
       // ignore: avoid_print
       print('⚠️ Failed to fetch owner for car $carId');
     }
-    if (mounted) {
+    if (mounted && _loadingOwner) {
+      setState(() {
+        _loadingOwner = false;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final data = widget.carData ?? {};
+    // استخدم البيانات المُثرية عند توفرها لضمان ظهور اسم ورقم المالك حتى لو وصلتا متأخرًا
+    final data = _enrichedData ?? widget.carData ?? {};
     
     // Debug info about the car (only in debug mode)
     if (kDebugMode) {
@@ -124,7 +128,7 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
           8.verticalSpace,
           MoreImagesCarsList(images: allImages),
           10.verticalSpace,
-          CarDetailsSection(carData: widget.carData ?? {}),
+          CarDetailsSection(carData: data),
           FeaturesListView(
             safetyFeatures: safetyFeatures,
             interiorFeatures: interiorFeatures,
@@ -143,8 +147,8 @@ class _CarDetailsPageState extends State<CarDetailsPage> {
             child:
                 CustomDivider(color: AppColors.whiteLess, thickness: 0.6.r),
           ),
-          SellerSctionDetalis(carData: widget.carData ?? {}),
-          SimilarCarsListView(currentCarData: widget.carData ?? {}),
+          SellerSctionDetalis(carData: data),
+          SimilarCarsListView(currentCarData: data),
         ],
       ),
     );
