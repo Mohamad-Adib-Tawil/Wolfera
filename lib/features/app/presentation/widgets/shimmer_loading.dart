@@ -38,7 +38,7 @@ class ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
     super.initState();
 
     _shimmerController = AnimationController.unbounded(vsync: this)
-      ..repeat(min: -0.5, max: 1.5, period: const Duration(milliseconds: 1500));
+      ..repeat(min: -0.5, max: 1.5, period: const Duration(milliseconds: 1000));
   }
 
   @override

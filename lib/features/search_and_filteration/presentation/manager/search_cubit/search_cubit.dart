@@ -89,8 +89,8 @@ class SearchCubit extends Cubit<SearchState> {
       final region = prefs.selectedRegionOrCity;
       emit(state.copyWith(
         isWorldwide: isWw,
-        selectedCountryCode: Nullable.value(code),
-        selectedRegionOrCity: Nullable.value(region),
+        selectedCountryCode: Nullable.value(isWw ? null : code),
+        selectedRegionOrCity: Nullable.value(isWw ? null : region),
       ));
       _applyFiltersAndSearch();
     } catch (_) {}
