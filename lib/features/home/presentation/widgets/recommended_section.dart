@@ -67,6 +67,9 @@ class RecommendedSection extends StatelessWidget {
             },
           ),
         ),
+        SizedBox(
+          height: 5,
+        )
       ],
     );
   }
