@@ -197,6 +197,7 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
       title: AppText(
         "Messages",
         style: context.textTheme.bodyMedium.s20.m,
+        translation: false,
       ),
     );
   }

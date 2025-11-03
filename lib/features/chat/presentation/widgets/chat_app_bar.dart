@@ -51,6 +51,7 @@ class ChatAppbar extends StatelessWidget implements PreferredSizeWidget {
                       style: context.textTheme.titleMedium?.s18.m,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
+                      translation: false,
                     ),
                     if (carTitle != null && carTitle!.isNotEmpty)
                       AppText(

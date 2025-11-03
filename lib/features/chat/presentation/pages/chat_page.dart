@@ -70,8 +70,8 @@ class _ChatPageState extends State<ChatPage> {
             );
           }
           
-          final messages = const Expanded(child: MessagesListViewWidget());
-          final input = const ChatTextField();
+          const messagesList = MessagesListViewWidget();
+          const input = ChatTextField();
           
           return Scaffold(
             appBar: PreferredSize(
@@ -96,14 +96,16 @@ class _ChatPageState extends State<ChatPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 5.verticalSpace,
-                _shouldAnimateEntrance
-                    ? DelayedFadeSlide(
-                        delay: const Duration(milliseconds: 220),
-                        duration: const Duration(milliseconds: 1000),
-                        beginOffset: const Offset(-0.24, 0),
-                        child: messages,
-                      )
-                    : messages,
+                Expanded(
+                  child: _shouldAnimateEntrance
+                      ? DelayedFadeSlide(
+                          delay: const Duration(milliseconds: 220),
+                          duration: const Duration(milliseconds: 1000),
+                          beginOffset: const Offset(-0.24, 0),
+                          child: messagesList,
+                        )
+                      : messagesList,
+                ),
                 _shouldAnimateEntrance
                     ? DelayedFadeSlide(
                         delay: const Duration(milliseconds: 340),

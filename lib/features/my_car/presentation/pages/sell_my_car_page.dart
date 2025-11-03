@@ -120,7 +120,7 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     final isRtl = context.locale.languageCode == 'ar';
     return Container(
-      height: 115.h,
+      constraints: BoxConstraints(minHeight: 115.h),
       margin: HWEdgeInsets.only(
         left: 10,
         right: 10,
@@ -128,6 +128,7 @@ class _Header extends StatelessWidget {
       ),
       padding: HWEdgeInsetsDirectional.only(start: 10, end: 20),
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
