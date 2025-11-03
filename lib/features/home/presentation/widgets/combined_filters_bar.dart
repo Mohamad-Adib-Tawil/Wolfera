@@ -209,7 +209,9 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
       case 7: // Fuel
       case 8: // Cylinders
       case 9: // Seats
+        return 56.h;
       case 10: // Colors
+        return 84.h; // circle (≈55) + gap (≈10-12) + text (≈18)
       case 11: // Condition
         return 56.h;
       default:
