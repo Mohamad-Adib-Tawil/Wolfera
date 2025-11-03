@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
@@ -45,15 +46,14 @@ class CirclueUserImageWidget extends StatelessWidget {
                 width: width.w,
                 height: (height?.h ?? width.w),
                 fadeInDuration: const Duration(milliseconds: 200),
-                progressIndicatorBuilder: (context, _, progress) => Center(
-                  child: SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      value: progress.progress,
-                      color: AppColors.primary,
-                      strokeWidth: 2,
-                    ),
+                placeholder: (context, _) => Shimmer.fromColors(
+                  period: const Duration(milliseconds: 1000),
+                  baseColor: AppColors.grey.withValues(alpha: 0.15),
+                  highlightColor: AppColors.primary.withValues(alpha: 0.25),
+                  child: Container(
+                    width: width.w,
+                    height: (height?.h ?? width.w),
+                    color: Colors.white,
                   ),
                 ),
                 errorWidget: (context, failedUrl, error) {

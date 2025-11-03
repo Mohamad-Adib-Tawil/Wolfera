@@ -15,7 +15,7 @@ import 'package:wolfera/generated/assets.dart';
 
 class SellerSctionDetalis extends StatelessWidget {
   final Map<String, dynamic> carData;
-  
+
   const SellerSctionDetalis({
     super.key,
     required this.carData,
@@ -23,18 +23,35 @@ class SellerSctionDetalis extends StatelessWidget {
 
   // استخراج بيانات المالك
   Map<String, dynamic>? get owner => carData['owner'] as Map<String, dynamic>?;
-  
+
   String? get phoneNumber =>
       owner?['phone_number']?.toString() ??
       owner?['phone']?.toString() ??
       carData['phone_number']?.toString();
-  String? get email => owner?['email']?.toString() ?? carData['email']?.toString();
+  String? get email =>
+      owner?['email']?.toString() ?? carData['email']?.toString();
   String get sellerName =>
       owner?['full_name']?.toString() ??
       owner?['display_name']?.toString() ??
       owner?['name']?.toString() ??
       carData['seller_name']?.toString() ??
       'Seller';
+
+  // التحقق من صلاحية رقم الهاتف وعدم كونه رقمًا افتراضيًا
+  bool get hasUsablePhone {
+    final p = phoneNumber?.trim();
+    if (p == null || p.isEmpty) return false;
+    final digits = p.replaceAll(RegExp(r'[^0-9+]'), '');
+    if (digits.length < 7) return false; // حد أدنى لطول الرقم
+    const banned = {
+      '+963900000000',
+      '+0000000000',
+      '0000000000',
+      '000000',
+      '123456',
+    };
+    return !banned.contains(digits);
+  }
 
   // وظيفة الاتصال بالهاتف
   Future<void> _makePhoneCall() async {
@@ -52,14 +69,14 @@ class SellerSctionDetalis extends StatelessWidget {
 
   // وظيفة فتح واتساب
   Future<void> _openWhatsApp() async {
-    if (phoneNumber == null || phoneNumber!.isEmpty) {
+    if (!hasUsablePhone) {
       showMessage('Phone number not available', isSuccess: false);
       return;
     }
     // إزالة الرموز والمسافات من رقم الهاتف
     final cleanPhone = phoneNumber!.replaceAll(RegExp(r'[^\d+]'), '');
     final Uri whatsappUri = Uri.parse('https://wa.me/$cleanPhone');
-    
+
     if (await canLaunchUrl(whatsappUri)) {
       await launchUrl(whatsappUri, mode: LaunchMode.externalApplication);
     } else {
@@ -67,22 +84,18 @@ class SellerSctionDetalis extends StatelessWidget {
     }
   }
 
-  // وظيفة إرسال إيميل
-  Future<void> _sendEmail() async {
-    if (email == null || email!.isEmpty) {
-      showMessage('Email not available', isSuccess: false);
+  // وظيفة إرسال رسالة نصية SMS
+  Future<void> _sendSms() async {
+    if (!hasUsablePhone) {
+      showMessage('Phone number not available', isSuccess: false);
       return;
     }
-    final Uri emailUri = Uri(
-      scheme: 'mailto',
-      path: email,
-      query: 'subject=Inquiry about ${carData['title'] ?? 'your car'}',
-    );
-    
-    if (await canLaunchUrl(emailUri)) {
-      await launchUrl(emailUri);
+    final cleanPhone = phoneNumber!.replaceAll(RegExp(r'[^\d+]'), '');
+    final Uri smsUri = Uri(scheme: 'sms', path: cleanPhone);
+    if (await canLaunchUrl(smsUri)) {
+      await launchUrl(smsUri, mode: LaunchMode.externalApplication);
     } else {
-      showMessage('Could not launch email client', isSuccess: false);
+      showMessage('Could not open SMS app', isSuccess: false);
     }
   }
 
@@ -90,7 +103,8 @@ class SellerSctionDetalis extends StatelessWidget {
   void _openInAppChat(BuildContext context) {
     final ownerId = owner?['id']?.toString() ?? carData['user_id']?.toString();
     if (ownerId == null || ownerId.isEmpty) {
-      showMessage('Cannot start chat: seller information not available', isSuccess: false);
+      showMessage('Cannot start chat: seller information not available',
+          isSuccess: false);
       return;
     }
     // TODO: تمرير معلومات المالك والسيارة إلى صفحة الشات
@@ -118,31 +132,35 @@ class SellerSctionDetalis extends StatelessWidget {
           14.verticalSpace,
           UserSectionWithLocation(carData: carData),
           29.verticalSpace,
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: GestureDetector(
-                  onTap: _makePhoneCall,
-                  child: const ContectButton(svg: Assets.svgPhone, title: 'Call'),
+          if (hasUsablePhone)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: GestureDetector(
+                    onTap: _makePhoneCall,
+                    child: const ContectButton(
+                        svg: Assets.svgPhone, title: 'Call'),
+                  ),
                 ),
-              ),
-              8.horizontalSpace,
-              Expanded(
-                child: GestureDetector(
-                  onTap: _openWhatsApp,
-                  child: const ContectButton(svg: Assets.svgWhatsapp, title: 'Chat'),
+                8.horizontalSpace,
+                Expanded(
+                  child: GestureDetector(
+                    onTap: _openWhatsApp,
+                    child: const ContectButton(
+                        svg: Assets.svgWhatsapp, title: 'Chat'),
+                  ),
                 ),
-              ),
-              8.horizontalSpace,
-              Expanded(
-                child: GestureDetector(
-                  onTap: _sendEmail,
-                  child: const ContectButton(svg: Assets.svgEmail, title: 'Email'),
+                8.horizontalSpace,
+                Expanded(
+                  child: GestureDetector(
+                    onTap: _sendSms,
+                    child: const ContectButton(
+                        svg: Assets.svgMessageSquare, title: 'SMS'),
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
           18.verticalSpace,
           GestureDetector(
             onTap: () => _openInAppChat(context),
