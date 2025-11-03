@@ -26,10 +26,10 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
   int _selectedIndex = 0;
 
   final _tabs = const [
+    _FilterTab('Makers', Icons.local_offer_outlined),
     _FilterTab('Location', Icons.place_outlined),
     _FilterTab('Budget', Icons.attach_money_rounded),
     _FilterTab('Body type', Icons.directions_car_filled_outlined),
-    _FilterTab('Makers', Icons.local_offer_outlined),
   ];
 
   SearchCubit get _searchCubit => GetIt.I<SearchCubit>();
@@ -144,14 +144,14 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
 
   Offset _offsetForIndex(int index) {
     switch (index) {
-      case 0: // Location: from top
-        return const Offset(0, -0.22);
-      case 1: // Budget: from bottom
-        return const Offset(0, 0.22);
-      case 2: // Body type: from right
-        return const Offset(0.22, 0);
-      case 3: // Makers: from left
+      case 0: // Makers: from left
         return const Offset(-0.22, 0);
+      case 1: // Location: from top
+        return const Offset(0, -0.22);
+      case 2: // Budget: from bottom
+        return const Offset(0, 0.22);
+      case 3: // Body type: from right
+        return const Offset(0.22, 0);
       default:
         return const Offset(0.18, 0);
     }
@@ -164,17 +164,17 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
 
   Widget _buildContentForIndex(int index) {
     switch (index) {
-      case 0: // Location
+      case 0: // Makers
+        return const MakersListViewFilter();
+      case 1: // Location
         return Align(
           alignment: Alignment.centerLeft,
           child: CityDropdown(onChanged: (_) => _searchCubit.searchCars()),
         );
-      case 1: // Budget
+      case 2: // Budget
         return const BudgetListView();
-      case 2: // Body Type
+      case 3: // Body Type
         return const CarBodyTypeListView();
-      case 3: // Makers
-        return const MakersListViewFilter();
       default:
         return const SizedBox.shrink();
     }
