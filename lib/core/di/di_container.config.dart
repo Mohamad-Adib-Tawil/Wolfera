@@ -29,6 +29,7 @@ import '../../features/auth/domain/use_cases/verification_usecase.dart'
     as _i438;
 import '../../features/auth/presentation/bloc/auth_bloc.dart' as _i797;
 import '../../features/chat/presentation/manager/chat_bloc.dart' as _i243;
+import '../../features/chat/presentation/manager/chat_cubit.dart' as _i770;
 import '../../features/home/data/datasources/home_datasource.dart' as _i1055;
 import '../../features/home/presentation/manager/home_cubit/home_cubit.dart'
     as _i535;
@@ -44,6 +45,7 @@ import '../../features/profile/domain/use_cases/update_profile.dart' as _i308;
 import '../../features/profile/presentation/manager/profile_bloc.dart' as _i750;
 import '../../features/search_and_filteration/presentation/manager/search_cubit/search_cubit.dart'
     as _i761;
+import '../../services/chat_service.dart' as _i207;
 import '../../services/search_and_filters_service.dart' as _i749;
 import '../api/client.dart' as _i265;
 import '../storage/prefs_repository.dart' as _i866;
@@ -72,6 +74,7 @@ Future<_i174.GetIt> $initGetIt(
   );
   gh.lazySingleton<_i535.HomeCubit>(() => _i535.HomeCubit());
   gh.lazySingleton<_i243.ChatBloc>(() => _i243.ChatBloc());
+  gh.lazySingleton<_i207.ChatService>(() => _i207.ChatService());
   gh.lazySingleton<_i749.SearchFilterService>(
       () => _i749.SearchFilterService());
   gh.factory<_i308.UpdateProfileUsecase>(
@@ -84,6 +87,8 @@ Future<_i174.GetIt> $initGetIt(
         gh<_i361.BaseOptions>(),
         gh<_i974.Logger>(),
       ));
+  gh.lazySingleton<_i770.ChatCubit>(
+      () => _i770.ChatCubit(gh<_i207.ChatService>()));
   gh.lazySingleton<_i139.MyCarsBloc>(
       () => _i139.MyCarsBloc(gh<_i531.SellMyCarUsecase>()));
   gh.factory<_i866.PrefsRepository>(

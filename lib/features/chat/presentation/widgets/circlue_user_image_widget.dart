@@ -32,12 +32,6 @@ class CirclueUserImageWidget extends StatelessWidget {
       height: (height?.h ?? width.w),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            offset: const Offset(04, -2),
-            color: AppColors.black.withValues(alpha: 0.45),
-          )
-        ],
       ),
       child: ClipOval(
         child: url != null

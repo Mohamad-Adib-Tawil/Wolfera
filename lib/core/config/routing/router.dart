@@ -342,7 +342,9 @@ class GRouter {
                     parentNavigatorKey: _rootNavigatorKey,
                     pageBuilder: (BuildContext context, GoRouterState state) {
                       return _builderPage(
-                        child: const ChatPage(),
+                        child: ChatPage(
+                          chatData: state.extra as Map<String, dynamic>?,
+                        ),
                         state: state,
                       );
                     },

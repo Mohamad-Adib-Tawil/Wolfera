@@ -1,9 +1,6 @@
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:intl/intl.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
 import 'package:wolfera/core/config/theme/typography.dart';
 import 'package:wolfera/core/utils/extensions/build_context.dart';
@@ -14,7 +11,19 @@ import 'package:wolfera/features/chat/presentation/widgets/circlue_user_image_wi
 class ChatItem extends StatelessWidget {
   final int? index;
   final VoidCallback? onTap;
-  const ChatItem({super.key, this.onTap, this.index});
+  final String? title;
+  final String? subtitle;
+  final String? avatarUrl;
+  final String? timeText;
+  const ChatItem({
+    super.key,
+    this.onTap,
+    this.index,
+    this.title,
+    this.subtitle,
+    this.avatarUrl,
+    this.timeText,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,9 +34,7 @@ class ChatItem extends StatelessWidget {
         children: [
           CirclueUserImageWidget(
             width: 55,
-            userImage: Faker()
-                .image
-                .loremPicsum(random: index, height: 200, width: 200),
+            userImage: avatarUrl,
           ),
           14.horizontalSpace,
           Padding(
@@ -48,11 +55,10 @@ class ChatItem extends StatelessWidget {
   }
 
   ConstrainedBox lastMessage(BuildContext context) {
-    final vehicle = Faker().vehicle;
     return ConstrainedBox(
       constraints: BoxConstraints(minWidth: 0, maxWidth: 210.w),
       child: AppText(
-        vehicle.colorYearMakeModel(),
+        (subtitle == null || subtitle!.isEmpty) ? '...' : subtitle!,
         style: context.textTheme.titleSmall.s13.l.withColor(AppColors.grey),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
@@ -61,7 +67,6 @@ class ChatItem extends StatelessWidget {
   }
 
   SizedBox profileName(BuildContext context) {
-    DateTime dateTime = Faker().date.dateTime();
     return SizedBox(
       width: 265.w,
       child: Row(
@@ -69,7 +74,7 @@ class ChatItem extends StatelessWidget {
           ConstrainedBox(
             constraints: BoxConstraints(minWidth: 0, maxWidth: 210.w),
             child: AppText(
-              Faker().person.name(),
+              (title == null || title!.isEmpty) ? 'User' : title!,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: context.textTheme.titleMedium.s15.r,
@@ -77,11 +82,34 @@ class ChatItem extends StatelessWidget {
           ),
           const Spacer(),
           AppText(
-            DateFormat('EEE').format(dateTime),
+            _formatTime(),
             style: context.textTheme.titleMedium?.copyWith(fontSize: 15),
           ),
         ],
       ),
     );
+  }
+
+  String _formatTime() {
+    if (timeText == null || timeText!.isEmpty) return '';
+    try {
+      final dt = DateTime.tryParse(timeText!);
+      if (dt == null) return '';
+      final now = DateTime.now();
+      final diff = now.difference(dt);
+      if (diff.inDays > 7) {
+        return '${dt.day}/${dt.month}';
+      } else if (diff.inDays > 0) {
+        return '${diff.inDays}d';
+      } else if (diff.inHours > 0) {
+        return '${diff.inHours}h';
+      } else if (diff.inMinutes > 0) {
+        return '${diff.inMinutes}m';
+      } else {
+        return 'Now';
+      }
+    } catch (_) {
+      return '';
+    }
   }
 }

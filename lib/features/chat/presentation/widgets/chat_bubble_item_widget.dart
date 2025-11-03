@@ -12,9 +12,15 @@ class ChatBubbleItemWidget extends StatelessWidget {
   const ChatBubbleItemWidget({
     super.key,
     required this.isCurrent,
+    required this.messageText,
+    this.senderName,
+    this.senderAvatar,
   });
 
   final bool isCurrent;
+  final String messageText;
+  final String? senderName;
+  final String? senderAvatar;
 
   @override
   Widget build(BuildContext context) {
@@ -41,9 +47,10 @@ class ChatBubbleItemWidget extends StatelessWidget {
             ),
           ),
           child: AppText(
-            'Lorem ipsum dolor sit amet consectetur Vitae turpis eget cras',
+            messageText,
             style: context.textTheme.bodyLarge!.s15
                 .withColor(isCurrent ? AppColors.white : AppColors.black),
+            translation: false,
           ),
         ),
         5.verticalSpace,
@@ -56,8 +63,9 @@ class ChatBubbleItemWidget extends StatelessWidget {
             Padding(
               padding: HWEdgeInsets.only(bottom: 1, right: 8),
               child: AppText(
-                '12:00 am',
+                _formatTime(),
                 style: context.textTheme.labelMedium.m,
+                translation: false,
               ),
             ),
             isCurrent
@@ -76,5 +84,13 @@ class ChatBubbleItemWidget extends StatelessWidget {
         )
       ],
     );
+  }
+  
+  String _formatTime() {
+    final now = DateTime.now();
+    final hour = now.hour > 12 ? now.hour - 12 : now.hour;
+    final period = now.hour >= 12 ? 'PM' : 'AM';
+    final minute = now.minute.toString().padLeft(2, '0');
+    return '$hour:$minute $period';
   }
 }

@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get_it/get_it.dart';
 import 'package:wolfera/features/chat/presentation/widgets/chat_app_bar.dart';
 import 'package:wolfera/features/app/presentation/widgets/animations/delayed_fade_slide.dart';
+import 'package:wolfera/features/chat/presentation/manager/chat_cubit.dart';
+import 'package:wolfera/features/app/presentation/widgets/app_loader_widget/app_loader.dart';
 import '../widgets/chat_text_field.dart';
 import '../widgets/messages_list_view_widget.dart';
 
 class ChatPage extends StatefulWidget {
-  const ChatPage({super.key});
+  final Map<String, dynamic>? chatData;
+  
+  const ChatPage({
+    super.key,
+    this.chatData,
+  });
 
   @override
   State<ChatPage> createState() => _ChatPageState();
@@ -15,54 +24,99 @@ class ChatPage extends StatefulWidget {
 class _ChatPageState extends State<ChatPage> {
   static bool _didAnimateOnce = false;
   late final bool _shouldAnimateEntrance;
+  late final ChatCubit _chatCubit;
 
   @override
   void initState() {
+    super.initState();
     _shouldAnimateEntrance = !_didAnimateOnce;
     _didAnimateOnce = true;
-    super.initState();
+    
+    _chatCubit = GetIt.I<ChatCubit>();
+    
+    // تهيئة المحادثة مع البيانات المستلمة
+    final data = widget.chatData ?? {};
+    _chatCubit.initializeConversation(
+      sellerId: data['seller_id']?.toString(),
+      carId: (data['car_id'] ?? data['carId'])?.toString(),
+      sellerName: data['seller_name']?.toString(),
+      carTitle: data['car_title']?.toString(),
+    );
+  }
+  
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final messages = const Expanded(child: MessagesListViewWidget());
-    final input = const ChatTextField();
-
-    return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(kToolbarHeight),
-        child: _shouldAnimateEntrance
-            ? const DelayedFadeSlide(
-                delay: Duration(milliseconds: 80),
-                duration: Duration(milliseconds: 1000),
-                beginOffset: Offset(0, -0.24),
-                child: ChatAppbar(),
-              )
-            : const ChatAppbar(),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          5.verticalSpace,
-          _shouldAnimateEntrance
-              ? DelayedFadeSlide(
-                  delay: const Duration(milliseconds: 220),
-                  duration: const Duration(milliseconds: 1000),
-                  beginOffset: const Offset(-0.24, 0),
-                  child: messages,
-                )
-              : messages,
-          _shouldAnimateEntrance
-              ? DelayedFadeSlide(
-                  delay: const Duration(milliseconds: 340),
-                  duration: const Duration(milliseconds: 1000),
-                  beginOffset: const Offset(0, 0.24),
-                  child: input,
-                )
-              : input,
-          5.verticalSpace,
-        ],
+    return BlocProvider.value(
+      value: _chatCubit,
+      child: BlocBuilder<ChatCubit, ChatState>(
+        builder: (context, state) {
+          if (state.isLoading) {
+            return const Scaffold(
+              body: Center(child: AppLoader()),
+            );
+          }
+          
+          if (state.error != null) {
+            return Scaffold(
+              appBar: AppBar(title: const Text('المحادثة')),
+              body: Center(
+                child: Text(state.error!),
+              ),
+            );
+          }
+          
+          final messages = const Expanded(child: MessagesListViewWidget());
+          final input = const ChatTextField();
+          
+          return Scaffold(
+            appBar: PreferredSize(
+              preferredSize: const Size.fromHeight(kToolbarHeight),
+              child: _shouldAnimateEntrance
+                  ? DelayedFadeSlide(
+                      delay: const Duration(milliseconds: 80),
+                      duration: const Duration(milliseconds: 1000),
+                      beginOffset: const Offset(0, -0.24),
+                      child: ChatAppbar(
+                        otherUserName: state.otherUserName,
+                        carTitle: state.carTitle,
+                      ),
+                    )
+                  : ChatAppbar(
+                      otherUserName: state.otherUserName,
+                      carTitle: state.carTitle,
+                    ),
+            ),
+            body: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                5.verticalSpace,
+                _shouldAnimateEntrance
+                    ? DelayedFadeSlide(
+                        delay: const Duration(milliseconds: 220),
+                        duration: const Duration(milliseconds: 1000),
+                        beginOffset: const Offset(-0.24, 0),
+                        child: messages,
+                      )
+                    : messages,
+                _shouldAnimateEntrance
+                    ? DelayedFadeSlide(
+                        delay: const Duration(milliseconds: 340),
+                        duration: const Duration(milliseconds: 1000),
+                        beginOffset: const Offset(0, 0.24),
+                        child: input,
+                      )
+                    : input,
+                5.verticalSpace,
+              ],
+            ),
+          );
+        },
       ),
     );
   }
