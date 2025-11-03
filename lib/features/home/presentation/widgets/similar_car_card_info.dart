@@ -7,6 +7,7 @@ import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
 import 'package:wolfera/features/app/presentation/widgets/custom_text_container.dart';
 import 'package:wolfera/features/app/presentation/widgets/space_text_widget.dart';
 import 'package:wolfera/generated/assets.dart';
+import 'package:wolfera/core/utils/money_formatter.dart';
 
 class SimilarCarCardInfo extends StatelessWidget {
   final Map<String, dynamic>? carData;
@@ -34,9 +35,9 @@ class SimilarCarCardInfo extends StatelessWidget {
     final country = carData?['country']?.toString();
     final location = city ?? country ?? 'Unknown';
     
-    final price = carData?['price'];
+    final priceRaw = carData?['price']?.toString();
     final currency = carData?['currency']?.toString() ?? '\$';
-    final priceText = price != null ? '${_formatNumber(price)}$currency' : 'N/A';
+    final priceText = MoneyFormatter.compactFromString(priceRaw, symbol: currency) ?? 'N/A';
     
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

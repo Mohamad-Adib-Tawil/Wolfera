@@ -7,6 +7,7 @@ import 'package:wolfera/features/home/presentation/widgets/car_mini_details_card
 import 'package:wolfera/features/app/presentation/widgets/app_loader_widget/app_loader.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
 import 'package:wolfera/features/my_car/presentation/manager/my_cars_bloc.dart';
+import 'package:wolfera/core/utils/money_formatter.dart';
 
 class MyCarsListViewBuilder extends StatelessWidget {
   const MyCarsListViewBuilder({
@@ -64,8 +65,7 @@ class MyCarsListViewBuilder extends StatelessWidget {
           final fuel = car['fuel_type']?.toString();
           final location = (car['city'] ?? car['location'])?.toString();
           final priceVal = car['price']?.toString();
-          final price =
-              (priceVal != null && priceVal.isNotEmpty) ? '${priceVal}\$' : null;
+          final price = MoneyFormatter.compactFromString(priceVal, symbol: '\$');
 
           return Padding(
             padding: HWEdgeInsets.only(top: 20, right: 14, left: 14),
