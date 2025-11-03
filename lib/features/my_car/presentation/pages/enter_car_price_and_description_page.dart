@@ -33,16 +33,60 @@ class _EnterCarPriceAndDescriptionPageState
               formControlName: _myCarsBloc.kFromCarDescription,
             ),
             50.verticalSpace,
-            SellCarItem(
-              title: 'Price'.tr(),
-              formControlName: _myCarsBloc.kFromCarPrice,
-              prefix: AppText(
-                "\$",
-                style:
-                    context.textTheme.bodyLarge?.m.withColor(AppColors.white),
-              ),
-              textInputType: const TextInputType.numberWithOptions(
-                  signed: false, decimal: false),
+            ReactiveValueListenableBuilder(
+              formControl: _myCarsBloc.descriptionSectionForm.control(_myCarsBloc.kFromCurrencyCode),
+              builder: (context, currencyControl, child) {
+                final code = currencyControl.value as String? ?? 'USD';
+                final selected = CurrenciesData.findByCode(code) ?? CurrenciesData.defaultCurrency();
+                return SellCarItem(
+                  title: 'Price'.tr(),
+                  formControlName: _myCarsBloc.kFromCarPrice,
+                  prefix: SizedBox(
+                    width: 104,
+                    child: AppDropdownSearch<CurrencyOption>(
+                      items: CurrenciesData.list,
+                      selectedItem: selected,
+                      itemAsString: (c) => c.symbol,
+                      hintText: 'Currency',
+                      dropdownBuilder: (context, c) => Text(
+                        (c?.symbol ?? r'$'),
+                        style: context.textTheme.bodySmall?.m
+                            .withColor(AppColors.white),
+                      ),
+                      popupProps: PopupProps.menu(
+                        showSearchBox: false,
+                        itemBuilder: (ctx, c, isSel) => Padding(
+                          padding: HWEdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                          child: Row(
+                            children: [
+                              Text(c.symbol, style: context.textTheme.titleSmall?.b),
+                              10.horizontalSpace,
+                              Expanded(child: Text('${c.code} - ${c.name}')),
+                            ],
+                          ),
+                        ),
+                      ),
+                      dropdownButtonProps: DropdownButtonProps(
+                        icon: Icon(Icons.keyboard_arrow_down_rounded,
+                            size: 16, color: AppColors.white),
+                      ),
+                      onChanged: (c) {
+                        if (c == null) return;
+                        _myCarsBloc.descriptionSectionForm
+                            .control(_myCarsBloc.kFromCurrencyCode)
+                            .updateValue(c.code);
+                      },
+                      borderColor: Colors.transparent,
+                      filled: false,
+                      contentPadding: HWEdgeInsetsDirectional.only(start: 6, end: 4),
+                      baseStyle: context.textTheme.bodySmall?.m
+                          .withColor(AppColors.white),
+                    ),
+                  ),
+                  textInputType: const TextInputType.numberWithOptions(
+                      signed: false, decimal: false),
+                );
+              },
             ),
             30.verticalSpace,
             AppText(

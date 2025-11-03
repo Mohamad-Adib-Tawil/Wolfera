@@ -20,6 +20,7 @@ class SellMyCarParams {
   final String userId;
   final String location;
   final String status;
+  final String currency; // currency symbol to display (e.g., $, €, ل.س)
   final String carMaker;
   final String carModel;
   final String carEngine;
@@ -54,6 +55,7 @@ class SellMyCarParams {
     required this.userId,
     required this.location,
     required this.status,
+    required this.currency,
     required this.carMaker,
     required this.carModel,
     required this.carEngine,
@@ -105,7 +107,7 @@ class SellMyCarParams {
       'model': carModel,
       'year': int.tryParse(carYear),
       'price': num.tryParse(carPrice),
-      'currency': 'USD',
+      'currency': currency,
       'mileage': int.tryParse(carMileage),
       'transmission': carTransmission,
       'fuel_type': carFuelType,

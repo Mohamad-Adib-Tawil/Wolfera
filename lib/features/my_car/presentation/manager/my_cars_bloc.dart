@@ -14,6 +14,7 @@ import 'package:wolfera/features/my_car/domain/usecases/sell_my_car_usecase.dart
 import 'package:wolfera/features/home/presentation/manager/home_cubit/home_cubit.dart';
 import 'package:wolfera/generated/locale_keys.g.dart';
 import 'package:wolfera/core/constants/locations_data.dart';
+import 'package:wolfera/core/constants/currencies.dart';
 import 'package:wolfera/features/app/domin/repositories/prefs_repository.dart';
 
 part 'my_cars_event.dart';
@@ -62,6 +63,8 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
   final String kFromWorldwide = 'worldwide';
   final String kFromCountryCode = 'countryCode';
   final String kFromRegionOrCity = 'regionOrCity';
+  // Price currency selection (new)
+  final String kFromCurrencyCode = 'currencyCode';
   final String kFromCarImageFullRight = 'carImageFullRight';
   final String kFromCarImageFullLeft = 'carImageFullLeft';
   final String kFromCarImageRear = 'carImageRear';
@@ -145,6 +148,9 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
         // Use countryName for 'location' param (legacy mapping)
         location: _computeCountryName(),
         status: 'Available',
+        currency: CurrenciesData.symbolFor(
+          descriptionSectionForm.control(kFromCurrencyCode).value as String?
+        ),
         carMaker: sellMyCarForm.control(kFromCarMaker).value as String,
         carModel: sellMyCarForm.control(kFromCarModel).value as String,
         carEngine: sellMyCarForm.control(kFromCarEngine).value as String,
@@ -380,6 +386,8 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
         validators: [Validators.required],
         value: "BMW 3.0L Twin-Turbo I6 2024 Automatic."),
     kFromCarPrice: FormControl<String>(validators: [Validators.required], value: "15000"),
+    // currency code with default USD
+    kFromCurrencyCode: FormControl<String>(value: 'USD'),
     // legacy location field (unused now in mapping, kept to avoid breaking)
     kFromCarLocation: FormControl<String>(value: ''),
     // Address selections (new) - will be initialized from user prefs
