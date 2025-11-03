@@ -302,6 +302,10 @@ class _SearcgPageState extends State<SearchPage> {
                               onPressed: () {
                                 _searchCubit.searchCars();
                               },
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: const Size(0, 0),
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
                               child: AppText('Retry'.tr()),
                             ),
                           ],
@@ -343,42 +347,6 @@ class _SearcgPageState extends State<SearchPage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               AppEmptyState.foodsEmpty(),
-                              if (hasActiveFilters) ...[
-                                4.verticalSpace,
-                                AppElevatedButton(
-                                  onPressed: () =>
-                                      _searchCubit.resetAllFilters(),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.transparent,
-                                    elevation: 0,
-                                    shadowColor: Colors.transparent,
-                                    side: const BorderSide(
-                                        color: AppColors.primary, width: 0.7),
-                                    padding: HWEdgeInsets.symmetric(
-                                        horizontal: 16, vertical: 10),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(24).r,
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(
-                                        Icons.filter_alt_off_rounded,
-                                        size: 16.r,
-                                        color: AppColors.primary,
-                                      ),
-                                      8.horizontalSpace,
-                                      AppText(
-                                        'Clear all filters'.tr(),
-                                        style: context
-                                            .textTheme.titleMedium?.s13.m
-                                            .withColor(AppColors.primary),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
                             ],
                           ),
                         ),
@@ -416,6 +384,10 @@ class _SearcgPageState extends State<SearchPage> {
                                     onPressed: () {
                                       _searchCubit.searchCars();
                                     },
+                                    style: ElevatedButton.styleFrom(
+                                      minimumSize: const Size(0, 0),
+                                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    ),
                                     child: AppText('Retry'.tr()),
                                   ),
                                 ],
@@ -457,42 +429,6 @@ class _SearcgPageState extends State<SearchPage> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     AppEmptyState.foodsEmpty(),
-                                    if (hasActiveFilters) ...[
-                                      4.verticalSpace,
-                                      AppElevatedButton(
-                                        onPressed: () =>
-                                            _searchCubit.resetAllFilters(),
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.transparent,
-                                          elevation: 0,
-                                          shadowColor: Colors.transparent,
-                                          side: const BorderSide(
-                                              color: AppColors.primary, width: 0.7),
-                                          padding: HWEdgeInsets.symmetric(
-                                              horizontal: 16, vertical: 10),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(24).r,
-                                          ),
-                                        ),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(
-                                              Icons.filter_alt_off_rounded,
-                                              size: 16.r,
-                                              color: AppColors.primary,
-                                            ),
-                                            8.horizontalSpace,
-                                            AppText(
-                                              'Clear all filters'.tr(),
-                                              style: context
-                                                  .textTheme.titleMedium?.s13.m
-                                                  .withColor(AppColors.primary),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
                                   ],
                                 ),
                               ),

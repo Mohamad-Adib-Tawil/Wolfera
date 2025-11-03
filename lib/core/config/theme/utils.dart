@@ -8,7 +8,8 @@ ElevatedButtonThemeData _elevatedButtonTheme(
         backgroundColor: scheme.primary,
         foregroundColor: scheme.onPrimary,
         disabledBackgroundColor: scheme.grey200,
-        minimumSize: Size(double.infinity, 65.h),
+        // Do not force infinite width; let parent constraints decide
+        minimumSize: Size(0, 65.h),
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(kr12)),
       ),
