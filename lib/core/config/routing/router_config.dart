@@ -83,4 +83,5 @@ class _MyCarsRoutes {
 class _ChatsRoutes {
   const _ChatsRoutes._();
   final String chatPage = 'chatPage';
+  final String sellerProfile = 'sellerProfile';
 }

@@ -13,74 +13,77 @@ class ChatAppbar extends StatelessWidget implements PreferredSizeWidget {
   final String? otherUserName;
   final String? carTitle;
   final String? otherUserAvatar;
+  final VoidCallback? onTapHeader;
   
   const ChatAppbar({
     super.key,
     this.otherUserName,
     this.carTitle,
     this.otherUserAvatar,
+    this.onTapHeader,
   });
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
   @override
   Widget build(BuildContext context) {
-    return PreferredSize(
-      preferredSize: const Size(double.infinity, kToolbarHeight),
-      child: AppBar(
-          toolbarHeight: 58.h,
-          titleSpacing: 10.w,
-          backgroundColor: Colors.transparent,
-          title: Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 3.5),
-                child: CirclueUserImageWidget(
-                  width: 42,
-                  userImage: otherUserAvatar,
-                ),
+    return AppBar(
+      toolbarHeight: 58.h,
+      titleSpacing: 10.w,
+      backgroundColor: Colors.transparent,
+      title: InkWell(
+        onTap: onTapHeader,
+        borderRadius: BorderRadius.circular(8),
+        child: Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 3.5),
+              child: CirclueUserImageWidget(
+                width: 42,
+                userImage: otherUserAvatar,
               ),
-              14.horizontalSpace,
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
+            ),
+            14.horizontalSpace,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  AppText(
+                    otherUserName ?? 'البائع',
+                    style: context.textTheme.titleMedium?.s18.m,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    translation: false,
+                  ),
+                  if (carTitle != null && carTitle!.isNotEmpty)
                     AppText(
-                      otherUserName ?? 'البائع',
-                      style: context.textTheme.titleMedium?.s18.m,
+                      carTitle!,
+                      style: context.textTheme.bodySmall?.s13,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       translation: false,
                     ),
-                    if (carTitle != null && carTitle!.isNotEmpty)
-                      AppText(
-                        carTitle!,
-                        style: context.textTheme.bodySmall?.s13,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        translation: false,
-                      ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          // centerTitle: true,
-          leading: GestureDetector(
-            onTap: () => GoRouter.of(context).pop(),
-            child: Container(
-              height: 35.h,
-              width: 35.w,
-              padding: HWEdgeInsets.only(left: 8, top: 5, bottom: 5),
-              child: AppSvgPicture(
-                Assets.svgArrowLeft,
-                height: 35.h,
-                width: 35.w,
+                ],
               ),
             ),
+          ],
+        ),
+      ),
+      leading: GestureDetector(
+        onTap: () => GoRouter.of(context).pop(),
+        child: Container(
+          height: 35.h,
+          width: 35.w,
+          padding: HWEdgeInsets.only(left: 8, top: 5, bottom: 5),
+          child: AppSvgPicture(
+            Assets.svgArrowLeft,
+            height: 35.h,
+            width: 35.w,
           ),
-          automaticallyImplyLeading: true),
+        ),
+      ),
+      automaticallyImplyLeading: true,
     );
   }
 }

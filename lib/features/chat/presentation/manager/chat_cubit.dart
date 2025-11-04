@@ -22,6 +22,7 @@ class ChatCubit extends Cubit<ChatState> {
     required String? carId,
     String? sellerName,
     String? carTitle,
+    String? conversationId,
   }) async {
     emit(state.copyWith(isLoading: true, error: null));
     
@@ -35,6 +36,46 @@ class ChatCubit extends Cubit<ChatState> {
         return;
       }
       
+      // إذا توفّر conversationId نختصر الطريق
+      if (conversationId != null && conversationId.isNotEmpty) {
+        final conversation = await _chatService.getConversation(conversationId);
+        if (conversation != null) {
+          _currentConversationId = conversation['id'];
+          final messages = await _chatService.getMessages(
+            conversationId: _currentConversationId!,
+          );
+          await _chatService.markMessagesAsRead(
+            conversationId: _currentConversationId!,
+            userId: currentUser.id,
+          );
+          _subscribeToMessages();
+
+          // معلومات الطرف الآخر
+          final isCurrentBuyer = conversation['buyer_id'] == currentUser.id;
+          final otherMap = isCurrentBuyer ? conversation['seller'] : conversation['buyer'];
+          final otherName = (sellerName != null && sellerName.isNotEmpty)
+              ? sellerName
+              : (otherMap?['full_name'] ?? otherMap?['display_name'] ?? otherMap?['name'])?.toString() ?? 'User';
+          final otherAvatar = (otherMap?['avatar_url'] ?? otherMap?['photo_url'] ?? otherMap?['picture'])?.toString();
+          final otherId = (isCurrentBuyer ? conversation['seller_id'] : conversation['buyer_id'])?.toString();
+          final resolvedCarTitle = carTitle ?? conversation['car']?['title']?.toString();
+
+          emit(state.copyWith(
+            isLoading: false,
+            conversationId: _currentConversationId,
+            conversation: conversation,
+            messages: messages,
+            currentUserId: currentUser.id,
+            otherUserId: otherId,
+            otherUserName: otherName,
+            otherUserAvatar: otherAvatar,
+            carTitle: resolvedCarTitle,
+          ));
+          return;
+        }
+        // في حال لم نجد المحادثة، نكمل بالمسار العادي أدناه
+      }
+
       if (sellerId == null || carId == null) {
         emit(state.copyWith(
           isLoading: false,
@@ -113,13 +154,17 @@ class ChatCubit extends Cubit<ChatState> {
       // الاشتراك في تحديثات الرسائل
       _subscribeToMessages();
       
-      // تحديد اسم الطرف الآخر إن لم يتم تمريره
+      // تحديد اسم وصورة الطرف الآخر
       String? otherName = sellerName;
+      final isCurrentBuyer = conversation['buyer_id'] == currentUser.id;
+      final otherMap = isCurrentBuyer ? conversation['seller'] : conversation['buyer'];
       if (otherName == null || otherName.isEmpty) {
-        final isCurrentBuyer = conversation['buyer_id'] == currentUser.id;
-        final other = isCurrentBuyer ? conversation['seller'] : conversation['buyer'];
-        otherName = (other?['full_name'] ?? other?['display_name'] ?? other?['name'])?.toString() ?? 'User';
+        otherName = (otherMap?['full_name'] ?? otherMap?['display_name'] ?? otherMap?['name'])?.toString() ?? 'User';
       }
+      final otherAvatar = (otherMap?['avatar_url'] ?? otherMap?['photo_url'] ?? otherMap?['picture'])?.toString();
+
+      // تحديد معرف الطرف الآخر
+      final otherId = (isCurrentBuyer ? conversation['seller_id'] : conversation['buyer_id'])?.toString();
 
       emit(state.copyWith(
         isLoading: false,
@@ -127,7 +172,9 @@ class ChatCubit extends Cubit<ChatState> {
         conversation: conversation,
         messages: messages,
         currentUserId: currentUser.id,
+        otherUserId: otherId,
         otherUserName: otherName,
+        otherUserAvatar: otherAvatar,
         carTitle: resolvedCarTitle,
       ));
     } catch (e) {
@@ -249,7 +296,9 @@ class ChatState {
   final Map<String, dynamic>? conversation;
   final List<Map<String, dynamic>> messages;
   final String? currentUserId;
+  final String? otherUserId;
   final String? otherUserName;
+  final String? otherUserAvatar;
   final String? carTitle;
   
   const ChatState({
@@ -262,7 +311,9 @@ class ChatState {
     this.conversation,
     this.messages = const [],
     this.currentUserId,
+    this.otherUserId,
     this.otherUserName,
+    this.otherUserAvatar,
     this.carTitle,
   });
   
@@ -276,7 +327,9 @@ class ChatState {
     Map<String, dynamic>? conversation,
     List<Map<String, dynamic>>? messages,
     String? currentUserId,
+    String? otherUserId,
     String? otherUserName,
+    String? otherUserAvatar,
     String? carTitle,
   }) {
     return ChatState(
@@ -289,7 +342,9 @@ class ChatState {
       conversation: conversation ?? this.conversation,
       messages: messages ?? this.messages,
       currentUserId: currentUserId ?? this.currentUserId,
+      otherUserId: otherUserId ?? this.otherUserId,
       otherUserName: otherUserName ?? this.otherUserName,
+      otherUserAvatar: otherUserAvatar ?? this.otherUserAvatar,
       carTitle: carTitle ?? this.carTitle,
     );
   }
