@@ -40,46 +40,22 @@ class _MyCarsPageState extends State<MyCarsPage> {
     );
     return SafeArea(
       child: Scaffold(
-        floatingActionButtonLocation:
-            FloatingActionButtonLocation.miniCenterDocked,
-        floatingActionButton: Padding(
-          padding: HWEdgeInsets.only(bottom: 18),
+        bottomNavigationBar: Padding(
+          padding: HWEdgeInsets.only(left: 16, right: 16, bottom: 16),
           child: _shouldAnimateEntrance
               ? _DelayedFadeSlide(
                   delay: const Duration(milliseconds: 360),
                   duration: const Duration(milliseconds: 1000),
                   beginOffset: const Offset(0, 0.24),
-                  child: ElevatedButton(
-                      style: ButtonStyle(
-                          alignment: Alignment.center,
-                          minimumSize: WidgetStatePropertyAll(Size(200.w, 40.h)),
-                          backgroundColor:
-                              const WidgetStatePropertyAll(AppColors.white)),
-                      onPressed: () {
-                        GRouter.router
-                            .pushNamed(GRouter.config.myCarsRoutes.sellMyCarPage);
-                      },
-                      child: AppText(
-                        "Sell My Car".tr(),
-                        style: context.textTheme.bodyLarge?.b
-                            .withColor(AppColors.blackLight),
-                      )),
+                  child: _SellCarCta(
+                    onTap: () => GRouter.router
+                        .pushNamed(GRouter.config.myCarsRoutes.sellMyCarPage),
+                  ),
                 )
-              : ElevatedButton(
-              style: ButtonStyle(
-                  alignment: Alignment.center,
-                  minimumSize: WidgetStatePropertyAll(Size(200.w, 40.h)),
-                  backgroundColor:
-                      const WidgetStatePropertyAll(AppColors.white)),
-              onPressed: () {
-                GRouter.router
-                    .pushNamed(GRouter.config.myCarsRoutes.sellMyCarPage);
-              },
-              child: AppText(
-                "Sell My Car".tr(),
-                style: context.textTheme.bodyLarge?.b
-                    .withColor(AppColors.blackLight),
-              )),
+              : _SellCarCta(
+                  onTap: () => GRouter.router
+                      .pushNamed(GRouter.config.myCarsRoutes.sellMyCarPage),
+                ),
         ),
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(kToolbarHeight),
@@ -177,6 +153,55 @@ class _MyCarsPageState extends State<MyCarsPage> {
               ],
             );
           },
+        ),
+      ),
+    );
+  }
+}
+
+class _SellCarCta extends StatelessWidget {
+  const _SellCarCta({required this.onTap});
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final radius = 14.r;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(radius),
+        onTap: onTap,
+        child: Ink(
+          height: 56.h,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(radius),
+            gradient: LinearGradient(
+              colors: [
+                AppColors.primary.withValues(alpha: 0.95),
+                AppColors.primary,
+              ],
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withValues(alpha: 0.28),
+                blurRadius: 18,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.directions_car_filled, color: Colors.white),
+              10.horizontalSpace,
+              AppText(
+                'Sell My Car'.tr(),
+                translation: false,
+                style: context.textTheme.titleMedium?.s18.xb
+                    .withColor(Colors.white),
+              ),
+            ],
+          ),
         ),
       ),
     );

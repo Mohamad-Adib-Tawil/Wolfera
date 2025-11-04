@@ -69,11 +69,14 @@ class _AppElevatedButtonState extends ThemeState<AppElevatedButton> {
 
     setButtonStyle();
 
+    final baseStyle = widget.style ?? _buttonTheme?.style;
+
     final child = ElevatedButton(
       onPressed: widget.isLoading ? null : onTap,
-      style: (widget.style ?? _buttonTheme?.style)?.copyWith(
-        minimumSize: MaterialStateProperty.all(const Size(0, 0)),
-        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      style: baseStyle ?? ElevatedButton.styleFrom(
+        minimumSize: Size(double.infinity, 56.h),
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 14.h),
+        tapTargetSize: MaterialTapTargetSize.padded,
       ),
       child: AnimatedCrossFade(
         firstChild: firstChild,

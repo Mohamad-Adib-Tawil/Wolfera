@@ -39,31 +39,34 @@ class LogoutBottomSheetBody extends StatelessWidget {
         ),
         30.verticalSpace,
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            AppElevatedButton(
-              text: LocaleKeys.cancel,
-              onPressed: () => context.pop(),
-              textStyle: context.textTheme.labelMedium.s18.b
-                  .withColor(AppColors.blackLight),
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.white,
-                  minimumSize: Size(120.w, 53.h),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10).r)),
+            Expanded(
+              child: AppElevatedButton(
+                text: LocaleKeys.cancel,
+                onPressed: () => context.pop(),
+                textStyle: context.textTheme.labelMedium.s18.b
+                    .withColor(AppColors.blackLight),
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.white,
+                    minimumSize: Size(double.infinity, 56.h),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10).r)),
+              ),
             ),
-            10.horizontalSpace,
-            AppElevatedButton(
-              text: LocaleKeys.yesAmSure,
-              onPressed: () =>
-                  GetIt.I<AuthBloc>().add(LogoutEvent(onSuccess: () async {})),
-              textStyle: context.textTheme.labelMedium.s18.b
-                  .withColor(AppColors.white),
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  minimumSize: Size(140.w, 53.h),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10).r)),
+            12.horizontalSpace,
+            Expanded(
+              child: AppElevatedButton(
+                text: LocaleKeys.yesAmSure,
+                onPressed: () => GetIt.I<AuthBloc>()
+                    .add(LogoutEvent(onSuccess: () async {})),
+                textStyle: context.textTheme.labelMedium.s18.b
+                    .withColor(AppColors.white),
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    minimumSize: Size(double.infinity, 56.h),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10).r)),
+              ),
             ),
           ],
         )
