@@ -13,12 +13,14 @@ class ChatBubbleItemWidget extends StatelessWidget {
     super.key,
     required this.isCurrent,
     required this.messageText,
+    this.messageTime,
     this.senderName,
     this.senderAvatar,
   });
 
   final bool isCurrent;
   final String messageText;
+  final DateTime? messageTime;
   final String? senderName;
   final String? senderAvatar;
 
@@ -63,7 +65,7 @@ class ChatBubbleItemWidget extends StatelessWidget {
             Padding(
               padding: HWEdgeInsets.only(bottom: 1, right: 8),
               child: AppText(
-                _formatTime(),
+                _formatTime(messageTime),
                 style: context.textTheme.labelMedium.m,
                 translation: false,
               ),
@@ -86,11 +88,11 @@ class ChatBubbleItemWidget extends StatelessWidget {
     );
   }
   
-  String _formatTime() {
-    final now = DateTime.now();
-    final hour = now.hour > 12 ? now.hour - 12 : now.hour;
-    final period = now.hour >= 12 ? 'PM' : 'AM';
-    final minute = now.minute.toString().padLeft(2, '0');
+  String _formatTime(DateTime? dt) {
+    if (dt == null) return '';
+    final hour = dt.hour > 12 ? dt.hour - 12 : dt.hour;
+    final period = dt.hour >= 12 ? 'PM' : 'AM';
+    final minute = dt.minute.toString().padLeft(2, '0');
     return '$hour:$minute $period';
   }
 }

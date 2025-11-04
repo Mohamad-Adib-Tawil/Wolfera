@@ -17,15 +17,15 @@ class DateTimeWidgetMessageItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
-    final difference = now.difference(dateTime);
-    
+    final today = DateTime(now.year, now.month, now.day);
+    final thatDay = DateTime(dateTime.year, dateTime.month, dateTime.day);
+    final diffDays = today.difference(thatDay).inDays;
+
     String displayText;
-    if (difference.inDays == 0) {
+    if (diffDays == 0) {
       displayText = 'اليوم';
-    } else if (difference.inDays == 1) {
+    } else if (diffDays == 1) {
       displayText = 'أمس';
-    } else if (difference.inDays < 7) {
-      displayText = 'منذ ${difference.inDays} أيام';
     } else {
       displayText = DateFormat('d MMM yyyy').format(dateTime);
     }

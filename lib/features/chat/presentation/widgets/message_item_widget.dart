@@ -36,6 +36,7 @@ class MessageItemWidget extends StatelessWidget {
             ChatBubbleItemWidget(
               isCurrent: isCurrent,
               messageText: message['message_text'] ?? '',
+              messageTime: messageTime,
               senderName: message['sender']?['full_name'] ?? '',
               senderAvatar: message['sender']?['avatar_url'],
             ),

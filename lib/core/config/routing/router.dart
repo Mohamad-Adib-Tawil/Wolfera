@@ -23,6 +23,7 @@ import 'package:wolfera/features/auth/presentation/pages/sigup_page.dart';
 import 'package:wolfera/features/home/presentation/pages/home_page.dart';
 import 'package:wolfera/features/search_and_filteration/presentation/pages/search_page.dart';
 import 'package:wolfera/features/chat/presentation/pages/chat_page.dart';
+import 'package:wolfera/features/chat/presentation/pages/seller_profile_page.dart';
 import 'package:wolfera/features/faviorate/presentation/pages/faviorate_page.dart';
 import 'package:wolfera/features/my_car/presentation/pages/my_cars_page.dart';
 import 'package:wolfera/features/notifications/presentation/pages/notifications_page.dart';
@@ -344,6 +345,25 @@ class GRouter {
                       return _builderPage(
                         child: ChatPage(
                           chatData: state.extra as Map<String, dynamic>?,
+                        ),
+                        state: state,
+                      );
+                    },
+                  ),
+                  GoRoute(
+                    path: _config.chatsRoutes.sellerProfile,
+                    name: _config.chatsRoutes.sellerProfile,
+                    parentNavigatorKey: _rootNavigatorKey,
+                    pageBuilder: (BuildContext context, GoRouterState state) {
+                      final extra = state.extra as Map<String, dynamic>?;
+                      final sellerId = extra?['seller_id']?.toString() ?? '';
+                      final sellerName = extra?['seller_name']?.toString();
+                      final sellerAvatar = extra?['seller_avatar']?.toString();
+                      return _builderPage(
+                        child: SellerProfilePage(
+                          sellerId: sellerId,
+                          sellerName: sellerName,
+                          sellerAvatar: sellerAvatar,
                         ),
                         state: state,
                       );

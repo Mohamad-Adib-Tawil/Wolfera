@@ -115,12 +115,19 @@ class SellerSctionDetalis extends StatelessWidget {
           isSuccess: false);
       return;
     }
+    // استنتاج صورة البائع
+    final sellerAvatar = owner == null
+        ? null
+        : (owner!['avatar_url'] ?? owner!['photo_url'] ?? owner!['picture'])
+            ?.toString();
+
     // تمرير معلومات المالك والسيارة إلى صفحة الشات
     GRouter.router.pushNamed(
       GRouter.config.chatsRoutes.chatPage,
       extra: {
         'seller_id': sellerId,
         'seller_name': sellerName,
+        'seller_avatar': sellerAvatar,
         'car_id': carData['id']?.toString(),
         'car_title': carData['title']?.toString(),
       },

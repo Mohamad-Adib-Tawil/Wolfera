@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
 import 'package:wolfera/features/chat/presentation/widgets/chat_app_bar.dart';
+import 'package:wolfera/core/config/routing/router.dart';
 import 'package:wolfera/features/app/presentation/widgets/animations/delayed_fade_slide.dart';
 import 'package:wolfera/features/chat/presentation/manager/chat_cubit.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_loader_widget/app_loader.dart';
@@ -41,6 +42,7 @@ class _ChatPageState extends State<ChatPage> {
       carId: (data['car_id'] ?? data['carId'])?.toString(),
       sellerName: data['seller_name']?.toString(),
       carTitle: data['car_title']?.toString(),
+      conversationId: data['conversation_id']?.toString(),
     );
   }
   
@@ -55,15 +57,18 @@ class _ChatPageState extends State<ChatPage> {
       value: _chatCubit,
       child: BlocBuilder<ChatCubit, ChatState>(
         builder: (context, state) {
-          if (state.isLoading) {
-            return const Scaffold(
-              body: Center(child: AppLoader()),
-            );
-          }
-          
+          final extras = widget.chatData ?? const {};
+          final headerName = state.otherUserName ?? extras['seller_name']?.toString();
+          final headerAvatar = state.otherUserAvatar ?? extras['seller_avatar']?.toString();
+          final headerCarTitle = state.carTitle ?? extras['car_title']?.toString();
+
           if (state.error != null) {
             return Scaffold(
-              appBar: AppBar(title: const Text('المحادثة')),
+              appBar: ChatAppbar(
+                otherUserName: headerName,
+                carTitle: headerCarTitle,
+                otherUserAvatar: headerAvatar,
+              ),
               body: Center(
                 child: Text(state.error!),
               ),
@@ -82,16 +87,44 @@ class _ChatPageState extends State<ChatPage> {
                       duration: const Duration(milliseconds: 1000),
                       beginOffset: const Offset(0, -0.24),
                       child: ChatAppbar(
-                        otherUserName: state.otherUserName,
-                        carTitle: state.carTitle,
+                        otherUserName: headerName,
+                        carTitle: headerCarTitle,
+                        otherUserAvatar: headerAvatar,
+                        onTapHeader: () {
+                          final otherId = state.otherUserId;
+                          if (otherId == null || otherId.isEmpty) return;
+                          GRouter.router.pushNamed(
+                            GRouter.config.chatsRoutes.sellerProfile,
+                            extra: {
+                              'seller_id': otherId,
+                              'seller_name': headerName,
+                              'seller_avatar': headerAvatar,
+                            },
+                          );
+                        },
                       ),
                     )
                   : ChatAppbar(
-                      otherUserName: state.otherUserName,
-                      carTitle: state.carTitle,
+                      otherUserName: headerName,
+                      carTitle: headerCarTitle,
+                      otherUserAvatar: headerAvatar,
+                      onTapHeader: () {
+                        final otherId = state.otherUserId;
+                        if (otherId == null || otherId.isEmpty) return;
+                        GRouter.router.pushNamed(
+                          GRouter.config.chatsRoutes.sellerProfile,
+                          extra: {
+                            'seller_id': otherId,
+                            'seller_name': headerName,
+                            'seller_avatar': headerAvatar,
+                          },
+                        );
+                      },
                     ),
             ),
-            body: Column(
+            body: state.isLoading
+                ? const Center(child: AppLoader())
+                : Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [

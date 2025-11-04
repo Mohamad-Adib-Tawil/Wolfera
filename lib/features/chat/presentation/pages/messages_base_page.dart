@@ -103,7 +103,12 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
             subtitle: subtitle.isNotEmpty ? subtitle : null,
             avatarUrl: otherAvatar,
             timeText: timeText,
-            onTap: () => _openConversation(conv, otherId: other?['id']?.toString(), otherName: otherName),
+            onTap: () => _openConversation(
+              conv,
+              otherId: other?['id']?.toString(),
+              otherName: otherName,
+              otherAvatar: otherAvatar,
+            ),
           ),
         );
       },
@@ -156,7 +161,7 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
     }
   }
 
-  void _openConversation(Map<String, dynamic> conv, {String? otherId, String? otherName}) {
+  void _openConversation(Map<String, dynamic> conv, {String? otherId, String? otherName, String? otherAvatar}) {
     final me = SupabaseService.currentUser?.id;
     if (me == null) return;
 
@@ -178,6 +183,7 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
         'conversation_id': conv['id']?.toString(),
         'seller_id': otherId, // الطرف الآخر
         'seller_name': otherName,
+        'seller_avatar': otherAvatar,
         'car_id': conv['car_id']?.toString(),
         'car_title': conv['car']?['title']?.toString(),
       },

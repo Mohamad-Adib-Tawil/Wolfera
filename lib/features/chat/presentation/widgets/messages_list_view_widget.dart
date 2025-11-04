@@ -76,25 +76,27 @@ class _MessagesListViewWidgetState extends State<MessagesListViewWidget> {
   }
   
   bool _shouldShowTime(int index, List<Map<String, dynamic>> messages) {
+    // اعرض تاريخ اليوم لأحدث مجموعة رسائل دائمًا
     if (index == 0) return true;
     if (index >= messages.length) return false;
-    
-    final reversedIndex = messages.length - 1 - index;
-    final previousIndex = reversedIndex + 1;
-    
-    if (previousIndex >= messages.length) return true;
-    
-    final current = messages[reversedIndex]['created_at'];
-    final previous = messages[previousIndex]['created_at'];
-    
+
+    // بما أن القائمة معكوسة، احسب المؤشرات الفعلية
+    final currentIdx = messages.length - 1 - index;
+    final prevIdx = currentIdx + 1;
+    if (prevIdx >= messages.length) return true;
+
+    final current = messages[currentIdx]['created_at'];
+    final previous = messages[prevIdx]['created_at'];
     if (current == null || previous == null) return false;
-    
+
     final currentTime = DateTime.tryParse(current.toString());
     final previousTime = DateTime.tryParse(previous.toString());
-    
     if (currentTime == null || previousTime == null) return false;
-    
-    // عرض الوقت إذا مر أكثر من 5 دقائق
-    return currentTime.difference(previousTime).inMinutes > 5;
+
+    // اعرض الفاصل عند تغير اليوم التقويمي
+    final isDifferentDay = currentTime.year != previousTime.year ||
+        currentTime.month != previousTime.month ||
+        currentTime.day != previousTime.day;
+    return isDifferentDay;
   }
 }
