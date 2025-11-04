@@ -190,33 +190,36 @@ class ChatCubit extends Cubit<ChatState> {
   void _subscribeToMessages() {
     if (_currentConversationId == null) return;
     
-    // إلغاء الاشتراك السابق
     _messagesSubscription?.unsubscribe();
     
     _messagesSubscription = _chatService.subscribeToConversation(
       conversationId: _currentConversationId!,
       onNewMessage: (message) {
-        // إضافة الرسالة الجديدة
-        final updatedMessages = [...state.messages, message];
-        emit(state.copyWith(messages: updatedMessages));
-        
-        // تحديد كمقروءة إذا كانت من الطرف الآخر
-        if (message['sender_id'] != state.currentUserId) {
-          _chatService.markMessagesAsRead(
-            conversationId: _currentConversationId!,
-            userId: state.currentUserId!,
-          );
+        // إذا كانت الرسالة موجودة بنفس المعرف، تجاهلها
+        final existsById = state.messages.any((m) => m['id'] == message['id']);
+        if (existsById) return;
+
+        // إزالة أي رسالة محلية معلّقة مطابقة (لتجنب التكرار)
+        bool isLocalPending(Map<String, dynamic> m) {
+          final isLocal = m['id']?.toString().startsWith('local_') == true;
+          return isLocal &&
+              m['message_text'] == message['message_text'] &&
+              m['sender_id'] == message['sender_id'];
         }
+        final filtered = state.messages.where((m) => !isLocalPending(m)).toList();
+        final updatedMessages = [...filtered, message];
+        emit(state.copyWith(messages: updatedMessages));
       },
       onMessageUpdate: (message) {
-        // تحديث الرسالة الموجودة
-        final updatedMessages = state.messages.map((m) {
-          if (m['id'] == message['id']) {
-            return message;
-          }
-          return m;
-        }).toList();
-        emit(state.copyWith(messages: updatedMessages));
+        // تحديث الرسالة إذا كانت موجودة، وإلا إضافتها
+        final idx = state.messages.indexWhere((m) => m['id'] == message['id']);
+        if (idx != -1) {
+          final list = List<Map<String, dynamic>>.from(state.messages);
+          list[idx] = message;
+          emit(state.copyWith(messages: list));
+        } else {
+          emit(state.copyWith(messages: [...state.messages, message]));
+        }
       },
     );
   }
@@ -227,6 +230,21 @@ class ChatCubit extends Cubit<ChatState> {
     if (_currentConversationId == null || state.currentUserId == null) return;
     
     emit(state.copyWith(isSending: true));
+    // أضف رسالة متفائلة محليًا لتحسين الاستجابة البصرية
+    final localId = 'local_${DateTime.now().microsecondsSinceEpoch}';
+    final optimistic = {
+      'id': localId,
+      'conversation_id': _currentConversationId,
+      'sender_id': state.currentUserId,
+      'message_text': text.trim(),
+      'message_type': 'text',
+      'attachments': <String>[],
+      'created_at': DateTime.now().toIso8601String(),
+      'sender': {
+        'id': state.currentUserId,
+      },
+    };
+    emit(state.copyWith(messages: [...state.messages, optimistic]));
     
     try {
       final message = await _chatService.sendMessage(
@@ -235,11 +253,13 @@ class ChatCubit extends Cubit<ChatState> {
         messageText: text.trim(),
       );
       
+      // إذا نجح الإرسال وأعد لنا الخادم الرسالة، استبدل المحلية بها فورًا
       if (message != null) {
-        // الرسالة ستصل عبر Realtime
+        final list = state.messages.map((m) => m['id'] == localId ? message : m).toList();
+        emit(state.copyWith(messages: list, isSending: false));
+      } else {
+        emit(state.copyWith(isSending: false));
       }
-      
-      emit(state.copyWith(isSending: false));
     } catch (e) {
       print('❌ Error sending message: $e');
       emit(state.copyWith(

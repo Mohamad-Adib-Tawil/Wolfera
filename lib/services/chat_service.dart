@@ -5,6 +5,7 @@ import 'package:injectable/injectable.dart';
 @lazySingleton
 class ChatService {
   final SupabaseClient _client = Supabase.instance.client;
+  final Map<String, Map<String, dynamic>> _senderCache = {};
   
   // Stream subscriptions
   final Map<String, RealtimeChannel> _subscriptions = {};
@@ -21,7 +22,7 @@ class ChatService {
       // محاولة جلب المحادثة الموجودة
       final existing = await _client
           .from('conversations')
-          .select('*, buyer:users!buyer_id(*), seller:users!seller_id(*), car:cars!car_id(*)')
+          .select('id,buyer_id,seller_id,car_id,is_active,last_message,last_message_at,updated_at, buyer:users!buyer_id(id,full_name,avatar_url,photo_url), seller:users!seller_id(id,full_name,avatar_url,photo_url), car:cars!car_id(id,title,user_id)')
           .eq('car_id', carId)
           .eq('buyer_id', buyerId)
           .eq('seller_id', sellerId)
@@ -32,7 +33,7 @@ class ChatService {
       // جرّب الأدوار المعكوسة (في حال كان المستخدم الحالي هو البائع)
       final reversed = await _client
           .from('conversations')
-          .select('*, buyer:users!buyer_id(*), seller:users!seller_id(*), car:cars!car_id(*)')
+          .select('id,buyer_id,seller_id,car_id,is_active,last_message,last_message_at,updated_at, buyer:users!buyer_id(id,full_name,avatar_url,photo_url), seller:users!seller_id(id,full_name,avatar_url,photo_url), car:cars!car_id(id,title,user_id)')
           .eq('car_id', carId)
           .eq('buyer_id', sellerId)
           .eq('seller_id', buyerId)
@@ -49,7 +50,7 @@ class ChatService {
             'seller_id': sellerId,
             'is_active': true,
           })
-          .select('*, buyer:users!buyer_id(*), seller:users!seller_id(*), car:cars!car_id(*)')
+          .select('id,buyer_id,seller_id,car_id,is_active,last_message,last_message_at,updated_at, buyer:users!buyer_id(id,full_name,avatar_url,photo_url), seller:users!seller_id(id,full_name,avatar_url,photo_url), car:cars!car_id(id,title,user_id)')
           .single();
       
       return newConversation;
@@ -64,7 +65,7 @@ class ChatService {
     try {
       final response = await _client
           .from('conversations')
-          .select('*, buyer:users!buyer_id(*), seller:users!seller_id(*), car:cars!car_id(*)')
+          .select('id,buyer_id,seller_id,car_id,is_active,last_message,last_message_at,updated_at, buyer:users!buyer_id(id,full_name,avatar_url,photo_url), seller:users!seller_id(id,full_name,avatar_url,photo_url), car:cars!car_id(id,title,user_id)')
           .or('buyer_id.eq.$userId,seller_id.eq.$userId')
           .eq('is_active', true)
           .order('last_message_at', ascending: false);
@@ -81,7 +82,7 @@ class ChatService {
     try {
       return await _client
           .from('conversations')
-          .select('*, buyer:users!buyer_id(*), seller:users!seller_id(*), car:cars!car_id(*)')
+          .select('id,buyer_id,seller_id,car_id,is_active,last_message,last_message_at,updated_at, buyer:users!buyer_id(id,full_name,avatar_url,photo_url), seller:users!seller_id(id,full_name,avatar_url,photo_url), car:cars!car_id(id,title,user_id)')
           .eq('id', conversationId)
           .single();
     } catch (e) {
@@ -110,7 +111,7 @@ class ChatService {
             'message_type': messageType,
             'attachments': attachments ?? [],
           })
-          .select('*, sender:users!sender_id(*)')
+          .select('id,conversation_id,sender_id,message_text,message_type,attachments,created_at,read_at, sender:users!sender_id(id,full_name,avatar_url,photo_url)')
           .single();
       
       return message;
@@ -123,13 +124,13 @@ class ChatService {
   /// جلب رسائل محادثة
   Future<List<Map<String, dynamic>>> getMessages({
     required String conversationId,
-    int limit = 50,
+    int limit = 30,
     int offset = 0,
   }) async {
     try {
       final response = await _client
           .from('messages')
-          .select('*, sender:users!sender_id(*)')
+          .select('id,conversation_id,sender_id,message_text,message_type,attachments,created_at,read_at, sender:users!sender_id(id,full_name,avatar_url,photo_url)')
           .eq('conversation_id', conversationId)
           .order('created_at', ascending: false)
           .range(offset, offset + limit - 1);
@@ -259,11 +260,20 @@ class ChatService {
   /// إضافة بيانات المرسل للرسالة
   Future<Map<String, dynamic>> _enrichMessageWithSender(Map<String, dynamic> message) async {
     try {
+      final senderId = message['sender_id']?.toString();
+      if (senderId == null) return message;
+      if (_senderCache.containsKey(senderId)) {
+        return {
+          ...message,
+          'sender': _senderCache[senderId],
+        };
+      }
       final sender = await _client
           .from('users')
-          .select('*')
-          .eq('id', message['sender_id'])
+          .select('id,full_name,avatar_url,photo_url')
+          .eq('id', senderId)
           .single();
+      _senderCache[senderId] = sender;
       
       return {
         ...message,
