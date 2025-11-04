@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:wolfera/core/config/routing/router.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
@@ -38,6 +39,99 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
     _didAnimateOnce = true;
     _loadConversations();
   }
+
+  Future<void> _confirmClear(Map<String, dynamic> conv) async {
+    final ok = await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Clear conversation?'),
+            content: const Text('This will remove all messages and send a system notice to the other user.'),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+              TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Clear', style: TextStyle(color: Colors.red))),
+            ],
+          ),
+        ) ??
+        false;
+    if (!ok) return;
+    final id = conv['id']?.toString();
+    final actor = SupabaseService.currentUser?.id;
+    if (id == null || actor == null) return;
+    final success = await _chatService.clearConversation(conversationId: id, actorId: actor);
+    if (success && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Conversation cleared')));
+    }
+  }
+
+  void _showActionsSheet(Map<String, dynamic> conv) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF1E1F24),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      builder: (ctx) {
+        return Padding(
+          padding: HWEdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  AppText('Conversation actions', translation: false, style: context.textTheme.titleMedium.s18.xb),
+                  IconButton(onPressed: () => Navigator.pop(ctx), icon: const Icon(Icons.close, color: Colors.white70))
+                ],
+              ),
+              10.verticalSpace,
+              ListTile(
+                leading: const Icon(Icons.archive_outlined, color: AppColors.primary),
+                title: const AppText('Hide conversation', translation: false),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _confirmArchive(conv);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.cleaning_services_outlined, color: Colors.redAccent),
+                title: const AppText('Clear conversation', translation: false),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _confirmClear(conv);
+                },
+              ),
+              6.verticalSpace,
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _confirmArchive(Map<String, dynamic> conv) async {
+    final ok = await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Hide conversation?'),
+            content: const Text('This will hide the conversation from your list. You can still receive messages.'),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+              TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Hide')),
+            ],
+          ),
+        ) ??
+        false;
+    if (!ok) return;
+    final id = conv['id']?.toString();
+    if (id == null) return;
+    final success = await _chatService.archiveConversation(id);
+    if (success) {
+      setState(() => _conversations.removeWhere((e) => e['id'] == id));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Conversation hidden')));
+      }
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -97,17 +191,65 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
         final timeText = (conv['last_message_at'] ?? conv['updated_at'] ?? conv['created_at'])?.toString();
         return Padding(
           padding: HWEdgeInsets.only(top: index == 0 ? 0 : 25),
-          child: ChatItem(
-            index: index,
-            title: otherName,
-            subtitle: subtitle.isNotEmpty ? subtitle : null,
-            avatarUrl: otherAvatar,
-            timeText: timeText,
-            onTap: () => _openConversation(
-              conv,
-              otherId: other?['id']?.toString(),
-              otherName: otherName,
-              otherAvatar: otherAvatar,
+          child: Slidable(
+            key: ValueKey('conv-${conv['id']}'),
+            startActionPane: ActionPane(
+              motion: const StretchMotion(),
+              extentRatio: 0.46,
+              children: [
+                SlidableAction(
+                  onPressed: (_) => _confirmArchive(conv),
+                  backgroundColor: AppColors.primary.withValues(alpha: 0.18),
+                  foregroundColor: AppColors.primary,
+                  icon: Icons.archive_outlined,
+                  label: 'Hide',
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                SlidableAction(
+                  onPressed: (_) => _confirmClear(conv),
+                  backgroundColor: const Color(0xFF3A1F1F),
+                  foregroundColor: Colors.redAccent,
+                  icon: Icons.cleaning_services_outlined,
+                  label: 'Clear',
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ],
+            ),
+            endActionPane: ActionPane(
+              motion: const StretchMotion(),
+              extentRatio: 0.46,
+              children: [
+                SlidableAction(
+                  onPressed: (_) => _confirmArchive(conv),
+                  backgroundColor: AppColors.primary.withValues(alpha: 0.18),
+                  foregroundColor: AppColors.primary,
+                  icon: Icons.archive_outlined,
+                  label: 'Hide',
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                SlidableAction(
+                  onPressed: (_) => _confirmClear(conv),
+                  backgroundColor: const Color(0xFF3A1F1F),
+                  foregroundColor: Colors.redAccent,
+                  icon: Icons.cleaning_services_outlined,
+                  label: 'Clear',
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ],
+            ),
+            child: ChatItem(
+              index: index,
+              title: otherName,
+              subtitle: subtitle.isNotEmpty ? subtitle : null,
+              avatarUrl: otherAvatar,
+              timeText: timeText,
+              onTap: () => _openConversation(
+                conv,
+                otherId: other?['id']?.toString(),
+                otherName: otherName,
+                otherAvatar: otherAvatar,
+              ),
+              onLongPress: () => _showActionsSheet(conv),
             ),
           ),
         );
@@ -145,11 +287,16 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
         userId: user.id,
         onConversationUpdate: (conv) {
           setState(() {
-            final i = _conversations.indexWhere((e) => e['id'] == conv['id']);
-            if (i >= 0) {
-              _conversations[i] = conv;
+            // إذا أصبحت غير نشطة (مؤرشفة) احذفها من اللائحة
+            if (conv['is_active'] != true) {
+              _conversations.removeWhere((e) => e['id'] == conv['id']);
             } else {
-              _conversations.insert(0, conv);
+              final i = _conversations.indexWhere((e) => e['id'] == conv['id']);
+              if (i >= 0) {
+                _conversations[i] = conv;
+              } else {
+                _conversations.insert(0, conv);
+              }
             }
           });
         },

@@ -59,6 +59,90 @@ class ChatService {
       return null;
     }
   }
+
+  /// حذف رسالة واحدة بتحويلها إلى رسالة محذوفة مرئية للطرفين
+  Future<bool> deleteMessage({required String messageId}) async {
+    try {
+      await _client
+          .from('messages')
+          .update({
+            'message_type': 'deleted',
+            'message_text': 'تم حذف هذه الرسالة',
+          })
+          .eq('id', messageId);
+      return true;
+    } catch (e) {
+      print('❌ Error deleting message: $e');
+      return false;
+    }
+  }
+
+  /// تفريغ جميع رسائل المحادثة مع إرسال رسالة نظام تُعلم الطرف الآخر
+  Future<bool> clearConversation({
+    required String conversationId,
+    required String actorId,
+  }) async {
+    try {
+      // أرسل رسالة نظام لإعلام الطرف الآخر
+      final system = await _client
+          .from('messages')
+          .insert({
+            'conversation_id': conversationId,
+            'sender_id': actorId,
+            'message_type': 'system',
+            'message_text': 'قام المستخدم بحذف الدردشة',
+          })
+          .select('id')
+          .single();
+
+      final sysId = system['id']?.toString();
+      // احذف كل الرسائل الأخرى وأبقِ رسالة النظام فقط
+      if (sysId != null) {
+        await _client
+            .from('messages')
+            .delete()
+            .eq('conversation_id', conversationId)
+            .neq('id', sysId);
+      } else {
+        await _client
+            .from('messages')
+            .delete()
+            .eq('conversation_id', conversationId);
+      }
+      return true;
+    } catch (e) {
+      print('❌ Error clearing conversation: $e');
+      return false;
+    }
+  }
+  
+  /// أرشفة محادثة (إخفاؤها) عبر جعل is_active = false
+  Future<bool> archiveConversation(String conversationId) async {
+    try {
+      await _client
+          .from('conversations')
+          .update({'is_active': false})
+          .eq('id', conversationId);
+      return true;
+    } catch (e) {
+      print('❌ Error archiving conversation: $e');
+      return false;
+    }
+  }
+
+  /// حذف محادثة نهائيًا (قد يتطلب قيود ON DELETE CASCADE في قاعدة البيانات)
+  Future<bool> deleteConversation(String conversationId) async {
+    try {
+      await _client
+          .from('conversations')
+          .delete()
+          .eq('id', conversationId);
+      return true;
+    } catch (e) {
+      print('❌ Error deleting conversation: $e');
+      return false;
+    }
+  }
   
   /// جلب كل محادثات المستخدم
   Future<List<Map<String, dynamic>>> getUserConversations(String userId) async {
@@ -114,6 +198,21 @@ class ChatService {
           .select('id,conversation_id,sender_id,message_text,message_type,attachments,created_at,read_at, sender:users!sender_id(id,full_name,avatar_url,photo_url)')
           .single();
       
+      // تحديث بيانات المحادثة لعرض آخر رسالة في قائمة المحادثات
+      try {
+        await _client
+            .from('conversations')
+            .update({
+              'last_message': messageText,
+              'last_message_at': message['created_at'] ?? DateTime.now().toIso8601String(),
+              'updated_at': DateTime.now().toIso8601String(),
+            })
+            .eq('id', conversationId);
+      } catch (e) {
+        // غير حرجة؛ قد تفشل بسبب RLS إذا لم تُضف سياسات التحديث للمشاركين
+        print('⚠️ Could not update conversation meta: $e');
+      }
+
       return message;
     } catch (e) {
       print('❌ Error sending message: $e');
@@ -165,6 +264,7 @@ class ChatService {
     required String conversationId,
     required Function(Map<String, dynamic>) onNewMessage,
     Function(Map<String, dynamic>)? onMessageUpdate,
+    Function(Map<String, dynamic>)? onMessageDelete,
   }) {
     // إلغاء الاشتراك السابق إن وجد
     unsubscribeFromConversation(conversationId);
@@ -201,6 +301,22 @@ class ChatService {
         callback: (payload) async {
           final messageWithSender = await _enrichMessageWithSender(payload.newRecord);
           onMessageUpdate(messageWithSender);
+        },
+      );
+    }
+    
+    if (onMessageDelete != null) {
+      channel.onPostgresChanges(
+        event: PostgresChangeEvent.delete,
+        schema: 'public',
+        table: 'messages',
+        filter: PostgresChangeFilter(
+          type: PostgresChangeFilterType.eq,
+          column: 'conversation_id',
+          value: conversationId,
+        ),
+        callback: (payload) async {
+          onMessageDelete(payload.oldRecord);
         },
       );
     }
