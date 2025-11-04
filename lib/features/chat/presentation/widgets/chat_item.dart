@@ -99,21 +99,16 @@ class ChatItem extends StatelessWidget {
   String _formatTime() {
     if (timeText == null || timeText!.isEmpty) return '';
     try {
-      final dt = DateTime.tryParse(timeText!);
-      if (dt == null) return '';
+      final raw = DateTime.tryParse(timeText!);
+      if (raw == null) return '';
+      final dt = raw.toLocal();
       final now = DateTime.now();
-      final diff = now.difference(dt);
-      if (diff.inDays > 7) {
-        return '${dt.day}/${dt.month}';
-      } else if (diff.inDays > 0) {
-        return '${diff.inDays}d';
-      } else if (diff.inHours > 0) {
-        return '${diff.inHours}h';
-      } else if (diff.inMinutes > 0) {
-        return '${diff.inMinutes}m';
-      } else {
-        return 'Now';
-      }
+      final today = DateTime(now.year, now.month, now.day);
+      final thatDay = DateTime(dt.year, dt.month, dt.day);
+      final diffDays = today.difference(thatDay).inDays;
+      if (diffDays == 0) return 'اليوم';
+      if (diffDays == 1) return 'أمس';
+      return '${dt.day}/${dt.month}/${dt.year}';
     } catch (_) {
       return '';
     }

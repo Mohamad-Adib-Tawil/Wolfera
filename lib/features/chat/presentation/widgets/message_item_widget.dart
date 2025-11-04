@@ -21,7 +21,7 @@ class MessageItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final createdAt = message['created_at'];
     final messageTime = createdAt != null
-        ? DateTime.tryParse(createdAt.toString())
+        ? DateTime.tryParse(createdAt.toString())?.toLocal()
         : null;
     final messageType = (message['message_type'] ?? 'text').toString();
     final messageId = message['id']?.toString();

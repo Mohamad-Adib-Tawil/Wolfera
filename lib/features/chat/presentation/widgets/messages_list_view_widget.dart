@@ -56,9 +56,7 @@ class _MessagesListViewWidgetState extends State<MessagesListViewWidget> {
           itemBuilder: (context, index) {
             final message = state.messages[state.messages.length - 1 - index];
             final isCurrentUser = message['sender_id'] == state.currentUserId;
-            final previousIndex = state.messages.length - index;
-            final showTime = previousIndex < state.messages.length && 
-                             _shouldShowTime(index, state.messages);
+            final showTime = _shouldShowTime(index, state.messages);
             
             return MessageItemWidget(
               message: message,
@@ -76,27 +74,33 @@ class _MessagesListViewWidgetState extends State<MessagesListViewWidget> {
   }
   
   bool _shouldShowTime(int index, List<Map<String, dynamic>> messages) {
-    // اعرض تاريخ اليوم لأحدث مجموعة رسائل دائمًا
-    if (index == 0) return true;
     if (index >= messages.length) return false;
 
-    // بما أن القائمة معكوسة، احسب المؤشرات الفعلية
+    // القائمة معكوسة visual (reverse: true) لكننا نأخذ الرسائل من الأحدث للأقدم
+    // currentIdx: مؤشر الرسالة الحالية في ترتيب state.messages (الأقدم -> الأحدث)
     final currentIdx = messages.length - 1 - index;
-    final prevIdx = currentIdx + 1;
-    if (prevIdx >= messages.length) return true;
+
+    // نريد إظهار العنوان عند أول رسالة لكل يوم (مثل واتساب)
+    // هذا يتحقق عندما تختلف يوم الرسالة الحالية عن الرسالة الأقدم منها في العرض (index+1)
+    final olderIdx = currentIdx - 1; // في ترتيب state.messages
 
     final current = messages[currentIdx]['created_at'];
-    final previous = messages[prevIdx]['created_at'];
-    if (current == null || previous == null) return false;
+    if (current == null) return false;
+    final currentTime = DateTime.tryParse(current.toString())?.toLocal();
+    if (currentTime == null) return false;
 
-    final currentTime = DateTime.tryParse(current.toString());
-    final previousTime = DateTime.tryParse(previous.toString());
-    if (currentTime == null || previousTime == null) return false;
+    // إذا لا يوجد رسالة أقدم (نهاية القائمة بصريًا)، أعرض العنوان لهذا اليوم
+    if (olderIdx < 0) return true;
 
-    // اعرض الفاصل عند تغير اليوم التقويمي
-    final isDifferentDay = currentTime.year != previousTime.year ||
-        currentTime.month != previousTime.month ||
-        currentTime.day != previousTime.day;
-    return isDifferentDay;
+    final older = messages[olderIdx]['created_at'];
+    if (older == null) return true;
+    final olderTime = DateTime.tryParse(older.toString())?.toLocal();
+    if (olderTime == null) return true;
+
+    final currentDay = DateTime(currentTime.year, currentTime.month, currentTime.day);
+    final olderDay = DateTime(olderTime.year, olderTime.month, olderTime.day);
+    return currentDay.year != olderDay.year ||
+        currentDay.month != olderDay.month ||
+        currentDay.day != olderDay.day;
   }
 }

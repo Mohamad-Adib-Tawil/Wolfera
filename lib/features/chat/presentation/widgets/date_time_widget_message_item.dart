@@ -16,9 +16,10 @@ class DateTimeWidgetMessageItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final local = dateTime.toLocal();
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final thatDay = DateTime(dateTime.year, dateTime.month, dateTime.day);
+    final thatDay = DateTime(local.year, local.month, local.day);
     final diffDays = today.difference(thatDay).inDays;
 
     String displayText;
@@ -27,7 +28,9 @@ class DateTimeWidgetMessageItem extends StatelessWidget {
     } else if (diffDays == 1) {
       displayText = 'أمس';
     } else {
-      displayText = DateFormat('d MMM yyyy').format(dateTime);
+      final sameYear = local.year == now.year;
+      final fmt = sameYear ? DateFormat('d MMMM', 'ar') : DateFormat('d MMMM yyyy', 'ar');
+      displayText = fmt.format(local);
     }
     
     return Container(
