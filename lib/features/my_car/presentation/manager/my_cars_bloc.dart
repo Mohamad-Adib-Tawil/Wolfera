@@ -32,6 +32,8 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
     on<LoadMyCarsEvent>(_onLoadMyCars);
     on<DeleteMyCarEvent>(_onDeleteMyCar);
     on<DeleteAllMyCarsEvent>(_onDeleteAllMyCars);
+    on<UpdateMyCarStatusEvent>(_onUpdateMyCarStatus);
+    on<UpdateMyCarPriceEvent>(_onUpdateMyCarPrice);
   }
   final SellMyCarUsecase _sellMyCarUsecase;
   final String kFromCarMaker = 'carMaker';
@@ -532,6 +534,72 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
     } catch (e) {
       print('🔴 Error deleting car: $e');
       EasyLoading.showError('Failed to delete car');
+    }
+  }
+
+  // تحديث حالة السيارة (active, sold, pending, inactive)
+  Future<void> _onUpdateMyCarStatus(
+    UpdateMyCarStatusEvent event,
+    Emitter<MyCarsState> emit,
+  ) async {
+    try {
+      EasyLoading.show(status: 'Updating status...');
+      final status = event.status.toLowerCase();
+      final update = <String, dynamic>{
+        'status': status,
+        'updated_at': DateTime.now().toIso8601String(),
+      };
+      if (status == 'sold') {
+        update['sold_at'] = DateTime.now().toIso8601String();
+      }
+
+      await SupabaseService.client
+          .from('cars')
+          .update(update)
+          .eq('id', event.carId);
+
+      // إعادة تحميل القائمة بعد التحديث
+      add(LoadMyCarsEvent());
+
+      // تحديث الصفحة الرئيسية
+      try {
+        GetIt.I<HomeCubit>().getHomeData();
+      } catch (_) {}
+
+      EasyLoading.showSuccess('Status updated');
+    } catch (e) {
+      print('🔴 Error updating car status: $e');
+      EasyLoading.showError('Failed to update status');
+    }
+  }
+
+  // تحديث سعر السيارة
+  Future<void> _onUpdateMyCarPrice(
+    UpdateMyCarPriceEvent event,
+    Emitter<MyCarsState> emit,
+  ) async {
+    try {
+      EasyLoading.show(status: 'Updating price...');
+      await SupabaseService.client
+          .from('cars')
+          .update({
+            'price': event.newPrice,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('id', event.carId);
+
+      // إعادة تحميل القائمة بعد التحديث
+      add(LoadMyCarsEvent());
+
+      // تحديث الصفحة الرئيسية
+      try {
+        GetIt.I<HomeCubit>().getHomeData();
+      } catch (_) {}
+
+      EasyLoading.showSuccess('Price updated');
+    } catch (e) {
+      print('🔴 Error updating car price: $e');
+      EasyLoading.showError('Failed to update price');
     }
   }
 }

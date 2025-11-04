@@ -27,3 +27,17 @@ class DeleteMyCarEvent extends MyCarsEvent {
 
 // حدث حذف جميع سيارات المستخدم
 class DeleteAllMyCarsEvent extends MyCarsEvent {}
+
+// تحديث حالة السيارة (active, sold, pending, inactive)
+class UpdateMyCarStatusEvent extends MyCarsEvent {
+  final String carId;
+  final String status;
+  UpdateMyCarStatusEvent({required this.carId, required this.status});
+}
+
+// تحديث سعر السيارة
+class UpdateMyCarPriceEvent extends MyCarsEvent {
+  final String carId;
+  final num newPrice;
+  UpdateMyCarPriceEvent({required this.carId, required this.newPrice});
+}

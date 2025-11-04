@@ -35,8 +35,6 @@ extension SafetyFeatureExtension on SafetyFeature {
         return 'Driver Drowsiness Monitoring';
       case SafetyFeature.pedestrianDetection:
         return 'Pedestrian Detection';
-      default:
-        return '';
     }
   }
 }

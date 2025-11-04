@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
 import 'package:wolfera/features/app/presentation/widgets/shimmer_loading.dart';
 import 'package:wolfera/services/firebase_service.dart';
+import 'package:get_it/get_it.dart';
+import 'package:wolfera/features/notifications/presentation/manager/notifications_cubit.dart';
 import '../../../../common/constants/constants.dart';
 import '../../../../core/config/routing/router.dart';
 import '../../../../core/config/theme/app_theme.dart';
@@ -45,6 +47,16 @@ class _AppRoute extends StatefulWidget {
 }
 
 class _AppRouteState extends State<_AppRoute> {
+  @override
+  void initState() {
+    super.initState();
+    // تهيئة الإشعارات
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final notificationsCubit = GetIt.I<NotificationsCubit>();
+      notificationsCubit.initialize();
+    });
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Shimmer(

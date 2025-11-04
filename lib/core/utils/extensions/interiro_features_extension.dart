@@ -43,8 +43,6 @@ extension InteriorFeatureExtension on InteriorFeature {
         return 'Apple CarPlay';
       case InteriorFeature.androidAuto:
         return 'Android Auto';
-      default:
-        return '';
     }
   }
 }

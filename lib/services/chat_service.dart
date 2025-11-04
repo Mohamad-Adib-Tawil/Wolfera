@@ -212,6 +212,9 @@ class ChatService {
         // غير حرجة؛ قد تفشل بسبب RLS إذا لم تُضف سياسات التحديث للمشاركين
         print('⚠️ Could not update conversation meta: $e');
       }
+      
+      // إشعار الرسالة يُرسل الآن من تريجر قاعدة البيانات (send_message_notification).
+      // تم إزالة الإرسال من التطبيق لتفادي التكرار.
 
       return message;
     } catch (e) {

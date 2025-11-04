@@ -96,10 +96,9 @@ class MyCarsListViewBuilder extends StatelessWidget {
     } else {
       content = ListView.builder(
         key: const ValueKey('mycars-list'),
-        shrinkWrap: true,
-        scrollDirection: Axis.vertical,
+        physics: const BouncingScrollPhysics(),
         itemCount: myCars.length,
-        padding: HWEdgeInsets.only(bottom: 75),
+        padding: HWEdgeInsets.only(top: 12, bottom: 75),
         itemBuilder: (context, index) {
           final car = myCars[index];
           final carId = car['id']?.toString();
@@ -154,68 +153,144 @@ class MyCarsListViewBuilder extends StatelessWidget {
                     child: Material(
                       color: Colors.black54,
                       shape: const CircleBorder(),
-                      child: IconButton(
-                        tooltip: 'Delete',
-                        icon: const Icon(Icons.delete_outline, color: Colors.white),
-                        onPressed: () async {
-                          final confirmed = await showModalBottomSheet<bool>(
-                                context: context,
-                                backgroundColor: const Color(0xFF1E1F24),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
-                                ),
-                                builder: (ctx) => Padding(
-                                  padding: HWEdgeInsets.all(16),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          AppText('Delete car?', translation: false, style: context.textTheme.titleMedium?.s18.xb.withColor(Colors.white)),
-                                          IconButton(onPressed: () => Navigator.pop(ctx, false), icon: const Icon(Icons.close, color: Colors.white70)),
-                                        ],
-                                      ),
-                                      6.verticalSpace,
-                                      AppText(
-                                        'Are you sure you want to delete this car? This action cannot be undone.',
-                                        translation: false,
-                                        style: context.textTheme.bodyMedium?.withColor(Colors.white70),
-                                      ),
-                                      14.verticalSpace,
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: AppElevatedButton(
-                                              text: 'Cancel',
-                                              onPressed: () => Navigator.pop(ctx, false),
-                                              appButtonStyle: AppButtonStyle.secondary,
-                                              style: ElevatedButton.styleFrom(minimumSize: Size(double.infinity, 46.h)),
-                                            ),
-                                          ),
-                                          10.horizontalSpace,
-                                          Expanded(
-                                            child: AppElevatedButton(
-                                              text: 'Delete',
-                                              onPressed: () => Navigator.pop(ctx, true),
-                                              style: ElevatedButton.styleFrom(
-                                                backgroundColor: Colors.redAccent,
-                                                minimumSize: Size(double.infinity, 46.h),
+                      child: PopupMenuButton<String>(
+                        icon: const Icon(Icons.more_vert, color: Colors.white),
+                        color: const Color(0xFF1E1F24),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+                        onSelected: (value) async {
+                          final status = (car['status']?.toString() ?? 'active').toLowerCase();
+                          final isSold = status == 'sold';
+
+                          if (value == 'edit_price') {
+                            final controller = TextEditingController(text: car['price']?.toString() ?? '');
+                            final newPrice = await showDialog<num?>(
+                              context: context,
+                              builder: (ctx) {
+                                return AlertDialog(
+                                  backgroundColor: const Color(0xFF1E1F24),
+                                  title: const Text('Edit price', style: TextStyle(color: Colors.white)),
+                                  content: TextField(
+                                    controller: controller,
+                                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                                    style: const TextStyle(color: Colors.white),
+                                    decoration: const InputDecoration(
+                                      hintText: 'Enter new price',
+                                      hintStyle: TextStyle(color: Colors.white70),
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.of(ctx).pop(null),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        final parsed = num.tryParse(controller.text.trim());
+                                        Navigator.of(ctx).pop(parsed);
+                                      },
+                                      child: const Text('Save'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                            if (newPrice != null) {
+                              // Dispatch update price event
+                              // ignore: use_build_context_synchronously
+                              context.read<MyCarsBloc>().add(UpdateMyCarPriceEvent(carId: carId, newPrice: newPrice));
+                            }
+                          } else if (value == 'toggle_sold') {
+                            final target = isSold ? 'active' : 'sold';
+                            // ignore: use_build_context_synchronously
+                            context.read<MyCarsBloc>().add(UpdateMyCarStatusEvent(carId: carId, status: target));
+                          } else if (value == 'delete') {
+                            final confirmed = await showModalBottomSheet<bool>(
+                                  context: context,
+                                  backgroundColor: const Color(0xFF1E1F24),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
+                                  ),
+                                  builder: (ctx) => Padding(
+                                    padding: HWEdgeInsets.all(16),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            AppText('Delete car?', translation: false, style: context.textTheme.titleMedium?.s18.xb.withColor(Colors.white)),
+                                            IconButton(onPressed: () => Navigator.pop(ctx, false), icon: const Icon(Icons.close, color: Colors.white70)),
+                                          ],
+                                        ),
+                                        6.verticalSpace,
+                                        AppText(
+                                          'Are you sure you want to delete this car? This action cannot be undone.',
+                                          translation: false,
+                                          style: context.textTheme.bodyMedium?.withColor(Colors.white70),
+                                        ),
+                                        14.verticalSpace,
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: AppElevatedButton(
+                                                text: 'Cancel',
+                                                onPressed: () => Navigator.pop(ctx, false),
+                                                appButtonStyle: AppButtonStyle.secondary,
+                                                style: ElevatedButton.styleFrom(minimumSize: Size(double.infinity, 46.h)),
                                               ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                      8.verticalSpace,
-                                    ],
+                                            10.horizontalSpace,
+                                            Expanded(
+                                              child: AppElevatedButton(
+                                                text: 'Delete',
+                                                onPressed: () => Navigator.pop(ctx, true),
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: Colors.redAccent,
+                                                  minimumSize: Size(double.infinity, 46.h),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        8.verticalSpace,
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ) ??
-                              false;
-                          if (confirmed) {
-                            context.read<MyCarsBloc>().add(DeleteMyCarEvent(carId));
+                                ) ??
+                                false;
+                            if (confirmed) {
+                              // ignore: use_build_context_synchronously
+                              context.read<MyCarsBloc>().add(DeleteMyCarEvent(carId));
+                            }
                           }
+                        },
+                        itemBuilder: (ctx) {
+                          final status = (car['status']?.toString() ?? 'active').toLowerCase();
+                          final isSold = status == 'sold';
+                          return [
+                            const PopupMenuItem(
+                              value: 'edit_price',
+                              child: ListTile(
+                                leading: Icon(Icons.edit, color: Colors.white70),
+                                title: Text('Edit price', style: TextStyle(color: Colors.white)),
+                              ),
+                            ),
+                            PopupMenuItem(
+                              value: 'toggle_sold',
+                              child: ListTile(
+                                leading: Icon(isSold ? Icons.undo : Icons.sell_outlined, color: Colors.white70),
+                                title: Text(isSold ? 'Mark as active' : 'Mark as sold', style: const TextStyle(color: Colors.white)),
+                              ),
+                            ),
+                            const PopupMenuItem(
+                              value: 'delete',
+                              child: ListTile(
+                                leading: Icon(Icons.delete_outline, color: Colors.white70),
+                                title: Text('Delete', style: TextStyle(color: Colors.white)),
+                              ),
+                            ),
+                          ];
                         },
                       ),
                     ),
@@ -231,6 +306,15 @@ class MyCarsListViewBuilder extends StatelessWidget {
       duration: const Duration(milliseconds: 1000),
       switchInCurve: Curves.easeOutCubic,
       switchOutCurve: Curves.easeOutCubic,
+      layoutBuilder: (currentChild, previousChildren) {
+        return Stack(
+          alignment: Alignment.topCenter,
+          children: <Widget>[
+            ...previousChildren,
+            if (currentChild != null) currentChild,
+          ],
+        );
+      },
       child: content,
     );
   }

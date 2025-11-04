@@ -25,8 +25,6 @@ extension CylindersExtension on Cylinders {
         return '16 Cylinders';
       case Cylinders.none:
         return 'None';
-      default:
-        return '';
     }
   }
 }
