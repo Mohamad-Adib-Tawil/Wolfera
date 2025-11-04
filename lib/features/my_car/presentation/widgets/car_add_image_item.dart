@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
 import 'package:wolfera/core/config/theme/typography.dart';
@@ -138,6 +140,40 @@ class _CarAddImageItemState extends State<CarAddImageItem> {
     if (mounted) {
       Navigator.pop(context);
     }
-    control.updateValue(File(file.path));
+    final original = File(file.path);
+    final compressed = await _compressIfNeeded(original);
+    control.updateValue(compressed);
+  }
+
+  Future<File> _compressIfNeeded(File file) async {
+    try {
+      final size = await file.length();
+      const threshold = 1024 * 1024; // 1MB
+      if (size <= threshold) return file;
+
+      final tmpDir = await getTemporaryDirectory();
+      final targetPath =
+          '${tmpDir.path}/wolfera_${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+      // اضغط الصورة بجودة مناسبة للحفاظ على التفاصيل مع تقليل الحجم
+      int quality = 80;
+      if (size > 5 * threshold) {
+        quality = 60;
+      } else if (size > 2 * threshold) {
+        quality = 70;
+      }
+      final result = await FlutterImageCompress.compressAndGetFile(
+        file.absolute.path,
+        targetPath,
+        quality: quality,
+        format: CompressFormat.jpeg,
+        keepExif: true,
+      );
+
+      if (result == null) return file;
+      return File(result.path);
+    } catch (_) {
+      return file;
+    }
   }
 }
