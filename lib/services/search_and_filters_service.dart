@@ -12,19 +12,32 @@ class SearchFilterService {
     required SearchState filters,
   }) async {
     try {
-      var queryBuilder = SupabaseService.client
-          .from('cars')
-          .select('*');
+      var queryBuilder = SupabaseService.client.from('cars').select('*');
 
       // ملاحظة: لا نقيّد الحالة هنا لضمان إرجاع كل السيارات
       // RecommendedSection يفضّل 'available' ولكن يعود لقائمة كاملة عند عدم توفرها
       // إذا رغبت بتفضيل 'available' يمكننا تطبيق ذلك لاحقاً كلوجيك بعد الجلب
 
-      // البحث في العنوان أو الماركة أو الموديل
+      // تجميع شروط OR (بحث نصي + ألوان)
+      final List<String> orConditions = [];
       if (query.isNotEmpty) {
-        queryBuilder = queryBuilder.or(
-          'title.ilike.%$query%,brand.ilike.%$query%,model.ilike.%$query%,description.ilike.%$query%'
-        );
+        final q = query.replaceAll(',', '');
+        orConditions.addAll([
+          'title.ilike.%$q%',
+          'brand.ilike.%$q%',
+          'model.ilike.%$q%',
+          'description.ilike.%$q%'
+        ]);
+      }
+      if (filters.seletedColors.isNotEmpty) {
+        for (final c in filters.seletedColors) {
+          final color = c.trim();
+          if (color.isEmpty) continue;
+          orConditions.add('color.ilike.%${color.replaceAll(',', '')}%');
+        }
+      }
+      if (orConditions.isNotEmpty) {
+        queryBuilder = queryBuilder.or(orConditions.join(','));
       }
 
       // تطبيق الفلاتر
@@ -46,6 +59,26 @@ class SearchFilterService {
 
       if (filters.seletedCondition != null) {
         queryBuilder = queryBuilder.eq('condition', filters.seletedCondition!);
+      }
+
+      // الأسطوانات (cylinders) كرقم
+      if (filters.seletedCylinders != null &&
+          filters.seletedCylinders!.trim().isNotEmpty) {
+        final cyl = int.tryParse(
+            filters.seletedCylinders!.replaceAll(RegExp(r'[^0-9]'), ''));
+        if (cyl != null) {
+          queryBuilder = queryBuilder.eq('cylinders', cyl);
+        }
+      }
+
+      // المقاعد (seats) كرقم
+      if (filters.seletedSeatsCount != null &&
+          filters.seletedSeatsCount!.trim().isNotEmpty) {
+        final seats = int.tryParse(
+            filters.seletedSeatsCount!.replaceAll(RegExp(r'[^0-9]'), ''));
+        if (seats != null) {
+          queryBuilder = queryBuilder.eq('seats', seats);
+        }
       }
 
       // فلاتر العنوان: الدولة + المنطقة/المدينة (تُطبّق فقط إذا كان الوضع ليس Worldwide)
@@ -81,6 +114,30 @@ class SearchFilterService {
         final maxKm = int.tryParse(filters.selectedCarMaxKilometers!);
         if (maxKm != null) {
           queryBuilder = queryBuilder.lte('mileage', maxKm);
+        }
+      }
+
+      // فلاتر السعر (Budget)
+      if (filters.selectedPrice != null) {
+        switch (filters.selectedPrice) {
+          case 'lessThan10K':
+            queryBuilder = queryBuilder.lte('price', 10000);
+            break;
+          case 'startingFrom10K':
+            queryBuilder = queryBuilder.gte('price', 10000);
+            break;
+          case 'startingFrom10Kto15K':
+            queryBuilder = queryBuilder.gte('price', 10000).lte('price', 15000);
+            break;
+          case 'startingFrom15Kto20K':
+            queryBuilder = queryBuilder.gte('price', 15000).lte('price', 20000);
+            break;
+          case 'startingFrom20Kto30K':
+            queryBuilder = queryBuilder.gte('price', 20000).lte('price', 30000);
+            break;
+          case 'moreThan30K':
+            queryBuilder = queryBuilder.gt('price', 30000);
+            break;
         }
       }
 
