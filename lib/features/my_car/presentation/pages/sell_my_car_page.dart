@@ -258,7 +258,8 @@ class _Button extends StatelessWidget {
               context.textTheme.bodyMedium?.xb.s20.withColor(AppColors.black),
           style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.white,
-              minimumSize: Size(MediaQuery.of(context).size.width, 50.h),
+              minimumSize: Size(MediaQuery.of(context).size.width, 56.h),
+              padding: EdgeInsets.symmetric(vertical: 14.h),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8).r)),
         );

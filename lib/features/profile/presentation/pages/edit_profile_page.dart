@@ -141,7 +141,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                         backgroundColor: AppColors.white,
                                         minimumSize: Size(
                                             MediaQuery.of(context).size.width,
-                                            53.h),
+                                            56.h),
+                                        padding: EdgeInsets.symmetric(vertical: 14.h),
                                         shape: RoundedRectangleBorder(
                                             borderRadius:
                                                 BorderRadius.circular(10).r)),
