@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 @pragma('vm:entry-point')
 void notificationTapBackground(NotificationResponse notificationResponse) {
@@ -13,10 +14,13 @@ class NotificationService {
   NotificationService();
 
   static final _localNotifications = FlutterLocalNotificationsPlugin();
+  static final _client = Supabase.instance.client;
 
   static Future<void> initializePlatformNotifications() async {
+    // Use a valid Android resource for the small icon. The default launcher icon
+    // exists in all Flutter templates under @mipmap/ic_launcher.
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('drawable/launcher_icon');
+        AndroidInitializationSettings('@mipmap/ic_launcher');
 
     const DarwinInitializationSettings initializationSettingsIOS =
         DarwinInitializationSettings(
@@ -36,6 +40,9 @@ class NotificationService {
       onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
       onDidReceiveNotificationResponse: notificationTapBackground,
     );
+
+    // Note: If you need Android 13+ runtime notification permission,
+    // request it via the permission_handler package at app level.
   }
 
   static void onDidReceiveLocalNotification(
@@ -55,6 +62,8 @@ class NotificationService {
       importance: Importance.max,
       priority: Priority.max,
       playSound: true,
+      // Ensure a small icon is set; uses the same as initialization.
+      icon: '@mipmap/ic_launcher',
     );
 
     DarwinNotificationDetails iosNotificationDetails =
@@ -85,6 +94,111 @@ class NotificationService {
       body,
       platformChannelSpecifics,
       payload: payload,
+    );
+  }
+  
+  // إرسال إشعار لمستخدم آخر عبر Supabase
+  static Future<bool> sendNotificationToUser({
+    required String userId,
+    required String title,
+    required String body,
+    required String type,
+    String? senderId,
+    Map<String, dynamic>? data,
+  }) async {
+    try {
+      await _client.from('notifications').insert({
+        'user_id': userId,
+        'sender_id': senderId ?? _client.auth.currentUser?.id,
+        'title': title,
+        'body': body,
+        'type': type,
+        'data': data ?? {},
+        'read_at': null,
+      });
+      return true;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error sending notification: $e');
+      }
+      return false;
+    }
+  }
+  
+  // إرسال إشعار رسالة جديدة
+  static Future<void> sendNewMessageNotification({
+    required String recipientId,
+    required String senderName,
+    required String messageText,
+    required String conversationId,
+  }) async {
+    await sendNotificationToUser(
+      userId: recipientId,
+      title: 'رسالة جديدة من $senderName',
+      body: messageText,
+      type: 'new_message',
+      data: {
+        'conversation_id': conversationId,
+        'action': 'open_chat',
+      },
+    );
+  }
+  
+  // إرسال إشعار عرض سعر
+  static Future<void> sendOfferNotification({
+    required String recipientId,
+    required String senderName,
+    required String carTitle,
+    required String offerId,
+  }) async {
+    await sendNotificationToUser(
+      userId: recipientId,
+      title: 'عرض جديد على $carTitle',
+      body: '$senderName قدم عرضاً على سيارتك',
+      type: 'new_offer',
+      data: {
+        'offer_id': offerId,
+        'action': 'view_offer',
+      },
+    );
+  }
+  
+  // إرسال إشعار إعجاب بسيارة
+  static Future<void> sendLikeNotification({
+    required String carOwnerId,
+    required String likerName,
+    required String carTitle,
+    required String carId,
+  }) async {
+    await sendNotificationToUser(
+      userId: carOwnerId,
+      title: 'إعجاب جديد',
+      body: '$likerName أعجب بسيارتك $carTitle',
+      type: 'car_like',
+      data: {
+        'car_id': carId,
+        'action': 'view_car',
+      },
+    );
+  }
+  
+  // إرسال إشعار تعليق
+  static Future<void> sendCommentNotification({
+    required String recipientId,
+    required String commenterName,
+    required String carTitle,
+    required String comment,
+    required String carId,
+  }) async {
+    await sendNotificationToUser(
+      userId: recipientId,
+      title: 'تعليق جديد على $carTitle',
+      body: '$commenterName: $comment',
+      type: 'car_comment',
+      data: {
+        'car_id': carId,
+        'action': 'view_comments',
+      },
     );
   }
 }

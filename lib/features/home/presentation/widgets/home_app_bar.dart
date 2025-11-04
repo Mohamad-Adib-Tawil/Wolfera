@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wolfera/core/config/routing/router.dart';
+import 'package:get_it/get_it.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
+import 'package:wolfera/core/config/theme/typography.dart';
+import 'package:wolfera/core/config/routing/router.dart';
+import 'package:wolfera/core/utils/extensions/build_context.dart';
 import 'package:wolfera/features/app/presentation/bloc/app_manager_cubit.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_svg_picture.dart';
+import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
 import 'package:wolfera/features/chat/presentation/widgets/circlue_user_image_widget.dart';
 import 'package:wolfera/features/home/presentation/widgets/city_dropdown.dart';
+import 'package:wolfera/features/notifications/presentation/manager/notifications_cubit.dart';
 import 'package:wolfera/generated/assets.dart';
 
 class HomeAppBar extends StatelessWidget {
@@ -31,15 +36,54 @@ class HomeAppBar extends StatelessWidget {
         title: Builder(
           builder: (context) {
             final baseChildren = <Widget>[
-              GestureDetector(
-                onTap: () {
-                  GRouter.router.pushNamed(
-                      GRouter.config.notificationsRoutes.notifications);
-                },
-                child: AppSvgPicture(
-                  Assets.svgBell,
-                  width: 24.w,
-                  height: 24.w,
+              BlocProvider.value(
+                value: GetIt.I<NotificationsCubit>(),
+                child: BlocBuilder<NotificationsCubit, NotificationsState>(
+                  builder: (context, state) {
+                    return GestureDetector(
+                      onTap: () {
+                        GRouter.router.pushNamed(
+                            GRouter.config.notificationsRoutes.notifications);
+                      },
+                      child: Stack(
+                        children: [
+                          AppSvgPicture(
+                            Assets.svgBell,
+                            width: 24.w,
+                            height: 24.w,
+                          ),
+                          if (state.unreadCount > 0)
+                            Positioned(
+                              right: 0,
+                              top: 0,
+                              child: Container(
+                                padding: EdgeInsets.all(2.w),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primary,
+                                  borderRadius: BorderRadius.circular(6.r),
+                                ),
+                                constraints: BoxConstraints(
+                                  minWidth: 12.w,
+                                  minHeight: 12.w,
+                                ),
+                                child: AppText(
+                                  state.unreadCount > 9 
+                                      ? '9+' 
+                                      : state.unreadCount.toString(),
+                                  style: TextStyle(
+                                    fontSize: 10.sp,
+                                    color: AppColors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  translation: false,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
               ),
               CityDropdown(

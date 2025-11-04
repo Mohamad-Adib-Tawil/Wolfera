@@ -19,8 +19,6 @@ extension SeatsExtension on Seats {
         return '8 Seats';
       case Seats.ninePlus:
         return '9+ Seats';
-      default:
-        return '';
     }
   }
 }

@@ -6,7 +6,7 @@ part 'pagination_model.g.dart';
 
 @JsonSerializable(genericArgumentFactories: true)
 @freezed
-class PaginationModel<T> with _$PaginationModel<T?> {
+class PaginationModel<T> with _$PaginationModel<T> {
   const PaginationModel._();
 
   const factory PaginationModel({

@@ -39,6 +39,8 @@ import '../../features/my_car/domain/usecases/sell_my_car_usecase.dart'
 import '../../features/my_car/presentation/manager/my_cars_bloc.dart' as _i139;
 import '../../features/notifications/data/datasources/notifications_datasource.dart'
     as _i200;
+import '../../features/notifications/presentation/manager/notifications_cubit.dart'
+    as _i986;
 import '../../features/profile/data/data_sources/profile_datasource.dart'
     as _i665;
 import '../../features/profile/domain/use_cases/update_profile.dart' as _i308;
@@ -74,6 +76,7 @@ Future<_i174.GetIt> $initGetIt(
   );
   gh.lazySingleton<_i535.HomeCubit>(() => _i535.HomeCubit());
   gh.lazySingleton<_i243.ChatBloc>(() => _i243.ChatBloc());
+  gh.lazySingleton<_i986.NotificationsCubit>(() => _i986.NotificationsCubit());
   gh.lazySingleton<_i207.ChatService>(() => _i207.ChatService());
   gh.lazySingleton<_i749.SearchFilterService>(
       () => _i749.SearchFilterService());

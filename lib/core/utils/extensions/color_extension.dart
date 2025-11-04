@@ -26,8 +26,6 @@ extension CarColorExtension on CarColor {
         return 'Red';
       case CarColor.silver:
         return 'Silver';
-      default:
-        return '';
     }
   }
 
@@ -55,8 +53,6 @@ extension CarColorExtension on CarColor {
         return Colors.red;
       case CarColor.silver:
         return const Color(0xFFC0C0C0);
-      default:
-        return Colors.transparent;
     }
   }
 }

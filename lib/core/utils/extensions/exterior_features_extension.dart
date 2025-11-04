@@ -33,8 +33,6 @@ extension ExteriorFeatureExtension on ExteriorFeature {
         return 'Roof Rack';
       case ExteriorFeature.dualExhaust:
         return 'Dual Exhaust';
-      default:
-        return '';
     }
   }
 }
