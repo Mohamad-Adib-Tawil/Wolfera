@@ -2,6 +2,7 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
+    id "com.google.gms.google-services"
 }
 
 def localProperties = new Properties()
@@ -95,4 +96,8 @@ dependencies {
     implementation 'com.google.android.gms:play-services-auth:20.4.1'
     // Include Credentials API (used by smart_auth for hints/credentials)
     implementation 'com.google.android.gms:play-services-auth-api-phone:18.0.1'
+    // Firebase BoM to align Firebase SDK versions
+    implementation platform('com.google.firebase:firebase-bom:34.5.0')
+    // Firebase Cloud Messaging
+    implementation 'com.google.firebase:firebase-messaging'
 }

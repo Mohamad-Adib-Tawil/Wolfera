@@ -116,6 +116,21 @@ class NotificationService {
         'data': data ?? {},
         'read_at': null,
       });
+
+      // استدعاء دالة Edge Function لإرسال Push عبر FCM
+      try {
+        final payload = {
+          'user_id': userId,
+          'title': title,
+          'body': body,
+          'data': (data ?? {})..addAll({'type': type}),
+        };
+        await _client.functions.invoke('push', body: payload);
+      } catch (e) {
+        if (kDebugMode) {
+          print('Edge Function push invoke failed: $e');
+        }
+      }
       return true;
     } catch (e) {
       if (kDebugMode) {
