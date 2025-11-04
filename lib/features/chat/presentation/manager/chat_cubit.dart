@@ -206,8 +206,9 @@ class ChatCubit extends Cubit<ChatState> {
               m['message_text'] == message['message_text'] &&
               m['sender_id'] == message['sender_id'];
         }
-        final filtered = state.messages.where((m) => !isLocalPending(m)).toList();
-        final updatedMessages = [...filtered, message];
+        final List<Map<String, dynamic>> filtered =
+            state.messages.where((m) => !isLocalPending(m)).toList();
+        final List<Map<String, dynamic>> updatedMessages = [...filtered, message];
         emit(state.copyWith(messages: updatedMessages));
       },
       onMessageUpdate: (message) {
@@ -218,8 +219,16 @@ class ChatCubit extends Cubit<ChatState> {
           list[idx] = message;
           emit(state.copyWith(messages: list));
         } else {
-          emit(state.copyWith(messages: [...state.messages, message]));
+          final List<Map<String, dynamic>> list = [...state.messages, message];
+          emit(state.copyWith(messages: list));
         }
+      },
+      onMessageDelete: (deleted) {
+        final id = deleted['id']?.toString();
+        if (id == null) return;
+        final list = List<Map<String, dynamic>>.from(
+            state.messages.where((m) => m['id']?.toString() != id));
+        emit(state.copyWith(messages: list));
       },
     );
   }
@@ -255,7 +264,9 @@ class ChatCubit extends Cubit<ChatState> {
       
       // إذا نجح الإرسال وأعد لنا الخادم الرسالة، استبدل المحلية بها فورًا
       if (message != null) {
-        final list = state.messages.map((m) => m['id'] == localId ? message : m).toList();
+        final list = state.messages
+            .map<Map<String, dynamic>>((m) => m['id'] == localId ? message : m)
+            .toList();
         emit(state.copyWith(messages: list, isSending: false));
       } else {
         emit(state.copyWith(isSending: false));
@@ -282,7 +293,8 @@ class ChatCubit extends Cubit<ChatState> {
       );
       
       if (olderMessages.isNotEmpty) {
-        final updatedMessages = [...olderMessages, ...state.messages];
+        final List<Map<String, dynamic>> updatedMessages =
+            [...olderMessages, ...state.messages];
         emit(state.copyWith(
           messages: updatedMessages,
           isLoadingMore: false,

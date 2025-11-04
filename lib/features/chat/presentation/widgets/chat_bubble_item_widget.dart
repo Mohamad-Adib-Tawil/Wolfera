@@ -16,6 +16,7 @@ class ChatBubbleItemWidget extends StatelessWidget {
     this.messageTime,
     this.senderName,
     this.senderAvatar,
+    this.isDeleted = false,
   });
 
   final bool isCurrent;
@@ -23,6 +24,7 @@ class ChatBubbleItemWidget extends StatelessWidget {
   final DateTime? messageTime;
   final String? senderName;
   final String? senderAvatar;
+  final bool isDeleted;
 
   @override
   Widget build(BuildContext context) {
@@ -36,9 +38,11 @@ class ChatBubbleItemWidget extends StatelessWidget {
           padding: HWEdgeInsets.only(top: 20, bottom: 20, right: 12, left: 20),
           width: context.mediaQuery.size.width * 0.6,
           decoration: BoxDecoration(
-            color: isCurrent
-                ? AppColors.primary.withValues(alpha: 0.8)
-                : AppColors.white,
+            color: isDeleted
+                ? (isCurrent ? const Color(0xFF3A3B40) : const Color(0xFFEDEEF3))
+                : (isCurrent
+                    ? AppColors.primary.withValues(alpha: 0.8)
+                    : AppColors.white),
             borderRadius: BorderRadius.only(
               bottomLeft:
                   isCurrent ? Radius.circular(16.r) : Radius.circular(0.r),
@@ -51,7 +55,11 @@ class ChatBubbleItemWidget extends StatelessWidget {
           child: AppText(
             messageText,
             style: context.textTheme.bodyLarge!.s15
-                .withColor(isCurrent ? AppColors.white : AppColors.black),
+                .withColor(
+                  isDeleted
+                      ? AppColors.grey
+                      : (isCurrent ? AppColors.white : AppColors.black),
+                ),
             translation: false,
           ),
         ),

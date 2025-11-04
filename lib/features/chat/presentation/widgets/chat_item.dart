@@ -11,6 +11,7 @@ import 'package:wolfera/features/chat/presentation/widgets/circlue_user_image_wi
 class ChatItem extends StatelessWidget {
   final int? index;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
   final String? title;
   final String? subtitle;
   final String? avatarUrl;
@@ -23,12 +24,14 @@ class ChatItem extends StatelessWidget {
     this.subtitle,
     this.avatarUrl,
     this.timeText,
+    this.onLongPress,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
+      onLongPress: onLongPress,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
