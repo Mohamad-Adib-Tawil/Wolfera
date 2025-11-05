@@ -1,9 +1,10 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
@@ -46,7 +47,8 @@ class _CarAddImageItemState extends State<CarAddImageItem> {
                     CupertinoActionSheetAction(
                       child: AppText(
                         LocaleKeys.chooseAnImageFromTheGallery,
-                        style: context.textTheme.bodyLarge.b
+                        style: (context.textTheme.bodyLarge ?? const TextStyle())
+                            .b
                             .withColor(AppColors.white),
                       ),
                       onPressed: () {
@@ -57,7 +59,8 @@ class _CarAddImageItemState extends State<CarAddImageItem> {
                     CupertinoActionSheetAction(
                       child: AppText(
                         LocaleKeys.takePictureFromTheCamera,
-                        style: context.textTheme.bodyLarge.b
+                        style: (context.textTheme.bodyLarge ?? const TextStyle())
+                            .b
                             .withColor(AppColors.white),
                       ),
                       onPressed: () {
@@ -117,7 +120,9 @@ class _CarAddImageItemState extends State<CarAddImageItem> {
                   child: AppText(
                     widget.text,
                     maxLines: 2,
-                    style: context.textTheme.bodyMedium?.m.s14
+                    style: (context.textTheme.bodyMedium ?? const TextStyle())
+                        .m
+                        .s14
                         .withColor(AppColors.white),
                     textAlign: TextAlign.center,
                   ),
@@ -133,33 +138,41 @@ class _CarAddImageItemState extends State<CarAddImageItem> {
   pickImage(
       {required ImageSource source,
       required FormControl<File?> control}) async {
-    final file = await ImagePicker().pickImage(source: source);
+    final xfile = await ImagePicker().pickImage(source: source);
+    if (xfile == null) return;
 
-    if (file == null) return;
-
+    // Close the action sheet
     if (mounted) {
       Navigator.pop(context);
     }
-    final original = File(file.path);
-    final compressed = await _compressIfNeeded(original);
-    control.updateValue(compressed);
+
+    // Disallow GIF images
+    final pathLower = xfile.path.toLowerCase();
+    if (pathLower.endsWith('.gif')) {
+      EasyLoading.showError('GIF images are not supported');
+      return;
+    }
+
+    final original = File(xfile.path);
+    // Always convert to JPEG to ensure compatibility (e.g., HEIC/HEIF -> JPEG)
+    final ensuredJpeg = await _convertToJpeg(original);
+    control.updateValue(ensuredJpeg);
   }
 
-  Future<File> _compressIfNeeded(File file) async {
+  Future<File> _convertToJpeg(File file) async {
     try {
       final size = await file.length();
-      const threshold = 1024 * 1024; // 1MB
-      if (size <= threshold) return file;
+      const mb = 1024 * 1024; // 1MB
 
       final tmpDir = await getTemporaryDirectory();
       final targetPath =
           '${tmpDir.path}/wolfera_${DateTime.now().millisecondsSinceEpoch}.jpg';
 
-      // اضغط الصورة بجودة مناسبة للحفاظ على التفاصيل مع تقليل الحجم
-      int quality = 80;
-      if (size > 5 * threshold) {
+      // اضغط/حوّل دائماً إلى JPEG لضمان العرض على جميع الأجهزة
+      int quality = 85;
+      if (size > 5 * mb) {
         quality = 60;
-      } else if (size > 2 * threshold) {
+      } else if (size > 2 * mb) {
         quality = 70;
       }
       final result = await FlutterImageCompress.compressAndGetFile(
