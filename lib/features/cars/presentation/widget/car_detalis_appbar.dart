@@ -8,6 +8,9 @@ import 'package:wolfera/core/utils/responsive_padding.dart';
 import 'package:wolfera/features/app/presentation/widgets/custom_appbar.dart';
 import 'package:wolfera/features/faviorate/presentation/manager/favorite_cubit.dart';
 import 'package:wolfera/features/faviorate/presentation/manager/favorite_state.dart';
+import 'package:get_it/get_it.dart';
+import 'package:wolfera/features/home/presentation/manager/home_cubit/home_cubit.dart';
+import 'package:wolfera/services/supabase_service.dart';
 
 class CarDetalisAppbar extends StatefulWidget implements PreferredSizeWidget {
   final Map<String, dynamic>? carData;
@@ -32,6 +35,8 @@ class CarDetalisAppbar extends StatefulWidget implements PreferredSizeWidget {
 class _CarDetalisAppbarState extends State<CarDetalisAppbar> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
+  bool _isAdmin = false;
+  bool _isFeatured = false;
 
   @override
   void initState() {
@@ -54,6 +59,26 @@ class _CarDetalisAppbarState extends State<CarDetalisAppbar> with SingleTickerPr
         weight: 50,
       ),
     ]).animate(_animationController);
+
+    // Init featured flag from carData
+    final f = widget.carData?['is_featured'];
+    if (f is bool) {
+      _isFeatured = f;
+    } else if (f is int) {
+      _isFeatured = f == 1;
+    }
+
+    // Check if current user is admin
+    _initAdmin();
+  }
+
+  Future<void> _initAdmin() async {
+    try {
+      final isAdmin = await SupabaseService.isCurrentUserAdmin();
+      if (mounted) {
+        setState(() => _isAdmin = isAdmin);
+      }
+    } catch (_) {}
   }
 
   @override
@@ -91,6 +116,36 @@ class _CarDetalisAppbarState extends State<CarDetalisAppbar> with SingleTickerPr
     }
   }
 
+  Future<void> _toggleFeatured() async {
+    if (!_isAdmin) {
+      showMessage('Only admin can feature cars', isSuccess: false);
+      return;
+    }
+    if (widget.carData == null) {
+      showMessage('Cannot update featured: Car data not available', isSuccess: false);
+      return;
+    }
+    final carId = widget.carData!['id']?.toString();
+    if (carId == null) {
+      showMessage('Cannot update featured: Car ID not available', isSuccess: false);
+      return;
+    }
+    try {
+      final newVal = !_isFeatured;
+      await SupabaseService.setCarFeatured(carId, newVal);
+      if (mounted) {
+        setState(() => _isFeatured = newVal);
+      }
+      showMessage(newVal ? 'Marked as featured' : 'Removed from featured', isSuccess: true);
+      // Refresh home featured list if available
+      try {
+        GetIt.I<HomeCubit>().getHomeData();
+      } catch (_) {}
+    } catch (e) {
+      showMessage('Failed to update featured', isSuccess: false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final carId = widget.carData?['id']?.toString();
@@ -99,29 +154,46 @@ class _CarDetalisAppbarState extends State<CarDetalisAppbar> with SingleTickerPr
       automaticallyImplyLeading: true,
       action: Padding(
         padding: HWEdgeInsetsDirectional.only(end: 20, top: 5),
-        child: BlocBuilder<FavoriteCubit, FavoriteState>(
-          builder: (context, state) {
-            final isFavorite = carId != null 
-                ? context.read<FavoriteCubit>().isFavoriteById(carId)
-                : false;
-            
-            return GestureDetector(
-              onTap: () => _toggleFavorite(context),
-              child: AnimatedBuilder(
-                animation: _scaleAnimation,
-                builder: (context, child) {
-                  return Transform.scale(
-                    scale: _scaleAnimation.value,
-                    child: Icon(
-                      isFavorite ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
-                      size: 30.r,
-                      color: isFavorite ? AppColors.red : AppColors.white,
-                    ),
-                  );
-                },
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (_isAdmin)
+              GestureDetector(
+                onTap: _toggleFeatured,
+                child: Padding(
+                  padding: EdgeInsets.only(right: 14.w),
+                  child: Icon(
+                    _isFeatured ? CupertinoIcons.star_fill : CupertinoIcons.star,
+                    size: 26.r,
+                    color: _isFeatured ? AppColors.orange : AppColors.white,
+                  ),
+                ),
               ),
-            );
-          },
+            BlocBuilder<FavoriteCubit, FavoriteState>(
+              builder: (context, state) {
+                final isFavorite = carId != null 
+                    ? context.read<FavoriteCubit>().isFavoriteById(carId)
+                    : false;
+                
+                return GestureDetector(
+                  onTap: () => _toggleFavorite(context),
+                  child: AnimatedBuilder(
+                    animation: _scaleAnimation,
+                    builder: (context, child) {
+                      return Transform.scale(
+                        scale: _scaleAnimation.value,
+                        child: Icon(
+                          isFavorite ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
+                          size: 30.r,
+                          color: isFavorite ? AppColors.red : AppColors.white,
+                        ),
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );

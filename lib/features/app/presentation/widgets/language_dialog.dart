@@ -2,7 +2,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
 import 'package:wolfera/common/helpers/helper_functions.dart';
 import 'package:wolfera/core/config/routing/router.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';

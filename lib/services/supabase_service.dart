@@ -110,6 +110,16 @@ class SupabaseService {
     return response;
   }
 
+  // Featured cars only (for RecommendedSection)
+  static Future<List<Map<String, dynamic>>> getFeaturedCars() async {
+    final response = await client
+        .from('cars')
+        .select('*')
+        .eq('is_featured', true)
+        .order('created_at', ascending: false);
+    return (response as List).cast<Map<String, dynamic>>();
+  }
+
   static Future<Map<String, dynamic>> addCar(
       Map<String, dynamic> carData) async {
     final response =
@@ -123,5 +133,31 @@ class SupabaseService {
 
   static Future<void> deleteCar(String id) async {
     await client.from('cars').delete().eq('id', id);
+  }
+
+  // Toggle is_featured flag (admin-only via RLS policy)
+  static Future<void> setCarFeatured(String id, bool isFeatured) async {
+    await client.from('cars').update({'is_featured': isFeatured}).eq('id', id);
+  }
+
+  // Check if current user is admin (requires users.is_admin boolean column)
+  static Future<bool> isCurrentUserAdmin() async {
+    try {
+      final uid = currentUser?.id;
+      if (uid == null) return false;
+      final res = await client
+          .from('users')
+          .select('is_admin')
+          .eq('id', uid)
+          .maybeSingle();
+      if (res == null) return false;
+      final val = res['is_admin'];
+      if (val is bool) return val;
+      if (val is int) return val == 1;
+      return false;
+    } catch (_) {
+      // If column doesn't exist or any error, treat as non-admin
+      return false;
+    }
   }
 }
