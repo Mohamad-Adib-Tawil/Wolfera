@@ -15,6 +15,7 @@ import 'package:wolfera/features/chat/presentation/widgets/chat_empty_state_widg
 import 'package:wolfera/features/chat/presentation/widgets/chat_item.dart';
 import 'package:wolfera/services/chat_service.dart';
 import 'package:wolfera/services/supabase_service.dart';
+import 'package:wolfera/services/chat_route_tracker.dart';
 
 class MessagesBasePage extends StatefulWidget {
   const MessagesBasePage({super.key});
@@ -38,6 +39,8 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
     _shouldAnimateEntrance = !_didAnimateOnce;
     _didAnimateOnce = true;
     _loadConversations();
+    // Refresh unread counters when a push new_message arrives
+    ChatRouteTracker.incomingMessageTick.addListener(_onIncomingPushTick);
   }
 
   Future<void> _confirmClear(Map<String, dynamic> conv) async {
@@ -189,72 +192,75 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
         final otherAvatar = other != null ? (other['avatar_url'] ?? other['photo_url'] ?? other['picture'])?.toString() : null;
         final subtitle = (conv['last_message'] ?? '').toString();
         final timeText = (conv['last_message_at'] ?? conv['updated_at'] ?? conv['created_at'])?.toString();
-        final unread = isBuyer
-            ? (conv['buyer_unread_count'] ?? 0) as int
-            : (conv['seller_unread_count'] ?? 0) as int;
         return Padding(
           padding: HWEdgeInsets.only(top: index == 0 ? 0 : 25),
-          child: Slidable(
-            key: ValueKey('conv-${conv['id']}'),
-            startActionPane: ActionPane(
-              motion: const StretchMotion(),
-              extentRatio: 0.46,
-              children: [
-                SlidableAction(
-                  onPressed: (_) => _confirmArchive(conv),
-                  backgroundColor: AppColors.primary.withValues(alpha: 0.18),
-                  foregroundColor: AppColors.primary,
-                  icon: Icons.archive_outlined,
-                  label: 'Hide',
-                  borderRadius: BorderRadius.circular(12),
+          child: FutureBuilder<int>(
+            future: _chatService.getUnreadMessagesForConversation(conv['id']?.toString() ?? '', me),
+            builder: (context, snapshot) {
+              final unread = snapshot.data ?? 0;
+              return Slidable(
+                key: ValueKey('conv-${conv['id']}'),
+                startActionPane: ActionPane(
+                  motion: const StretchMotion(),
+                  extentRatio: 0.46,
+                  children: [
+                    SlidableAction(
+                      onPressed: (_) => _confirmArchive(conv),
+                      backgroundColor: AppColors.primary.withValues(alpha: 0.18),
+                      foregroundColor: AppColors.primary,
+                      icon: Icons.archive_outlined,
+                      label: 'Hide',
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    SlidableAction(
+                      onPressed: (_) => _confirmClear(conv),
+                      backgroundColor: const Color(0xFF3A1F1F),
+                      foregroundColor: Colors.redAccent,
+                      icon: Icons.cleaning_services_outlined,
+                      label: 'Clear',
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ],
                 ),
-                SlidableAction(
-                  onPressed: (_) => _confirmClear(conv),
-                  backgroundColor: const Color(0xFF3A1F1F),
-                  foregroundColor: Colors.redAccent,
-                  icon: Icons.cleaning_services_outlined,
-                  label: 'Clear',
-                  borderRadius: BorderRadius.circular(12),
+                endActionPane: ActionPane(
+                  motion: const StretchMotion(),
+                  extentRatio: 0.46,
+                  children: [
+                    SlidableAction(
+                      onPressed: (_) => _confirmArchive(conv),
+                      backgroundColor: AppColors.primary.withValues(alpha: 0.18),
+                      foregroundColor: AppColors.primary,
+                      icon: Icons.archive_outlined,
+                      label: 'Hide',
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    SlidableAction(
+                      onPressed: (_) => _confirmClear(conv),
+                      backgroundColor: const Color(0xFF3A1F1F),
+                      foregroundColor: Colors.redAccent,
+                      icon: Icons.cleaning_services_outlined,
+                      label: 'Clear',
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            endActionPane: ActionPane(
-              motion: const StretchMotion(),
-              extentRatio: 0.46,
-              children: [
-                SlidableAction(
-                  onPressed: (_) => _confirmArchive(conv),
-                  backgroundColor: AppColors.primary.withValues(alpha: 0.18),
-                  foregroundColor: AppColors.primary,
-                  icon: Icons.archive_outlined,
-                  label: 'Hide',
-                  borderRadius: BorderRadius.circular(12),
+                child: ChatItem(
+                  index: index,
+                  title: otherName,
+                  subtitle: subtitle.isNotEmpty ? subtitle : null,
+                  avatarUrl: otherAvatar,
+                  timeText: timeText,
+                  unreadCount: unread,
+                  onTap: () => _openConversation(
+                    conv,
+                    otherId: other?['id']?.toString(),
+                    otherName: otherName,
+                    otherAvatar: otherAvatar,
+                  ),
+                  onLongPress: () => _showActionsSheet(conv),
                 ),
-                SlidableAction(
-                  onPressed: (_) => _confirmClear(conv),
-                  backgroundColor: const Color(0xFF3A1F1F),
-                  foregroundColor: Colors.redAccent,
-                  icon: Icons.cleaning_services_outlined,
-                  label: 'Clear',
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ],
-            ),
-            child: ChatItem(
-              index: index,
-              title: otherName,
-              subtitle: subtitle.isNotEmpty ? subtitle : null,
-              avatarUrl: otherAvatar,
-              timeText: timeText,
-              unreadCount: unread,
-              onTap: () => _openConversation(
-                conv,
-                otherId: other?['id']?.toString(),
-                otherName: otherName,
-                otherAvatar: otherAvatar,
-              ),
-              onLongPress: () => _showActionsSheet(conv),
-            ),
+              );
+            },
           ),
         );
       },
@@ -312,6 +318,25 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
     }
   }
 
+  // Refresh conversations when a push new_message arrives
+  Future<void> _onIncomingPushTick() async {
+    print('🔍 [DEBUG] MessagesBasePage: _onIncomingPushTick called');
+    final user = SupabaseService.currentUser;
+    if (user == null) return;
+    try {
+      final list = await _chatService.getUserConversations(user.id);
+      final filtered = list.where((c) => c['buyer_id'] != c['seller_id']).toList();
+      if (!mounted) return;
+      setState(() {
+        _conversations = filtered;
+        _isLoading = false;
+      });
+      print('🔍 [DEBUG] MessagesBasePage: Conversations refreshed, count = ${filtered.length}');
+    } catch (e) {
+      print('❌ [DEBUG] MessagesBasePage: Error in _onIncomingPushTick: $e');
+    }
+  }
+
   void _openConversation(Map<String, dynamic> conv, {String? otherId, String? otherName, String? otherAvatar}) {
     final me = SupabaseService.currentUser?.id;
     if (me == null) return;
@@ -344,6 +369,7 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
   @override
   void dispose() {
     _sub?.unsubscribe();
+    ChatRouteTracker.incomingMessageTick.removeListener(_onIncomingPushTick);
     super.dispose();
   }
 
