@@ -189,6 +189,9 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
         final otherAvatar = other != null ? (other['avatar_url'] ?? other['photo_url'] ?? other['picture'])?.toString() : null;
         final subtitle = (conv['last_message'] ?? '').toString();
         final timeText = (conv['last_message_at'] ?? conv['updated_at'] ?? conv['created_at'])?.toString();
+        final unread = isBuyer
+            ? (conv['buyer_unread_count'] ?? 0) as int
+            : (conv['seller_unread_count'] ?? 0) as int;
         return Padding(
           padding: HWEdgeInsets.only(top: index == 0 ? 0 : 25),
           child: Slidable(
@@ -243,6 +246,7 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
               subtitle: subtitle.isNotEmpty ? subtitle : null,
               avatarUrl: otherAvatar,
               timeText: timeText,
+              unreadCount: unread,
               onTap: () => _openConversation(
                 conv,
                 otherId: other?['id']?.toString(),

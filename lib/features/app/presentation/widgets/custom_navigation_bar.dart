@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:get_it/get_it.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:wolfera/services/chat_service.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
 import 'package:wolfera/features/app/presentation/widgets/nav_bar_item.dart';
 import 'package:wolfera/features/app/presentation/widgets/nav_bar_item_circular.dart';
@@ -23,6 +26,9 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
   late Animation<Offset> _animation;
 
   int selectedIndex = 0;
+  int _chatUnread = 0;
+  RealtimeChannel? _userConvChannel;
+  final _chatService = GetIt.I<ChatService>();
 
   @override
   void initState() {
@@ -35,11 +41,14 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       begin: const Offset(0, 0),
       end: const Offset(0, 1),
     ).animate(_controller);
+
+    _initUnreadBadge();
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _userConvChannel?.unsubscribe();
     super.dispose();
   }
 
@@ -50,6 +59,28 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
     _controller.reset();
     _controller.forward();
     widget.child.goBranch(index);
+  }
+
+  Future<void> _initUnreadBadge() async {
+    try {
+      final userId = Supabase.instance.client.auth.currentUser?.id;
+      if (userId == null) return;
+      // Initial total unread
+      final total = await _chatService.getUnreadCount(userId);
+      if (mounted) setState(() => _chatUnread = total);
+
+      // Subscribe to conversation changes and recalc total
+      _userConvChannel?.unsubscribe();
+      _userConvChannel = _chatService.subscribeToUserConversations(
+        userId: userId,
+        onConversationUpdate: (_) async {
+          final t = await _chatService.getUnreadCount(userId);
+          if (mounted) setState(() => _chatUnread = t);
+        },
+      );
+    } catch (_) {
+      // ignore
+    }
   }
 
   @override
@@ -102,6 +133,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
                     svgAsset: Assets.svgNavChat,
                     isSelected: widget.child.currentIndex == 4,
                     onTap: () => _animateCursor(4),
+                    badgeCount: _chatUnread,
                   ),
                 ],
               ),

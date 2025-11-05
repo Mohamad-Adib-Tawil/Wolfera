@@ -16,6 +16,7 @@ class ChatItem extends StatelessWidget {
   final String? subtitle;
   final String? avatarUrl;
   final String? timeText;
+  final int unreadCount;
   const ChatItem({
     super.key,
     this.onTap,
@@ -25,6 +26,7 @@ class ChatItem extends StatelessWidget {
     this.avatarUrl,
     this.timeText,
     this.onLongPress,
+    this.unreadCount = 0,
   });
 
   @override
@@ -86,10 +88,37 @@ class ChatItem extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          AppText(
-            _formatTime(),
-            style: context.textTheme.titleMedium?.copyWith(fontSize: 15),
-            translation: false,
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AppText(
+                _formatTime(),
+                style: context.textTheme.titleMedium?.copyWith(fontSize: 15),
+                translation: false,
+              ),
+              if (unreadCount > 0) ...[
+                6.horizontalSpace,
+                Container(
+                  padding: HWEdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Colors.redAccent,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  constraints: BoxConstraints(minWidth: 18.w),
+                  child: Center(
+                    child: Text(
+                      _formatCount(unreadCount),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 11.sp,
+                        fontWeight: FontWeight.w600,
+                        height: 1.0,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ],
           ),
         ],
       ),
@@ -112,5 +141,11 @@ class ChatItem extends StatelessWidget {
     } catch (_) {
       return '';
     }
+  }
+
+  String _formatCount(int count) {
+    if (count <= 0) return '';
+    if (count > 99) return '99+';
+    return count.toString();
   }
 }
