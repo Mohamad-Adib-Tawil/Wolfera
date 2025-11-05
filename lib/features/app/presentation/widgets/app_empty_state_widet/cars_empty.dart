@@ -11,9 +11,15 @@ class _CarsEmpty extends AppEmptyState {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        AppSvgPicture(image),
-        30.verticalSpace,
+        AppSvgPicture(
+          image,
+          width: 96.w,
+          height: 96.w,
+          fit: BoxFit.contain,
+        ),
+        12.verticalSpace,
         AppText(
           title,
           style: context.textTheme.titleLarge.b.withColor(AppColors.primary),
