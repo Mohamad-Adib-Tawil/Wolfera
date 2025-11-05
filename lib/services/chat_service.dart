@@ -149,7 +149,7 @@ class ChatService {
     try {
       final response = await _client
           .from('conversations')
-          .select('id,buyer_id,seller_id,car_id,is_active,last_message,last_message_at,updated_at, buyer:users!buyer_id(id,full_name,avatar_url,photo_url), seller:users!seller_id(id,full_name,avatar_url,photo_url), car:cars!car_id(id,title,user_id)')
+          .select('id,buyer_id,seller_id,car_id,is_active,last_message,last_message_at,updated_at,buyer_unread_count,seller_unread_count, buyer:users!buyer_id(id,full_name,avatar_url,photo_url), seller:users!seller_id(id,full_name,avatar_url,photo_url), car:cars!car_id(id,title,user_id)')
           .or('buyer_id.eq.$userId,seller_id.eq.$userId')
           .eq('is_active', true)
           .order('last_message_at', ascending: false);
@@ -166,7 +166,7 @@ class ChatService {
     try {
       return await _client
           .from('conversations')
-          .select('id,buyer_id,seller_id,car_id,is_active,last_message,last_message_at,updated_at, buyer:users!buyer_id(id,full_name,avatar_url,photo_url), seller:users!seller_id(id,full_name,avatar_url,photo_url), car:cars!car_id(id,title,user_id)')
+          .select('id,buyer_id,seller_id,car_id,is_active,last_message,last_message_at,updated_at,buyer_unread_count,seller_unread_count, buyer:users!buyer_id(id,full_name,avatar_url,photo_url), seller:users!seller_id(id,full_name,avatar_url,photo_url), car:cars!car_id(id,title,user_id)')
           .eq('id', conversationId)
           .single();
     } catch (e) {

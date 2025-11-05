@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
+import 'package:wolfera/core/config/routing/router.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
 import 'package:wolfera/core/config/theme/typography.dart';
 import 'package:wolfera/core/utils/extensions/build_context.dart';
 import 'package:wolfera/core/utils/responsive_padding.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_loader_widget/app_loader.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
-import 'package:wolfera/features/app/presentation/widgets/custom_appbar.dart';
 import 'package:wolfera/features/app/presentation/widgets/animations/delayed_fade_slide.dart';
 import 'package:wolfera/features/notifications/presentation/manager/notifications_cubit.dart';
 
@@ -48,36 +48,40 @@ class _NotificationsPageState extends State<NotificationsPage> {
       value: _notificationsCubit,
       child: BlocBuilder<NotificationsCubit, NotificationsState>(
         builder: (context, state) {
-          final Widget content;
-          
-          if (state.isLoading) {
-            content = const Center(child: AppLoader());
-          } else if (state.notifications.isEmpty) {
-            content = Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.notifications_off_outlined,
-                    size: 80.sp,
-                    color: AppColors.grey,
-                  ),
-                  16.verticalSpace,
-                  AppText(
-                    'لا توجد إشعارات',
-                    style: context.textTheme.bodyLarge?.withColor(AppColors.grey),
-                  ),
-                ],
-              ),
-            );
-          } else {
-            content = RefreshIndicator(
+          final all = state.notifications;
+          final msgs = all.where((n) => (n['type']?.toString() ?? '') == 'new_message').toList();
+          final general = all.where((n) => (n['type']?.toString() ?? '') != 'new_message').toList();
+
+          Widget buildList(List<Map<String, dynamic>> items) {
+            if (state.isLoading) {
+              return const Center(child: AppLoader());
+            }
+            if (items.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.notifications_off_outlined,
+                      size: 80.sp,
+                      color: AppColors.grey,
+                    ),
+                    16.verticalSpace,
+                    AppText(
+                      'لا توجد إشعارات',
+                      style: context.textTheme.bodyLarge?.withColor(AppColors.grey),
+                    ),
+                  ],
+                ),
+              );
+            }
+            return RefreshIndicator(
               onRefresh: () => _notificationsCubit.loadNotifications(),
               child: ListView.builder(
                 padding: HWEdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                itemCount: state.notifications.length,
+                itemCount: items.length,
                 itemBuilder: (context, index) {
-                  final notification = state.notifications[index];
+                  final notification = items[index];
                   return NotificationItemWidget(
                     notification: notification,
                     onTap: () => _handleNotificationTap(notification),
@@ -89,40 +93,54 @@ class _NotificationsPageState extends State<NotificationsPage> {
               ),
             );
           }
-          
-          return Scaffold(
-            backgroundColor: AppColors.blackLight,
-            appBar: PreferredSize(
-              preferredSize: const Size.fromHeight(kToolbarHeight),
-              child: _shouldAnimateEntrance
+
+          return DefaultTabController(
+            length: 2,
+            child: Scaffold(
+              backgroundColor: AppColors.blackLight,
+              appBar: AppBar(
+                backgroundColor: Colors.transparent,
+                centerTitle: true,
+                automaticallyImplyLeading: true,
+                title: AppText(
+                  'Notifications'.tr(),
+                  style: context.textTheme.bodyMedium.s20.m,
+                ),
+                bottom: const TabBar(
+                  indicatorColor: AppColors.primary,
+                  labelColor: Colors.white,
+                  unselectedLabelColor: AppColors.grey,
+                  tabs: [
+                    Tab(text: 'عام'),
+                    Tab(text: 'الرسائل'),
+                  ],
+                ),
+              ),
+              body: _shouldAnimateEntrance
                   ? DelayedFadeSlide(
-                      delay: const Duration(milliseconds: 100),
+                      delay: const Duration(milliseconds: 260),
                       duration: const Duration(milliseconds: 1000),
-                      beginOffset: const Offset(0, -0.24),
-                      child: CustomAppbar(
-                        text: 'Notifications'.tr(),
-                        automaticallyImplyLeading: true,
+                      beginOffset: const Offset(-0.24, 0),
+                      child: TabBarView(
+                        children: [
+                          buildList(general),
+                          buildList(msgs),
+                        ],
                       ),
                     )
-                  : CustomAppbar(
-                      text: 'Notifications'.tr(),
-                      automaticallyImplyLeading: true,
+                  : TabBarView(
+                      children: [
+                        buildList(general),
+                        buildList(msgs),
+                      ],
                     ),
             ),
-            body: _shouldAnimateEntrance
-                ? DelayedFadeSlide(
-                    delay: const Duration(milliseconds: 260),
-                    duration: const Duration(milliseconds: 1000),
-                    beginOffset: const Offset(-0.24, 0),
-                    child: content,
-                  )
-                : content,
           );
         },
       ),
     );
   }
-  
+
   void _handleNotificationTap(Map<String, dynamic> notification) {
     // تحديد كمقروء
     if (notification['read_at'] == null) {
@@ -135,16 +153,35 @@ class _NotificationsPageState extends State<NotificationsPage> {
     
     switch (type) {
       case 'new_message':
-        // فتح المحادثة
         final conversationId = data['conversation_id']?.toString();
-        if (conversationId != null) {
-          // Navigate to chat page
-        }
+        final sellerId = data['other_user_id']?.toString() ?? data['sender_id']?.toString();
+        final carId = data['car_id']?.toString();
+        final extras = <String, dynamic>{
+          if (conversationId != null) 'conversation_id': conversationId,
+          if (sellerId != null) 'seller_id': sellerId,
+          if (carId != null) 'car_id': carId,
+        };
+        GRouter.router.go(
+          '${GRouter.config.mainRoutes.messagesBasePage}/${GRouter.config.chatsRoutes.chatPage}',
+          extra: extras,
+        );
         break;
       case 'new_offer':
       case 'car_like':
       case 'car_comment':
-        // Navigate to car details
+      case 'car_updated':
+      case 'price_drop':
+      case 'car_status_changed':
+      case 'car_state_changed':
+        final carId = data['car_id']?.toString() ?? notification['car_id']?.toString();
+        if (carId != null && carId.isNotEmpty) {
+          GRouter.router.go(
+            '${GRouter.config.mainRoutes.home}/${GRouter.config.homeRoutes.carDetails}',
+            extra: {'id': carId},
+          );
+        }
+        break;
+      default:
         break;
     }
   }
