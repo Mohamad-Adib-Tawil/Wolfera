@@ -24,7 +24,6 @@ class CustomNavigationBar extends StatefulWidget {
 class _CustomNavigationBarState extends State<CustomNavigationBar>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<Offset> _animation;
 
   int selectedIndex = 0;
   int _chatUnread = 0;
@@ -51,10 +50,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
-    _animation = Tween<Offset>(
-      begin: const Offset(0, 0),
-      end: const Offset(0, 1),
-    ).animate(_controller);
+    // Removed unused slide animation tween to reduce lints
 
     print('🔍 [DEBUG] About to call _initUnreadBadge');
     _initUnreadBadge();

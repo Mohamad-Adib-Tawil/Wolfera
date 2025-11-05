@@ -17,7 +17,6 @@ class DotsIndicator extends AnimatedWidget {
   final ValueChanged<int> onPageSelected;
   final Color color;
   static const double _kDotSize = 11.0;
-  static const double _kMaxZoom = 2.0;
   static const double _kDotSpacing = 25.0;
 
   Widget _buildDot(int index) {
@@ -30,7 +29,7 @@ class DotsIndicator extends AnimatedWidget {
                   index)
               .abs(),
     ));
-    double zoom = 1.0 + (_kMaxZoom - 1.0) * selectedness;
+    // double zoom = 1.0 + (_kMaxZoom - 1.0) * selectedness; // unused
 
     return SizedBox(
       width: _kDotSpacing.w,

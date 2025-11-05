@@ -12,7 +12,10 @@ class SearchFilterService {
     required SearchState filters,
   }) async {
     try {
-      var queryBuilder = SupabaseService.client.from('cars').select('*');
+      var queryBuilder = SupabaseService.client
+          .from('cars')
+          .select('*')
+          .or('is_featured.is.null,is_featured.eq.false'); // exclude featured cars; include nulls
 
       // ملاحظة: لا نقيّد الحالة هنا لضمان إرجاع كل السيارات
       // RecommendedSection يفضّل 'available' ولكن يعود لقائمة كاملة عند عدم توفرها
