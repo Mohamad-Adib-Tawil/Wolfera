@@ -89,17 +89,15 @@ class StorageService {
     try {
       // Prepare file data
       Uint8List fileBytes;
-      String fileName = customFileName ?? 
+      String fileName = customFileName ??
           'car_${DateTime.now().millisecondsSinceEpoch}_${_uuid.v4().substring(0, 8)}.jpg';
       
       if (imageFile is File) {
         fileBytes = await imageFile.readAsBytes();
         // Use original extension if available
         if (customFileName == null) {
-          final ext = imageFile.path.split('.').last;
-          if (ext.isNotEmpty) {
-            fileName = 'car_${DateTime.now().millisecondsSinceEpoch}_${_uuid.v4().substring(0, 8)}$ext';
-          }
+          // Force .jpg to align with our UI conversion
+          fileName = 'car_${DateTime.now().millisecondsSinceEpoch}_${_uuid.v4().substring(0, 8)}.jpg';
         }
       } else if (imageFile is Uint8List) {
         fileBytes = imageFile;
@@ -119,6 +117,7 @@ class StorageService {
             fileOptions: const FileOptions(
               cacheControl: '3600',
               upsert: false, // Don't overwrite car images
+              contentType: 'image/jpeg',
             ),
           );
       
