@@ -1,4 +1,6 @@
 import 'package:flutter/foundation.dart';
+import 'dart:io';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -46,8 +48,26 @@ class NotificationService {
       },
     );
 
-    // Note: If you need Android 13+ runtime notification permission,
-    // request it via the permission_handler package at app level.
+    // Request runtime notification permissions (Android 13+ and iOS)
+    await requestNotificationPermissionsIfNeeded();
+  }
+
+  /// Requests notification permission on Android 13+ and iOS.
+  static Future<void> requestNotificationPermissionsIfNeeded() async {
+    try {
+      if (Platform.isAndroid) {
+        // Android 13+ requires runtime permission; on older versions it's a no-op
+        await Permission.notification.request();
+      } else if (Platform.isIOS) {
+        // iOS permission via iOS plugin
+        final iosImpl = _localNotifications
+            .resolvePlatformSpecificImplementation<
+                IOSFlutterLocalNotificationsPlugin>();
+        await iosImpl?.requestPermissions(alert: true, badge: true, sound: true);
+      }
+    } catch (_) {
+      // no-op
+    }
   }
 
   static void onDidReceiveLocalNotification(

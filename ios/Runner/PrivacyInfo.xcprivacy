@@ -1,0 +1,27 @@
+{
+  "NSPrivacyTracking": false,
+  "NSPrivacyCollectedDataTypes": [
+    {
+      "NSPrivacyCollectedDataType": "UserContent",
+      "NSPrivacyCollectedDataTypeLinked": false,
+      "NSPrivacyCollectedDataTypeTracking": false,
+      "NSPrivacyCollectedDataTypePurposes": ["AppFunctionality"]
+    },
+    {
+      "NSPrivacyCollectedDataType": "DeviceID",
+      "NSPrivacyCollectedDataTypeLinked": false,
+      "NSPrivacyCollectedDataTypeTracking": false,
+      "NSPrivacyCollectedDataTypePurposes": ["AppFunctionality"]
+    }
+  ],
+  "NSPrivacyAccessedAPITypes": [
+    {
+      "NSPrivacyAccessedAPIType": "Camera",
+      "NSPrivacyAccessedAPIPurpose": "Capture car images"
+    },
+    {
+      "NSPrivacyAccessedAPIType": "Photos",
+      "NSPrivacyAccessedAPIPurpose": "Select and upload images"
+    }
+  ]
+}
