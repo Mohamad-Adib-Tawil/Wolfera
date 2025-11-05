@@ -95,6 +95,11 @@ class PushMessagingService {
         body: body,
         payload: payload,
       );
+
+      // Notify UI to refresh unread badge when a new message arrives
+      if (type == 'new_message') {
+        ChatRouteTracker.notifyIncomingMessage();
+      }
     });
 
     // إذا فُتح التطبيق من إشعار
@@ -102,6 +107,11 @@ class PushMessagingService {
       if (kDebugMode) {
         print('🔔 onMessageOpenedApp - Opened from notification: ${message.data}');
         print('🔔 onMessageOpenedApp - Notification: ${message.notification?.toMap()}');
+      }
+      final data = message.data;
+      final type = (data['type'] ?? data['action'])?.toString();
+      if (type == 'new_message') {
+        ChatRouteTracker.notifyIncomingMessage();
       }
       await PushMessagingService._routeFromData(message.data);
     });
@@ -113,6 +123,11 @@ class PushMessagingService {
       print('🔔 getInitialMessage - Notification: ${initial.notification?.toMap()}');
     }
     if (initial != null) {
+      final data = initial.data;
+      final type = (data['type'] ?? data['action'])?.toString();
+      if (type == 'new_message') {
+        ChatRouteTracker.notifyIncomingMessage();
+      }
       await PushMessagingService._routeFromData(initial.data);
     }
 

@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:wolfera/services/chat_service.dart';
+import 'package:wolfera/services/chat_route_tracker.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
 import 'package:wolfera/features/app/presentation/widgets/nav_bar_item.dart';
 import 'package:wolfera/features/app/presentation/widgets/nav_bar_item_circular.dart';
@@ -29,10 +30,23 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
   int _chatUnread = 0;
   RealtimeChannel? _userConvChannel;
   final _chatService = GetIt.I<ChatService>();
+  
+  void _onChatRouteChange() {
+    // Whenever user enters/exits a chat, recalc unread (useful right after leaving)
+    print('🔍 [DEBUG] _onChatRouteChange: Chat route changed, refreshing unread count');
+    _refreshUnread();
+  }
+
+  void _onIncomingMessage() {
+    // When a push 'new_message' arrives, refresh unread badge
+    print('🔍 [DEBUG] _onIncomingMessage: Incoming message tick, refreshing unread count');
+    _refreshUnread();
+  }
 
   @override
   void initState() {
     super.initState();
+    print('🔍 [DEBUG] CustomNavigationBar initState called');
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
@@ -42,13 +56,21 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       end: const Offset(0, 1),
     ).animate(_controller);
 
+    print('🔍 [DEBUG] About to call _initUnreadBadge');
     _initUnreadBadge();
+    // Listen to chat route changes to refresh badge when leaving a chat
+    ChatRouteTracker.currentConversationId.addListener(_onChatRouteChange);
+    // Listen to push incoming message ticks to update unread immediately
+    ChatRouteTracker.incomingMessageTick.addListener(_onIncomingMessage);
+    print('🔍 [DEBUG] CustomNavigationBar initState completed');
   }
 
   @override
   void dispose() {
     _controller.dispose();
     _userConvChannel?.unsubscribe();
+    ChatRouteTracker.currentConversationId.removeListener(_onChatRouteChange);
+    ChatRouteTracker.incomingMessageTick.removeListener(_onIncomingMessage);
     super.dispose();
   }
 
@@ -64,9 +86,14 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
   Future<void> _initUnreadBadge() async {
     try {
       final userId = Supabase.instance.client.auth.currentUser?.id;
-      if (userId == null) return;
+      if (userId == null) {
+        print('🔍 [DEBUG] _initUnreadBadge: No user logged in');
+        return;
+      }
+      print('🔍 [DEBUG] _initUnreadBadge: Getting initial unread count for $userId');
       // Initial total unread
       final total = await _chatService.getUnreadCount(userId);
+      print('🔍 [DEBUG] _initUnreadBadge: Initial unread count = $total');
       if (mounted) setState(() => _chatUnread = total);
 
       // Subscribe to conversation changes and recalc total
@@ -74,12 +101,28 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
       _userConvChannel = _chatService.subscribeToUserConversations(
         userId: userId,
         onConversationUpdate: (_) async {
-          final t = await _chatService.getUnreadCount(userId);
-          if (mounted) setState(() => _chatUnread = t);
+          print('🔍 [DEBUG] _initUnreadBadge: Conversation update received, refreshing...');
+          await _refreshUnread();
         },
       );
-    } catch (_) {
-      // ignore
+    } catch (e) {
+      print('❌ [DEBUG] _initUnreadBadge error: $e');
+    }
+  }
+
+  Future<void> _refreshUnread() async {
+    try {
+      final userId = Supabase.instance.client.auth.currentUser?.id;
+      if (userId == null) {
+        print('🔍 [DEBUG] _refreshUnread: No user logged in');
+        return;
+      }
+      print('🔍 [DEBUG] _refreshUnread: Getting updated unread count for $userId');
+      final t = await _chatService.getUnreadCount(userId);
+      print('🔍 [DEBUG] _refreshUnread: Updated unread count = $t, current = $_chatUnread');
+      if (mounted) setState(() => _chatUnread = t);
+    } catch (e) {
+      print('❌ [DEBUG] _refreshUnread error: $e');
     }
   }
 
@@ -132,7 +175,10 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
                     title: "Chat",
                     svgAsset: Assets.svgNavChat,
                     isSelected: widget.child.currentIndex == 4,
-                    onTap: () => _animateCursor(4),
+                    onTap: () {
+                      print('🔍 [DEBUG] Chat tab tapped, current _chatUnread = $_chatUnread');
+                      _animateCursor(4);
+                    },
                     badgeCount: _chatUnread,
                   ),
                 ],

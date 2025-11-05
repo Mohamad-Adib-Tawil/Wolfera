@@ -154,6 +154,8 @@ class ChatService {
           .eq('is_active', true)
           .order('last_message_at', ascending: false);
       
+      // Debug removed to reduce noise
+      
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
       print('❌ Error fetching conversations: $e');
@@ -419,16 +421,46 @@ class ChatService {
       int totalUnread = 0;
       
       for (final conv in conversations) {
-        if (conv['buyer_id'] == userId) {
-          totalUnread += (conv['buyer_unread_count'] ?? 0) as int;
-        } else if (conv['seller_id'] == userId) {
-          totalUnread += (conv['seller_unread_count'] ?? 0) as int;
+        final conversationId = conv['id']?.toString();
+        if (conversationId == null) continue;
+        
+        // حساب الرسائل غير المقروءة من جدول messages مباشرة
+        try {
+          final response = await _client
+              .from('messages')
+              .select('id')
+              .eq('conversation_id', conversationId)
+              .neq('sender_id', userId) // رسائل من الآخرين فقط
+              .isFilter('read_at', null); // غير مقروءة
+          
+          final count = response.length;
+          totalUnread += count;
+        } catch (e) {
+          print('❌ [DEBUG] Error counting messages for conv $conversationId: $e');
         }
       }
       
+      print('🔍 [DEBUG] Total unread messages: $totalUnread');
       return totalUnread;
     } catch (e) {
       print('❌ Error getting unread count: $e');
+      return 0;
+    }
+  }
+
+  /// حساب الرسائل غير المقروءة لمحادثة واحدة
+  Future<int> getUnreadMessagesForConversation(String conversationId, String userId) async {
+    try {
+      final response = await _client
+          .from('messages')
+          .select('id')
+          .eq('conversation_id', conversationId)
+          .neq('sender_id', userId) // رسائل من الآخرين فقط
+          .isFilter('read_at', null); // غير مقروءة
+      
+      return response.length;
+    } catch (e) {
+      print('❌ Error counting unread messages for conversation $conversationId: $e');
       return 0;
     }
   }
