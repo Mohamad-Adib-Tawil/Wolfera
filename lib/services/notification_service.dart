@@ -15,12 +15,13 @@ class NotificationService {
 
   static final _localNotifications = FlutterLocalNotificationsPlugin();
   static final _client = Supabase.instance.client;
+  static void Function(String? payload)? onTap;
 
   static Future<void> initializePlatformNotifications() async {
     // Use a valid Android resource for the small icon. The default launcher icon
     // exists in all Flutter templates under @mipmap/ic_launcher.
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('@drawable/ic_stat_notify');
 
     const DarwinInitializationSettings initializationSettingsIOS =
         DarwinInitializationSettings(
@@ -37,8 +38,12 @@ class NotificationService {
 
     await _localNotifications.initialize(
       initializationSettings,
+      // MUST be a top-level/static function for background handling
       onDidReceiveBackgroundNotificationResponse: notificationTapBackground,
-      onDidReceiveNotificationResponse: notificationTapBackground,
+      // Foreground tap handler can be a closure; delegate to onTap
+      onDidReceiveNotificationResponse: (resp) {
+        onTap?.call(resp.payload);
+      },
     );
 
     // Note: If you need Android 13+ runtime notification permission,
@@ -53,8 +58,7 @@ class NotificationService {
   }
 
   static Future<NotificationDetails> _notificationDetails() async {
-    AndroidNotificationDetails androidPlatformChannelSpecifics =
-        const AndroidNotificationDetails(
+    final androidPlatformChannelSpecifics = AndroidNotificationDetails(
       'wolfera-Cars',
       'Wolfera Cars Notification',
       groupKey: 'com.wolfera.wolfera',
@@ -62,8 +66,10 @@ class NotificationService {
       importance: Importance.max,
       priority: Priority.max,
       playSound: true,
-      // Ensure a small icon is set; uses the same as initialization.
-      icon: '@mipmap/ic_launcher',
+      // Small monochrome icon
+      icon: '@drawable/ic_stat_notify',
+      // Show app launcher as large icon where supported
+      largeIcon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
     );
 
     DarwinNotificationDetails iosNotificationDetails =
