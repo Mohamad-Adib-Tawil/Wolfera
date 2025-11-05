@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wolfera/core/api/api_utils.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
@@ -39,7 +40,7 @@ class _AddAdminDialogState extends State<AddAdminDialog> {
       final email = _controller.text.trim();
       await SupabaseService.promoteUserToAdminByEmail(email);
       if (mounted) {
-        showMessage('Admin added successfully', isSuccess: true);
+        showMessage('admin_added_success'.tr(), isSuccess: true);
         Navigator.of(context).pop();
       }
     } catch (e) {
@@ -111,12 +112,7 @@ class _AddAdminDialogState extends State<AddAdminDialog> {
                       child: const Icon(Icons.admin_panel_settings_rounded, color: Colors.white),
                     ),
                     12.horizontalSpace,
-                    const Expanded(
-                      child: AppText(
-                        'Add Admin',
-                        translation: false,
-                      ),
-                    ),
+                    const Expanded(child: AppText('add_admin_title')),
                     IconButton(
                       icon: const Icon(Icons.close, color: Colors.white),
                       onPressed: () => Navigator.of(context).pop(),
@@ -131,10 +127,7 @@ class _AddAdminDialogState extends State<AddAdminDialog> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const AppText(
-                      'Grant admin access to a user by email',
-                      translation: false,
-                    ),
+                    const AppText('add_admin_subtitle'),
                     12.verticalSpace,
 
                     // Form
@@ -147,7 +140,7 @@ class _AddAdminDialogState extends State<AddAdminDialog> {
                         textInputAction: TextInputAction.done,
                         onFieldSubmitted: (_) => _submit(),
                         decoration: InputDecoration(
-                          labelText: 'User Email',
+                          labelText: 'user_email'.tr(),
                           prefixIcon: const Icon(Icons.email_rounded, color: Colors.white70),
                           filled: true,
                           fillColor: Colors.white.withOpacity(0.06),
@@ -194,20 +187,14 @@ class _AddAdminDialogState extends State<AddAdminDialog> {
                                 width: 20,
                                 child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                               )
-                            : const AppText(
-                                'Promote to Admin',
-                                translation: false,
-                              ),
+                            : const AppText('promote_to_admin'),
                       ),
                     ),
 
                     10.verticalSpace,
                     Opacity(
                       opacity: 0.8,
-                      child: const AppText(
-                        'Note: The user must already exist in the system. Only super admins can perform this action.',
-                        translation: false,
-                      ),
+                      child: const AppText('add_admin_note'),
                     ),
                   ],
                 ),

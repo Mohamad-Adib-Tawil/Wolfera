@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
@@ -80,7 +81,7 @@ class ChatItem extends StatelessWidget {
           ConstrainedBox(
             constraints: BoxConstraints(minWidth: 0, maxWidth: 210.w),
             child: AppText(
-              (title == null || title!.isEmpty) ? 'User' : title!,
+              (title == null || title!.isEmpty) ? 'user'.tr() : title!,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: context.textTheme.titleMedium.s15.r,
@@ -135,8 +136,8 @@ class ChatItem extends StatelessWidget {
       final today = DateTime(now.year, now.month, now.day);
       final thatDay = DateTime(dt.year, dt.month, dt.day);
       final diffDays = today.difference(thatDay).inDays;
-      if (diffDays == 0) return 'اليوم';
-      if (diffDays == 1) return 'أمس';
+      if (diffDays == 0) return 'today'.tr();
+      if (diffDays == 1) return 'yesterday'.tr();
       return '${dt.day}/${dt.month}/${dt.year}';
     } catch (_) {
       return '';

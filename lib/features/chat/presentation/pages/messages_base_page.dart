@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -47,11 +48,11 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
     final ok = await showDialog<bool>(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: const Text('Clear conversation?'),
-            content: const Text('This will remove all messages and send a system notice to the other user.'),
+            title: Text('clear_conversation_q'.tr()),
+            content: Text('clear_conversation_body'.tr()),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-              TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Clear', style: TextStyle(color: Colors.red))),
+              TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('cancel'.tr())),
+              TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text('clear_conversation'.tr(), style: const TextStyle(color: Colors.red))),
             ],
           ),
         ) ??
@@ -62,7 +63,7 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
     if (id == null || actor == null) return;
     final success = await _chatService.clearConversation(conversationId: id, actorId: actor);
     if (success && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Conversation cleared')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('conversation_cleared'.tr())));
     }
   }
 
@@ -81,14 +82,14 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  AppText('Conversation actions', translation: false, style: context.textTheme.titleMedium.s18.xb),
+                  AppText('conversation_actions', style: context.textTheme.titleMedium.s18.xb),
                   IconButton(onPressed: () => Navigator.pop(ctx), icon: const Icon(Icons.close, color: Colors.white70))
                 ],
               ),
               10.verticalSpace,
               ListTile(
                 leading: const Icon(Icons.archive_outlined, color: AppColors.primary),
-                title: const AppText('Hide conversation', translation: false),
+                title: const AppText('hide_conversation'),
                 onTap: () {
                   Navigator.pop(ctx);
                   _confirmArchive(conv);
@@ -96,7 +97,7 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
               ),
               ListTile(
                 leading: const Icon(Icons.cleaning_services_outlined, color: Colors.redAccent),
-                title: const AppText('Clear conversation', translation: false),
+                title: const AppText('clear_conversation'),
                 onTap: () {
                   Navigator.pop(ctx);
                   _confirmClear(conv);
@@ -114,11 +115,11 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
     final ok = await showDialog<bool>(
           context: context,
           builder: (ctx) => AlertDialog(
-            title: const Text('Hide conversation?'),
-            content: const Text('This will hide the conversation from your list. You can still receive messages.'),
+            title: Text('hide_conversation_q'.tr()),
+            content: Text('hide_conversation_body'.tr()),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-              TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Hide')),
+              TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('cancel'.tr())),
+              TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text('hide'.tr())),
             ],
           ),
         ) ??
@@ -130,7 +131,7 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
     if (success) {
       setState(() => _conversations.removeWhere((e) => e['id'] == id));
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Conversation hidden')));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('conversation_hidden'.tr())));
       }
     }
   }
@@ -188,7 +189,7 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
         final me = SupabaseService.currentUser!.id;
         final isBuyer = conv['buyer_id'] == me;
         final other = isBuyer ? conv['seller'] : conv['buyer'];
-        final otherName = other != null ? (other['full_name'] ?? other['display_name'] ?? other['name'])?.toString() : 'User';
+        final otherName = other != null ? (other['full_name'] ?? other['display_name'] ?? other['name'])?.toString() : 'user'.tr();
         final otherAvatar = other != null ? (other['avatar_url'] ?? other['photo_url'] ?? other['picture'])?.toString() : null;
         final subtitle = (conv['last_message'] ?? '').toString();
         final timeText = (conv['last_message_at'] ?? conv['updated_at'] ?? conv['created_at'])?.toString();
@@ -209,7 +210,7 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
                       backgroundColor: AppColors.primary.withValues(alpha: 0.18),
                       foregroundColor: AppColors.primary,
                       icon: Icons.archive_outlined,
-                      label: 'Hide',
+                      label: 'hide'.tr(),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     SlidableAction(
@@ -217,7 +218,7 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
                       backgroundColor: const Color(0xFF3A1F1F),
                       foregroundColor: Colors.redAccent,
                       icon: Icons.cleaning_services_outlined,
-                      label: 'Clear',
+                      label: 'clear_conversation'.tr(),
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ],
@@ -378,9 +379,8 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
       centerTitle: true,
       backgroundColor: Colors.transparent,
       title: AppText(
-        "Messages",
+        'messages',
         style: context.textTheme.bodyMedium.s20.m,
-        translation: false,
       ),
     );
   }
@@ -395,7 +395,7 @@ class _AnimatedAppBar extends StatelessWidget {
         centerTitle: true,
         backgroundColor: Colors.transparent,
         title: AppText(
-          "Messages",
+          'messages',
           style: context.textTheme.bodyMedium.s20.m,
         ),
       );

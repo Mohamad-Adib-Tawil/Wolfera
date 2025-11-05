@@ -141,10 +141,7 @@ class _SearchResultsVerticalListState extends State<SearchResultsVerticalList> {
             content = Padding(
               padding: EdgeInsets.symmetric(vertical: 12.h),
               child: const Center(
-                child: AppText(
-                  'No cars found',
-                  translation: false,
-                ),
+                child: AppText('no_cars_found'),
               ),
             );
           } else {

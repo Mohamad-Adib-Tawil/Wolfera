@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:wolfera/core/config/theme/typography.dart';
@@ -50,7 +51,7 @@ class ChatAppbar extends StatelessWidget implements PreferredSizeWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   AppText(
-                    otherUserName ?? 'البائع',
+                    otherUserName ?? 'Seller'.tr(),
                     style: context.textTheme.titleMedium?.s18.m,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,

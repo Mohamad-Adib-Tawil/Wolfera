@@ -98,9 +98,8 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
                         8.horizontalSpace,
                         AppText(
                           t.label,
-                          translation: false,
-                          style: context.textTheme.titleSmall?.s13.m.withColor(
-                              isSel ? AppColors.primary : AppColors.white),
+                          style: context.textTheme.titleSmall?.s13.m
+                              .withColor(isSel ? AppColors.primary : AppColors.white),
                         ),
                       ],
                     ),

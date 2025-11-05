@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
 import 'package:wolfera/core/config/theme/typography.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:wolfera/core/utils/extensions/build_context.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_svg_picture.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
@@ -26,14 +27,14 @@ class UserSectionWithLocation extends StatelessWidget {
     
     final userName = owner?['full_name']?.toString() ?? 
                      carData['seller_name']?.toString() ?? 
-                     'Car Owner';
+                     'car_owner'.tr();
     
     final userCity = owner?['city']?.toString() ?? carData['city']?.toString();
     final userCountry = owner?['country']?.toString() ?? carData['country']?.toString();
     final userLocation = owner?['location']?.toString() ?? carData['location']?.toString();
     
     // بناء نص الموقع
-    String locationText = 'WorldWide';
+    String locationText = 'Worldwide'.tr();
     if (userCity != null && userCountry != null) {
       locationText = '$userCity, $userCountry';
     } else if (userCity != null) {
