@@ -140,24 +140,67 @@ class SupabaseService {
     await client.from('cars').update({'is_featured': isFeatured}).eq('id', id);
   }
 
-  // Check if current user is admin (requires users.is_admin boolean column)
+  // Check if current user is admin (treat super admin as admin too)
   static Future<bool> isCurrentUserAdmin() async {
     try {
       final uid = currentUser?.id;
       if (uid == null) return false;
       final res = await client
           .from('users')
-          .select('is_admin')
+          .select('is_admin, is_super_admin')
           .eq('id', uid)
           .maybeSingle();
       if (res == null) return false;
-      final val = res['is_admin'];
-      if (val is bool) return val;
-      if (val is int) return val == 1;
-      return false;
+      final adm = res['is_admin'];
+      final sadm = res['is_super_admin'];
+      bool bAdm = adm is bool ? adm : (adm is int ? adm == 1 : false);
+      bool bSAdm = sadm is bool ? sadm : (sadm is int ? sadm == 1 : false);
+      return bAdm || bSAdm;
     } catch (_) {
       // If column doesn't exist or any error, treat as non-admin
       return false;
     }
+  }
+
+  // Check if current user is SUPER ADMIN (requires users.is_super_admin boolean column)
+  static Future<bool> isCurrentUserSuperAdmin() async {
+    try {
+      final uid = currentUser?.id;
+      if (uid == null) return false;
+      final res = await client
+          .from('users')
+          .select('is_super_admin')
+          .eq('id', uid)
+          .maybeSingle();
+      if (res == null) return false;
+      final val = res['is_super_admin'];
+      if (val is bool) return val;
+      if (val is int) return val == 1;
+      return false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  // Super admin can promote a user to admin by email (RLS must allow this)
+  static Future<void> promoteUserToAdminByEmail(String email) async {
+    // 1) find the user id by email
+    final userRow = await client
+        .from('users')
+        .select('id')
+        .eq('email', email)
+        .maybeSingle();
+    if (userRow == null) {
+      throw Exception('User not found');
+    }
+    final uid = userRow['id']?.toString();
+    if (uid == null || uid.isEmpty) {
+      throw Exception('Invalid user id');
+    }
+    // 2) update is_admin
+    await client
+        .from('users')
+        .update({'is_admin': true, 'updated_at': DateTime.now().toIso8601String()})
+        .eq('id', uid);
   }
 }

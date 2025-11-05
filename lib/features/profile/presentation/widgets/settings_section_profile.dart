@@ -10,6 +10,8 @@ import 'package:wolfera/features/app/presentation/widgets/language_dialog.dart';
 import 'package:wolfera/features/profile/presentation/pages/profile_page.dart';
 import 'package:wolfera/features/profile/presentation/widgets/logout_bottom_sheet.dart';
 import 'package:wolfera/generated/assets.dart';
+import 'package:wolfera/services/supabase_service.dart';
+import 'package:wolfera/features/profile/presentation/widgets/add_admin_dialog.dart';
 
 import 'profile_item_settings_widget.dart';
 
@@ -28,6 +30,22 @@ class SettingsSectionProfile extends StatelessWidget {
           svgIcon: Assets.svgPerson,
           onTap: () => GRouter.router
               .pushNamed(GRouter.config.profileRoutes.profileEdit),
+        ),
+        // Super Admin: Add Admin button
+        FutureBuilder<bool>(
+          future: SupabaseService.isCurrentUserSuperAdmin(),
+          builder: (context, snapshot) {
+            final isSuper = snapshot.data == true;
+            if (!isSuper) return const SizedBox.shrink();
+            return ProfileItemSettingsWidget(
+              title: 'Add Admin',
+              svgIcon: Assets.svgPerson,
+              onTap: () => showDialog(
+                context: context,
+                builder: (_) => const AddAdminDialog(),
+              ),
+            );
+          },
         ),
         ProfileItemSettingsWidget(
           title: 'Address',
