@@ -14,6 +14,13 @@
         android:label="Wolfera"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
+        <!-- Default FCM notification icon/color -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_stat_notify" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/ic_launcher_background" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

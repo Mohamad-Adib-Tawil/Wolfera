@@ -66,15 +66,12 @@ class NotificationService {
       importance: Importance.max,
       priority: Priority.max,
       playSound: true,
-      // Small monochrome icon
       icon: '@drawable/ic_stat_notify',
-      // Show app launcher as large icon where supported
-      largeIcon: DrawableResourceAndroidBitmap('@mipmap/ic_launcher'),
+      largeIcon: DrawableResourceAndroidBitmap('@mipmap/launcher_icon'),
     );
 
     DarwinNotificationDetails iosNotificationDetails =
         const DarwinNotificationDetails(
-      presentAlert: true,
       presentBadge: true,
       presentSound: true,
     );
