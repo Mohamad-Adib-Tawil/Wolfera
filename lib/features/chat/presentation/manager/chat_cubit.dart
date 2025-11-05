@@ -76,6 +76,77 @@ class ChatCubit extends Cubit<ChatState> {
         // في حال لم نجد المحادثة، نكمل بالمسار العادي أدناه
       }
 
+      // إذا لم تتوفر carId لكن sellerId موجودة (مثلاً عند فتح من إشعار)،
+      // نحاول إيجاد أحدث محادثة بين المستخدم الحالي والطرف الآخر بغض النظر عن السيارة.
+      if (sellerId != null && sellerId.isNotEmpty && (carId == null || carId.isEmpty)) {
+        try {
+          final conv = await SupabaseService.client
+              .from('conversations')
+              .select('id,buyer_id,seller_id,car_id, buyer:users!buyer_id(id,full_name,avatar_url,photo_url), seller:users!seller_id(id,full_name,avatar_url,photo_url)')
+              .or('and(buyer_id.eq.${currentUser.id},seller_id.eq.$sellerId),and(buyer_id.eq.$sellerId,seller_id.eq.${currentUser.id}))')
+              .order('last_message_at', ascending: false)
+              .limit(1)
+              .maybeSingle();
+
+          if (conv != null) {
+            _currentConversationId = conv['id']?.toString();
+            final messages = await _chatService.getMessages(
+              conversationId: _currentConversationId!,
+            );
+            await _chatService.markMessagesAsRead(
+              conversationId: _currentConversationId!,
+              userId: currentUser.id,
+            );
+            _subscribeToMessages();
+
+            final isCurrentBuyer = conv['buyer_id'] == currentUser.id;
+            final otherMap = isCurrentBuyer ? conv['seller'] : conv['buyer'];
+            final otherName = (sellerName != null && sellerName.isNotEmpty)
+                ? sellerName
+                : (otherMap?['full_name'] ?? otherMap?['display_name'] ?? otherMap?['name'])?.toString() ?? 'User';
+            final otherAvatar = (otherMap?['avatar_url'] ?? otherMap?['photo_url'] ?? otherMap?['picture'])?.toString();
+            final otherId = (isCurrentBuyer ? conv['seller_id'] : conv['buyer_id'])?.toString();
+
+            emit(state.copyWith(
+              isLoading: false,
+              conversationId: _currentConversationId,
+              conversation: conv,
+              messages: messages,
+              currentUserId: currentUser.id,
+              otherUserId: otherId,
+              otherUserName: otherName,
+              otherUserAvatar: otherAvatar,
+              carTitle: carTitle, // قد تكون null؛ العنوان سيختفي من الهيدر تلقائياً
+            ));
+            return;
+          }
+        } catch (_) {
+          // تجاهل ونكمل بعرض رأس المستخدم على الأقل
+        }
+
+        // إن لم نجد محادثة، اعرض رأس المستخدم فقط بدون رسائل أو سيارة
+        try {
+          final user = await SupabaseService.client
+              .from('users')
+              .select('id, full_name, avatar_url, photo_url')
+              .eq('id', sellerId)
+              .maybeSingle();
+          emit(state.copyWith(
+            isLoading: false,
+            currentUserId: currentUser.id,
+            otherUserId: sellerId,
+            otherUserName: sellerName ?? (user?['full_name']?.toString() ?? 'User'),
+            otherUserAvatar: (user?['avatar_url'] ?? user?['photo_url'])?.toString(),
+            carTitle: null,
+          ));
+          return;
+        } catch (_) {
+          // إذا فشل الجلب، لن نُظهر خطأ؛ فقط أوقف التحميل
+          emit(state.copyWith(isLoading: false));
+          return;
+        }
+      }
+
       if (sellerId == null || carId == null) {
         emit(state.copyWith(
           isLoading: false,

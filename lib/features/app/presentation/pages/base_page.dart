@@ -1,5 +1,4 @@
-import 'dart:convert';
-import 'dart:io';
+ 
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,8 +17,7 @@ import 'package:wolfera/features/app/presentation/widgets/custom_navigation_bar.
 import 'package:wolfera/generated/locale_keys.g.dart';
 
 import '../../../../generated/assets.dart';
-import '../../../../services/firebase_service.dart';
-import '../../../../services/notification_service.dart';
+ 
 import '../widgets/app_scaffold.dart';
 
 class BasePage extends StatefulWidget {

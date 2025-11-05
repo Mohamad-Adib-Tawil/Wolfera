@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
@@ -7,6 +8,7 @@ import 'package:wolfera/core/config/routing/router.dart';
 import 'package:wolfera/features/app/presentation/widgets/animations/delayed_fade_slide.dart';
 import 'package:wolfera/features/chat/presentation/manager/chat_cubit.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_loader_widget/app_loader.dart';
+import 'package:wolfera/services/chat_route_tracker.dart';
 import '../widgets/chat_text_field.dart';
 import '../widgets/messages_list_view_widget.dart';
 
@@ -26,6 +28,7 @@ class _ChatPageState extends State<ChatPage> {
   static bool _didAnimateOnce = false;
   late final bool _shouldAnimateEntrance;
   late final ChatCubit _chatCubit;
+  StreamSubscription<ChatState>? _sub;
 
   @override
   void initState() {
@@ -44,10 +47,26 @@ class _ChatPageState extends State<ChatPage> {
       carTitle: data['car_title']?.toString(),
       conversationId: data['conversation_id']?.toString(),
     );
+
+    // حدّد tracker بحسب المعطى الأولي إن وجد
+    final initialConv = data['conversation_id']?.toString();
+    if (initialConv != null && initialConv.isNotEmpty) {
+      ChatRouteTracker.enter(initialConv);
+    }
+
+    // راقب تغيّر معرف المحادثة من الحالة
+    _sub = _chatCubit.stream.listen((s) {
+      final cid = s.conversationId;
+      if (cid != null && cid.isNotEmpty) {
+        ChatRouteTracker.enter(cid);
+      }
+    });
   }
   
   @override
   void dispose() {
+    _sub?.cancel();
+    ChatRouteTracker.exit();
     super.dispose();
   }
 
