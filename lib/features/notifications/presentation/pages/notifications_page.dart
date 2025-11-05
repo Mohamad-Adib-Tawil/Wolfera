@@ -67,10 +67,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                       color: AppColors.grey,
                     ),
                     16.verticalSpace,
-                    AppText(
-                      'لا توجد إشعارات',
-                      style: context.textTheme.bodyLarge?.withColor(AppColors.grey),
-                    ),
+                    AppText('no_notifications', style: context.textTheme.bodyLarge?.withColor(AppColors.grey)),
                   ],
                 ),
               );
@@ -102,17 +99,14 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 backgroundColor: Colors.transparent,
                 centerTitle: true,
                 automaticallyImplyLeading: true,
-                title: AppText(
-                  'Notifications'.tr(),
-                  style: context.textTheme.bodyMedium.s20.m,
-                ),
-                bottom: const TabBar(
+                title: AppText('Notifications'.tr()),
+                bottom: TabBar(
                   indicatorColor: AppColors.primary,
                   labelColor: Colors.white,
                   unselectedLabelColor: AppColors.grey,
                   tabs: [
-                    Tab(text: 'عام'),
-                    Tab(text: 'الرسائل'),
+                    Tab(text: 'general'.tr()),
+                    Tab(text: 'messages'.tr()),
                   ],
                 ),
               ),
@@ -202,10 +196,10 @@ class NotificationItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isRead = notification['read_at'] != null;
-    final title = notification['title']?.toString() ?? 'إشعار';
+    final title = notification['title']?.toString() ?? 'notification'.tr();
     final body = notification['body']?.toString() ?? '';
     final sender = notification['sender'] as Map<String, dynamic>?;
-    final senderName = sender?['full_name']?.toString() ?? 'مستخدم';
+    final senderName = sender?['full_name']?.toString() ?? 'user'.tr();
     final createdAt = notification['created_at']?.toString();
     
     return Dismissible(
@@ -269,8 +263,7 @@ class NotificationItemWidget extends StatelessWidget {
                         if (createdAt != null)
                           AppText(
                             _formatTime(createdAt),
-                            style: context.textTheme.bodySmall
-                                ?.withColor(AppColors.grey),
+                            style: context.textTheme.bodySmall?.withColor(AppColors.grey),
                             translation: false,
                           ),
                       ],
@@ -286,12 +279,7 @@ class NotificationItemWidget extends StatelessWidget {
                     ),
                     if (sender != null) ...[
                       4.verticalSpace,
-                      AppText(
-                        'من: $senderName',
-                        style: context.textTheme.bodySmall
-                            ?.withColor(AppColors.grey),
-                        translation: false,
-                      ),
+                      AppText('from'.tr(args: [senderName]), style: context.textTheme.bodySmall?.withColor(AppColors.grey), translation: false),
                     ],
                   ],
                 ),

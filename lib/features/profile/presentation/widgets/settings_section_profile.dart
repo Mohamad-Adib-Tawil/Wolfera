@@ -26,7 +26,7 @@ class SettingsSectionProfile extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
         ProfileItemSettingsWidget(
-          title: 'Edit Profile',
+          title: 'editProfile',
           svgIcon: Assets.svgPerson,
           onTap: () => GRouter.router
               .pushNamed(GRouter.config.profileRoutes.profileEdit),
@@ -38,7 +38,7 @@ class SettingsSectionProfile extends StatelessWidget {
             final isSuper = snapshot.data == true;
             if (!isSuper) return const SizedBox.shrink();
             return ProfileItemSettingsWidget(
-              title: 'Add Admin',
+              title: 'add_admin_title',
               svgIcon: Assets.svgPerson,
               onTap: () => showDialog(
                 context: context,
@@ -48,7 +48,7 @@ class SettingsSectionProfile extends StatelessWidget {
           },
         ),
         ProfileItemSettingsWidget(
-          title: 'Address',
+          title: 'address',
           svgIcon: Assets.svgMapPin,
           onTap: () => GRouter.router.pushNamed(
             GRouter.config.profileRoutes.addressPage,
@@ -67,7 +67,7 @@ class SettingsSectionProfile extends StatelessWidget {
               .pushNamed(GRouter.config.notificationsRoutes.notifications),
         ),
         ProfileItemSettingsWidget(
-          title: 'Language',
+          title: 'language',
           svgIcon: Assets.svgGlobe,
           onTap: () => AnimatedDialog.show(context,
               child: const LanguageDialog(),
@@ -75,19 +75,19 @@ class SettingsSectionProfile extends StatelessWidget {
               barrierLabel: "LanguageDialog"),
         ),
         ProfileItemSettingsWidget(
-          title: 'Privacy Policy',
+          title: 'settingsApp.privacyPolicy',
           svgIcon: Assets.svgLock,
           onTap: () => GRouter.router
               .pushNamed(GRouter.config.settingsRoutes.privacyPolicy),
         ),
         ProfileItemSettingsWidget(
-          title: 'About Us',
+          title: 'settingsApp.aboutTheApplication',
           svgIcon: Assets.svgInfoRect,
           onTap: () =>
               GRouter.router.pushNamed(GRouter.config.settingsRoutes.aboutUs),
         ),
         ProfileItemSettingsWidget(
-          title: 'Logout',
+          title: 'logout',
           svgIcon: Assets.svgLogout,
           isLastItem: false,
           color: AppColors.primary,

@@ -331,9 +331,10 @@ class _SearcgPageState extends State<SearchPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             AppText(
-                              'Error: ${state.searchError}',
+                              'error'.tr(args: [state.searchError ?? '']),
                               style: context.textTheme.bodyMedium
                                   ?.withColor(AppColors.white),
+                              translation: false,
                             ),
                             20.verticalSpace,
                             ElevatedButton(
@@ -413,9 +414,10 @@ class _SearcgPageState extends State<SearchPage> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   AppText(
-                                    'Error: ${state.searchError}',
+                                    'error'.tr(args: [state.searchError ?? '']),
                                     style: context.textTheme.bodyMedium
                                         ?.withColor(AppColors.white),
+                                    translation: false,
                                   ),
                                   20.verticalSpace,
                                   ElevatedButton(

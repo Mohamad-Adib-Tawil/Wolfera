@@ -10,6 +10,7 @@ import 'package:wolfera/features/my_car/presentation/manager/my_cars_bloc.dart';
 import 'package:wolfera/core/utils/money_formatter.dart';
 import 'package:wolfera/core/config/routing/router.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_elvated_button.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:wolfera/core/config/theme/typography.dart';
 import 'package:wolfera/core/utils/extensions/build_context.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
@@ -62,18 +63,9 @@ class MyCarsListViewBuilder extends StatelessWidget {
                 children: [
                   AppSvgPicture(Assets.svgNoProfilePicture, width: 72.w, height: 72.w),
                   16.verticalSpace,
-                  AppText(
-                    'You have no cars yet',
-                    translation: false,
-                    style: context.textTheme.titleMedium?.s18.xb.withColor(Colors.white),
-                  ),
+                  AppText('mycars_empty_title', style: context.textTheme.titleMedium?.s18.xb.withColor(Colors.white)),
                   8.verticalSpace,
-                  AppText(
-                    'Start by adding your first car to sell it on Wolfera.',
-                    translation: false,
-                    style: context.textTheme.bodyMedium?.withColor(Colors.white70),
-                    maxLines: 2,
-                  ),
+                  AppText('mycars_empty_subtitle', style: context.textTheme.bodyMedium?.withColor(Colors.white70), maxLines: 2),
                   18.verticalSpace,
                   AppElevatedButton(
                     text: 'Sell My Car',
@@ -168,27 +160,24 @@ class MyCarsListViewBuilder extends StatelessWidget {
                               builder: (ctx) {
                                 return AlertDialog(
                                   backgroundColor: const Color(0xFF1E1F24),
-                                  title: const Text('Edit price', style: TextStyle(color: Colors.white)),
+                                  title: Text('edit_price'.tr(), style: const TextStyle(color: Colors.white)),
                                   content: TextField(
                                     controller: controller,
                                     keyboardType: const TextInputType.numberWithOptions(decimal: true),
                                     style: const TextStyle(color: Colors.white),
-                                    decoration: const InputDecoration(
-                                      hintText: 'Enter new price',
-                                      hintStyle: TextStyle(color: Colors.white70),
+                                    decoration: InputDecoration(
+                                      hintText: 'enter_new_price'.tr(),
+                                      hintStyle: const TextStyle(color: Colors.white70),
                                     ),
                                   ),
                                   actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.of(ctx).pop(null),
-                                      child: const Text('Cancel'),
-                                    ),
+                                    TextButton(onPressed: () => Navigator.of(ctx).pop(null), child: Text('cancel'.tr())),
                                     TextButton(
                                       onPressed: () {
                                         final parsed = num.tryParse(controller.text.trim());
                                         Navigator.of(ctx).pop(parsed);
                                       },
-                                      child: const Text('Save'),
+                                      child: Text('save'.tr()),
                                     ),
                                   ],
                                 );
@@ -219,22 +208,18 @@ class MyCarsListViewBuilder extends StatelessWidget {
                                         Row(
                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                           children: [
-                                            AppText('Delete car?', translation: false, style: context.textTheme.titleMedium?.s18.xb.withColor(Colors.white)),
+                                            AppText('delete_car_q', style: context.textTheme.titleMedium?.s18.xb.withColor(Colors.white)),
                                             IconButton(onPressed: () => Navigator.pop(ctx, false), icon: const Icon(Icons.close, color: Colors.white70)),
                                           ],
                                         ),
                                         6.verticalSpace,
-                                        AppText(
-                                          'Are you sure you want to delete this car? This action cannot be undone.',
-                                          translation: false,
-                                          style: context.textTheme.bodyMedium?.withColor(Colors.white70),
-                                        ),
+                                        AppText('delete_car_confirm', style: context.textTheme.bodyMedium?.withColor(Colors.white70)),
                                         14.verticalSpace,
                                         Row(
                                           children: [
                                             Expanded(
                                               child: AppElevatedButton(
-                                                text: 'Cancel',
+                                                text: 'cancel',
                                                 onPressed: () => Navigator.pop(ctx, false),
                                                 appButtonStyle: AppButtonStyle.secondary,
                                                 style: ElevatedButton.styleFrom(minimumSize: Size(double.infinity, 46.h)),
@@ -243,7 +228,7 @@ class MyCarsListViewBuilder extends StatelessWidget {
                                             10.horizontalSpace,
                                             Expanded(
                                               child: AppElevatedButton(
-                                                text: 'Delete',
+                                                text: 'delete',
                                                 onPressed: () => Navigator.pop(ctx, true),
                                                 style: ElevatedButton.styleFrom(
                                                   backgroundColor: Colors.redAccent,
@@ -269,25 +254,25 @@ class MyCarsListViewBuilder extends StatelessWidget {
                           final status = (car['status']?.toString() ?? 'active').toLowerCase();
                           final isSold = status == 'sold';
                           return [
-                            const PopupMenuItem(
+                            PopupMenuItem(
                               value: 'edit_price',
                               child: ListTile(
                                 leading: Icon(Icons.edit, color: Colors.white70),
-                                title: Text('Edit price', style: TextStyle(color: Colors.white)),
+                                title: Text('edit_price'.tr(), style: const TextStyle(color: Colors.white)),
                               ),
                             ),
                             PopupMenuItem(
                               value: 'toggle_sold',
                               child: ListTile(
                                 leading: Icon(isSold ? Icons.undo : Icons.sell_outlined, color: Colors.white70),
-                                title: Text(isSold ? 'Mark as active' : 'Mark as sold', style: const TextStyle(color: Colors.white)),
+                                title: Text(isSold ? 'mark_as_active'.tr() : 'mark_as_sold'.tr(), style: const TextStyle(color: Colors.white)),
                               ),
                             ),
-                            const PopupMenuItem(
+                            PopupMenuItem(
                               value: 'delete',
                               child: ListTile(
                                 leading: Icon(Icons.delete_outline, color: Colors.white70),
-                                title: Text('Delete', style: TextStyle(color: Colors.white)),
+                                title: Text('delete'.tr(), style: const TextStyle(color: Colors.white)),
                               ),
                             ),
                           ];

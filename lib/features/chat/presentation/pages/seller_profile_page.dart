@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
@@ -56,7 +57,7 @@ class _SellerProfilePageState extends State<SellerProfilePage> {
       });
     } catch (e) {
       setState(() {
-        _error = 'Failed to load seller cars';
+        _error = 'failed_to_load_seller_cars'.tr();
         _loading = false;
       });
     }
@@ -84,7 +85,7 @@ class _SellerProfilePageState extends State<SellerProfilePage> {
               : _cars.isEmpty
                   ? Center(
                       child: AppText(
-                        'No cars for sale',
+                        'no_cars_for_sale'.tr(),
                         style: context.textTheme.bodyLarge!.s15
                             .withColor(AppColors.grey),
                         translation: false,
