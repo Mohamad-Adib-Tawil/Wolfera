@@ -45,12 +45,18 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
-	<!-- Camera Permission -->
-	<key>NSCameraUsageDescription</key>
-	<string>This app needs camera access to take photos for your car listings</string>
-	<!-- Photo Library Permission -->
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app needs photo library access to select photos for your car listings</string>
+	    <!-- Camera Permission -->
+    <key>NSCameraUsageDescription</key>
+    <string>We use the camera to capture car photos and for optional scanning.</string>
+    <!-- Photo Library Permission -->
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>We access your photo library so you can choose car images to upload.</string>
+    <!-- Photo Library Add Permission (optional) -->
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>We save selected photos to your library if you request.</string>
+    <!-- Notifications Permission -->
+    <key>NSUserNotificationUsageDescription</key>
+    <string>We send notifications for new messages and important app activity.</string>
 	<!-- Location Permission -->
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This app needs location access to show cars near you</string>

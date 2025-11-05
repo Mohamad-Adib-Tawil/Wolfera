@@ -27,11 +27,14 @@ class _PrivacyPolicyState extends State<PrivacyPolicy> {
 
   @override
   Widget build(BuildContext context) {
+    final isArabic = Localizations.localeOf(context).languageCode.toLowerCase().startsWith('ar');
+    final html = isArabic ? privacyPolicyHTML_AR : privacyPolicyHTML_EN;
+
     final body = Padding(
       padding: HWEdgeInsets.symmetric(horizontal: 10, vertical: 10),
       child: ListView(
         children: [
-          Html(data: privacyPolicyHTML),
+          Html(data: html),
         ],
       ),
     );
