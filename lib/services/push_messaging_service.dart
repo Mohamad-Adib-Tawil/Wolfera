@@ -6,6 +6,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:wolfera/services/notification_service.dart';
 import 'package:wolfera/services/chat_route_tracker.dart';
 import 'package:wolfera/core/config/routing/router.dart';
@@ -64,9 +65,8 @@ class PushMessagingService {
       }
     };
 
-    // Foreground messages → أظهر إشعاراً محلياً
+    // Foreground messages → أظهر إشعاراً محلياً (مترجماً حسب لغة التطبيق)
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      final notification = message.notification;
       final data = message.data;
       final type = (data['type'] ?? data['action'])?.toString();
       final conversationId = data['conversation_id']?.toString();
@@ -81,8 +81,50 @@ class PushMessagingService {
         return;
       }
 
-      final title = notification?.title ?? data['title']?.toString() ?? 'إشعار';
-      final body = notification?.body ?? data['body']?.toString() ?? '';
+      // ابنِ العنوان/النص محليًا لضمان الترجمة الصحيحة وعدم استخدام نصوص خام من الخادم
+      String title;
+      String body;
+      try {
+        switch (type) {
+          case 'new_message':
+            final senderName = (data['sender_name'] ?? data['other_user_name'] ?? data['seller_name'] ?? '').toString();
+            final preview = (data['preview'] ?? data['body'] ?? '').toString();
+            title = 'notif_new_message_from'.tr(args: [senderName]);
+            body = preview.isNotEmpty ? preview : 'notif_generic'.tr();
+            break;
+          case 'new_offer':
+          case 'offer_new':
+          case 'offer_updated':
+            final carTitle = (data['car_title'] ?? data['title'] ?? '').toString();
+            final senderName = (data['sender_name'] ?? '').toString();
+            title = 'notif_new_offer_title'.tr(args: [carTitle]);
+            body = 'notif_new_offer_body'.tr(args: [senderName]);
+            break;
+          case 'car_like':
+            final likerName = (data['liker_name'] ?? data['sender_name'] ?? '').toString();
+            final carTitle = (data['car_title'] ?? '').toString();
+            title = 'notif_like_title'.tr();
+            body = 'notif_like_body'.tr(args: [likerName, carTitle]);
+            break;
+          case 'car_comment':
+            final commenter = (data['commenter_name'] ?? data['sender_name'] ?? '').toString();
+            final carTitle = (data['car_title'] ?? '').toString();
+            final comment = (data['comment'] ?? data['body'] ?? '').toString();
+            title = 'notif_comment_title'.tr(args: [carTitle]);
+            body = comment.isNotEmpty
+                ? 'notif_comment_body'.tr(args: [commenter, comment])
+                : 'notif_generic'.tr();
+            break;
+          default:
+            title = 'notification_default_title'.tr();
+            body = (data['body'] ?? '').toString();
+            if (body.isEmpty) body = 'notif_generic'.tr();
+        }
+      } catch (_) {
+        // أي خطأ في الترجمة → عناوين افتراضية آمنة
+        title = 'notification_default_title'.tr();
+        body = 'notif_generic'.tr();
+      }
       final payload = jsonEncode(data);
 
       if (kDebugMode) {
