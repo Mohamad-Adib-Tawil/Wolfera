@@ -122,9 +122,7 @@ class _SearcgPageState extends State<SearchPage> {
                       beginOffset: const Offset(0, -0.24),
                       child: BlocBuilder<SearchCubit, SearchState>(
                         builder: (context, state) {
-                          final resultsCount = state.searchQuery.isEmpty
-                              ? 0
-                              : state.searchResults.length;
+                          final resultsCount = state.searchResults.length;
                           final hasActiveFilters = state.activeFilterCount() > 0;
 
                           return Padding(
@@ -133,9 +131,9 @@ class _SearcgPageState extends State<SearchPage> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 AppText(
-                                  state.searchQuery.isEmpty
-                                      ? LocaleKeys.searchForCars.tr()
-                                      : '$resultsCount ${'Cars found'.tr()}',
+                                  resultsCount > 0
+                                      ? '$resultsCount ${'Cars found'.tr()}'
+                                      : LocaleKeys.searchForCars.tr(),
                                   translation: false,
                                   style: context.textTheme.titleMedium?.s13.m
                                       .withColor(AppColors.white),
@@ -215,9 +213,7 @@ class _SearcgPageState extends State<SearchPage> {
                     )
                   : BlocBuilder<SearchCubit, SearchState>(
                       builder: (context, state) {
-                        final resultsCount = state.searchQuery.isEmpty
-                            ? 0
-                            : state.searchResults.length;
+                        final resultsCount = state.searchResults.length;
                         final hasActiveFilters = state.activeFilterCount() > 0;
 
                         return Padding(
@@ -226,9 +222,9 @@ class _SearcgPageState extends State<SearchPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               AppText(
-                                state.searchQuery.isEmpty
-                                    ? LocaleKeys.searchForCars.tr()
-                                    : '$resultsCount ${'Cars found'.tr()}',
+                                resultsCount > 0
+                                    ? '$resultsCount ${'Cars found'.tr()}'
+                                    : LocaleKeys.searchForCars.tr(),
                                 translation: false,
                                 style: context.textTheme.titleMedium?.s13.m
                                     .withColor(AppColors.white),
@@ -356,8 +352,8 @@ class _SearcgPageState extends State<SearchPage> {
                     final hasActiveFilters = state.activeFilterCount() > 0;
                     final hasSearchQuery = state.searchQuery.isNotEmpty;
 
-                    // حالة عدم وجود نص بحث ولا فلاتر
-                    if (!hasSearchQuery && !hasActiveFilters) {
+                    // حالة عدم وجود نص بحث ولا فلاتر، لكن لا تظهر العنصر الفارغ إذا كانت هناك نتائج
+                    if (!hasSearchQuery && !hasActiveFilters && state.searchResults.isEmpty) {
                       return Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -439,8 +435,8 @@ class _SearcgPageState extends State<SearchPage> {
                           final hasActiveFilters = state.activeFilterCount() > 0;
                           final hasSearchQuery = state.searchQuery.isNotEmpty;
 
-                          // حالة عدم وجود نص بحث ولا فلاتر
-                          if (!hasSearchQuery && !hasActiveFilters) {
+                          // حالة عدم وجود نص بحث ولا فلاتر، لكن لا تظهر العنصر الفارغ إذا كانت هناك نتائج
+                          if (!hasSearchQuery && !hasActiveFilters && state.searchResults.isEmpty) {
                             return Center(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
