@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:image_picker/image_picker.dart';
@@ -15,6 +16,7 @@ import 'package:wolfera/features/app/presentation/widgets/app_svg_picture.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
 import 'package:wolfera/generated/assets.dart';
 import 'package:wolfera/generated/locale_keys.g.dart';
+import 'package:wolfera/services/nsfw_moderation_service.dart';
 
 class CarAddImageItem extends StatefulWidget {
   const CarAddImageItem({
@@ -156,6 +158,21 @@ class _CarAddImageItemState extends State<CarAddImageItem> {
     final original = File(xfile.path);
     // Always convert to JPEG to ensure compatibility (e.g., HEIC/HEIF -> JPEG)
     final ensuredJpeg = await _convertToJpeg(original);
+
+    // On-device NSFW moderation before accepting the image into the form
+    try {
+      final bytes = await ensuredJpeg.readAsBytes();
+      final allowed = await NsfwModerationService.isImageAllowed(bytes);
+      if (!allowed) {
+        EasyLoading.showError('nsfw_image_rejected'.tr());
+        // Optionally show a second hint
+        EasyLoading.showInfo('nsfw_image_try_another'.tr());
+        return;
+      }
+    } catch (_) {
+      // Fail-open: if moderation fails, allow selection to avoid blocking UX
+    }
+
     control.updateValue(ensuredJpeg);
   }
 

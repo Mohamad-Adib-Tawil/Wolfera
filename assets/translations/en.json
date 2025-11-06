@@ -272,5 +272,7 @@
   "hide": "Hide",
   "error": "Error: {}"
   ,"failed_to_load_seller_cars": "Failed to load seller cars",
-  "no_cars_for_sale": "No cars for sale"
+  "no_cars_for_sale": "No cars for sale",
+  "nsfw_image_rejected": "Image rejected due to content policy.",
+  "nsfw_image_try_another": "Please choose a clear, appropriate photo."
 }
