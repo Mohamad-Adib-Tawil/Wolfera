@@ -68,10 +68,33 @@ class SearchCubit extends Cubit<SearchState> {
       ));
     } catch (e) {
       print('🔴 Error searching cars: $e');
-      emit(state.copyWith(
-        isSearching: false,
-        searchError: Nullable.value(e.toString()),
-      ));
+      // تعافي صامت: إعادة تعيين جميع الفلاتر وجلب كل السيارات بدون عرض خطأ للمستخدم
+      try {
+        final resetState = SearchState.initial();
+        // ابدأ تحميل الاسترجاع الصامت
+        emit(resetState.copyWith(
+          isSearching: true,
+          searchQuery: '',
+          searchError: const Nullable.value(null),
+        ));
+        final fallbackResults = await _searchFilterService.searchCars(
+          query: '',
+          filters: resetState,
+        );
+        emit(resetState.copyWith(
+          isSearching: false,
+          searchResults: fallbackResults,
+        ));
+      } catch (e2) {
+        // إذا فشل الاسترجاع أيضاً، أعِد حالة افتراضية بصمت بدون نتائج
+        if (kDebugMode) {
+          print('🔴 Fallback search failed: $e2');
+        }
+        emit(SearchState.initial().copyWith(
+          isSearching: false,
+          searchResults: const [],
+        ));
+      }
     }
   }
 
