@@ -67,9 +67,14 @@ app.*.map.json
 
 # FVM Version Cache
 .fvm/
-.vscode
+vscode
 .fvmrc
 
 # Documentation: ignore all markdown files except README.md
 *.md
 !README.md
+
+# ML model artifacts (local only; do NOT commit)
+assets/models/nsfw.tflite
+# Keep the directory
+!assets/models/.gitkeep

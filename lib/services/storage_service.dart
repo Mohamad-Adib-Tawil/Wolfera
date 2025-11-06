@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:supabase_flutter/supabase_flutter.dart';
 // import 'package:path/path.dart' as path; // Commented out - not in dependencies
 import 'package:uuid/uuid.dart';
+import 'package:wolfera/services/nsfw_moderation_service.dart';
 
 class StorageService {
   static final SupabaseClient _client = Supabase.instance.client;
@@ -30,6 +31,12 @@ class StorageService {
         fileBytes = imageFile;
       } else {
         throw Exception('Invalid image file type');
+      }
+
+      // On-device NSFW moderation (fail-open inside service). Return null to block upload.
+      final _allowedAvatar = await NsfwModerationService.isImageAllowed(fileBytes);
+      if (!_allowedAvatar) {
+        return null;
       }
 
       // Upload path following RLS policy: {userId}/filename
@@ -103,6 +110,12 @@ class StorageService {
         fileBytes = imageFile;
       } else {
         throw Exception('Invalid image file type');
+      }
+
+      // On-device NSFW moderation (fail-open inside service). Return null to block upload.
+      final _allowedCarImg = await NsfwModerationService.isImageAllowed(fileBytes);
+      if (!_allowedCarImg) {
+        return null;
       }
 
       // Upload path following RLS policy: {userId}/{carId}/filename
