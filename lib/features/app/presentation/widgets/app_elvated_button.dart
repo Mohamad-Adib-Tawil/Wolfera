@@ -94,13 +94,18 @@ class _AppElevatedButtonState extends ThemeState<AppElevatedButton> {
   }
 
   Widget get secondChild => Row(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          AppText(
-            LocaleKeys.requestIsInProgress,
-            style: context.textTheme.bodySmall!.s20.xb
-                .withColor(AppColors.blackLight),
+          Flexible(
+            child: AppText(
+              LocaleKeys.requestIsInProgress,
+              style: context.textTheme.bodySmall!.s20.xb
+                  .withColor(AppColors.blackLight),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+            ),
           ),
           if (widget.isLoading) ...[
             8.horizontalSpace,

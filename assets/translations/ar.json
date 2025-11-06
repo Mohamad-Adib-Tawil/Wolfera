@@ -56,7 +56,7 @@
   "photoOptions": "خيارات الصورة",
   "takePictureFromTheCamera": "التقاط صورة من الكاميرا",
   "chooseAnImageFromTheGallery": "اختيار صورة من المعرض",
-  "wolferaCarsApp": "تطبيق wolfera Cars",
+  "wolferaApp": "تطبيق wolfera Cars",
   "back": "رجوع",
   "settings": "الإعدادات",
   "settingsApp": {
@@ -83,6 +83,7 @@
   "خطأ في المصادقة. تحقق من إعدادات Supabase": "خطأ في المصادقة. تحقق من إعدادات Supabase",
   "عربي": "عربي",
   "English": "إنجليزي",
+  "Sign in with Google": "تسجيل الدخول بـ Google",
   "Faviorate": "المفضلة",
   "Notifications": "الإشعارات",
   "My Cars": "سياراتي",
@@ -134,7 +135,7 @@
   "chooseLang": "اختر اللغة",
   "language": "اللغة",
   "onboarding": {
-    "welcomeTowolferaCars": "أهلاً بكم في wolfera Cars",
+    "welcomeTowolfera": "أهلاً بكم في wolfera Cars",
     "buyAndSellCarsEffortlessly": "اشتري وبيع السيارات بدون جهد",
     "YourPerfectRideisJustATapAway": "رحلتك المثالية مجرد نقرة!",
     "skip": "تخطي"
@@ -270,6 +271,12 @@
   "conversation_hidden": "تم إخفاء المحادثة",
   "hide": "إخفاء",
   "error": "خطأ: {}",
+  "google_signin_misconfigured": "إعداد Google Sign-In غير صحيح. تحقق من بصمات SHA-1 واسم الحزمة ومعرّف عميل الويب.",
+  "google_signin_canceled": "تم إلغاء تسجيل الدخول من قِبل المستخدم.",
+  "google_signin_network_error": "خطأ في الشبكة. يرجى التحقق من اتصال الإنترنت.",
+  "google_play_services_missing": "خدمات Google Play غير متوفرة أو قديمة.",
+  "google_auth_error": "خطأ في المصادقة. تحقق من إعدادات Supabase.",
+  "google_signin_failed": "فشل تسجيل الدخول بـ Google. حاول مرة أخرى.",
   "nsfw_image_rejected": "تم رفض الصورة لمخالفة سياسة المحتوى.",
   "nsfw_image_try_another": "يرجى اختيار صورة واضحة ومناسبة."
 }

@@ -57,7 +57,7 @@ class OnboardingPage extends StatelessWidget {
                     opacity: 0.2,
                     sigma: 4,
                     child: AppText(
-                      LocaleKeys.onboarding_welcomeTowolferaCars,
+                      LocaleKeys.onboarding_welcomeTowolfera,
                       style: context.textTheme.bodyLarge?.xb.s40
                           .withColor(AppColors.orange),
                     ),
