@@ -196,12 +196,57 @@ class NotificationItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isRead = notification['read_at'] != null;
-    final title = notification['title']?.toString() ?? 'notification'.tr();
-    final body = notification['body']?.toString() ?? '';
+    final type = notification['type']?.toString() ?? '';
+    final data = (notification['data'] as Map?)?.cast<String, dynamic>() ?? <String, dynamic>{};
+
+    String title;
+    String body;
+    try {
+      switch (type) {
+        case 'new_message':
+          final senderName = (data['sender_name'] ?? data['other_user_name'] ?? '').toString();
+          title = 'notif_new_message_from'.tr(namedArgs: {'name': senderName});
+          final preview = (data['preview'] ?? '').toString();
+          body = preview.isNotEmpty ? preview : 'notif_generic'.tr();
+          break;
+        case 'new_offer':
+          final carTitle = (data['car_title'] ?? data['title'] ?? '').toString();
+          final senderName = (data['sender_name'] ?? '').toString();
+          title = 'notif_new_offer_title'.tr(args: [carTitle]);
+          body = 'notif_new_offer_body'.tr(args: [senderName]);
+          break;
+        case 'car_like':
+          final liker = (data['liker_name'] ?? data['sender_name'] ?? '').toString();
+          final carTitle = (data['car_title'] ?? '').toString();
+          title = 'notif_like_title'.tr();
+          body = 'notif_like_body'.tr(args: [liker, carTitle]);
+          break;
+        case 'car_comment':
+          final commenter = (data['commenter_name'] ?? data['sender_name'] ?? '').toString();
+          final carTitle = (data['car_title'] ?? '').toString();
+          final comment = (data['comment'] ?? '').toString();
+          title = 'notif_comment_title'.tr(args: [carTitle]);
+          body = comment.isNotEmpty ? 'notif_comment_body'.tr(args: [commenter, comment]) : 'notif_generic'.tr();
+          break;
+        case 'car_removed':
+          final carTitle = (data['car_title'] ?? '').toString();
+          final reason = (data['reason'] ?? '').toString();
+          title = 'notif_car_removed_title'.tr(args: [carTitle]);
+          body = 'notif_car_removed_body'.tr(args: [reason]);
+          break;
+        default:
+          title = notification['title']?.toString() ?? 'notification'.tr();
+          body = notification['body']?.toString() ?? '';
+      }
+    } catch (_) {
+      title = notification['title']?.toString() ?? 'notification'.tr();
+      body = notification['body']?.toString() ?? '';
+    }
+
     final sender = notification['sender'] as Map<String, dynamic>?;
     final senderName = sender?['full_name']?.toString() ?? 'user'.tr();
     final createdAt = notification['created_at']?.toString();
-    
+
     return Dismissible(
       key: Key(notification['id'].toString()),
       direction: DismissDirection.endToStart,
@@ -304,7 +349,7 @@ class NotificationItemWidget extends StatelessWidget {
       } else if (diff.inMinutes > 0) {
         return '${diff.inMinutes}m';
       } else {
-        return 'الآن';
+        return 'now'.tr();
       }
     } catch (_) {
       return '';

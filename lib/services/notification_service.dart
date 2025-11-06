@@ -19,6 +19,22 @@ class NotificationService {
   static final _client = Supabase.instance.client;
   static void Function(String? payload)? onTap;
 
+  // ===== Localization helpers for server-sent notifications =====
+  static Future<String> _getUserPreferredLanguage(String userId) async {
+    try {
+      final row = await _client
+          .from('users')
+          .select('preferred_language')
+          .eq('id', userId)
+          .maybeSingle();
+      final lang = row?['preferred_language']?.toString().toLowerCase();
+      if (lang == 'ar' || lang == 'en') return lang!;
+    } catch (_) {}
+    return 'en';
+  }
+
+  static bool _isArabic(String lang) => lang == 'ar';
+
   static Future<void> initializePlatformNotifications() async {
     // Use a valid Android resource for the small icon. The default launcher icon
     // exists in all Flutter templates under @mipmap/ic_launcher.
@@ -170,10 +186,15 @@ class NotificationService {
     required String messageText,
     required String conversationId,
   }) async {
+    final lang = await _getUserPreferredLanguage(recipientId);
+    final title = _isArabic(lang)
+        ? 'رسالة جديدة من $senderName'
+        : 'New message from $senderName';
+    final body = messageText;
     await sendNotificationToUser(
       userId: recipientId,
-      title: 'رسالة جديدة من $senderName',
-      body: messageText,
+      title: title,
+      body: body,
       type: 'new_message',
       data: {
         'conversation_id': conversationId,
@@ -189,10 +210,17 @@ class NotificationService {
     required String carTitle,
     required String offerId,
   }) async {
+    final lang = await _getUserPreferredLanguage(recipientId);
+    final title = _isArabic(lang)
+        ? 'عرض جديد على $carTitle'
+        : 'New offer on $carTitle';
+    final body = _isArabic(lang)
+        ? '$senderName قدم عرضاً على سيارتك'
+        : '$senderName sent you a new offer';
     await sendNotificationToUser(
       userId: recipientId,
-      title: 'عرض جديد على $carTitle',
-      body: '$senderName قدم عرضاً على سيارتك',
+      title: title,
+      body: body,
       type: 'new_offer',
       data: {
         'offer_id': offerId,
@@ -208,10 +236,15 @@ class NotificationService {
     required String carTitle,
     required String carId,
   }) async {
+    final lang = await _getUserPreferredLanguage(carOwnerId);
+    final title = _isArabic(lang) ? 'إعجاب جديد' : 'New like';
+    final body = _isArabic(lang)
+        ? '$likerName أعجب بسيارتك $carTitle'
+        : '$likerName liked your car $carTitle';
     await sendNotificationToUser(
       userId: carOwnerId,
-      title: 'إعجاب جديد',
-      body: '$likerName أعجب بسيارتك $carTitle',
+      title: title,
+      body: body,
       type: 'car_like',
       data: {
         'car_id': carId,
@@ -228,10 +261,15 @@ class NotificationService {
     required String comment,
     required String carId,
   }) async {
+    final lang = await _getUserPreferredLanguage(recipientId);
+    final title = _isArabic(lang)
+        ? 'تعليق جديد على $carTitle'
+        : 'New comment on $carTitle';
+    final body = '$commenterName: $comment';
     await sendNotificationToUser(
       userId: recipientId,
-      title: 'تعليق جديد على $carTitle',
-      body: '$commenterName: $comment',
+      title: title,
+      body: body,
       type: 'car_comment',
       data: {
         'car_id': carId,
@@ -247,11 +285,17 @@ class NotificationService {
     required String reason,
     required String carId,
   }) async {
+    final lang = await _getUserPreferredLanguage(recipientId);
+    final title = _isArabic(lang)
+        ? 'تم حذف السيارة - $carTitle'
+        : 'Listing removed - $carTitle';
+    final body = _isArabic(lang)
+        ? 'السبب: $reason'
+        : 'Reason: $reason';
     await sendNotificationToUser(
       userId: recipientId,
-      // ملاحظة: قد يعرض النظام نص العنوان/المحتوى مباشرة، لذا نرسل نصًا مقروءًا افتراضيًا
-      title: 'تم حذف السيارة - $carTitle',
-      body: 'السبب: $reason',
+      title: title,
+      body: body,
       type: 'car_removed',
       data: {
         'car_id': carId,
