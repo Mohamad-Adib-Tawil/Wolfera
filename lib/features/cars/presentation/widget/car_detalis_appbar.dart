@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wolfera/core/api/api_utils.dart';
@@ -10,6 +11,7 @@ import 'package:wolfera/features/faviorate/presentation/manager/favorite_cubit.d
 import 'package:wolfera/features/faviorate/presentation/manager/favorite_state.dart';
 import 'package:get_it/get_it.dart';
 import 'package:wolfera/features/home/presentation/manager/home_cubit/home_cubit.dart';
+import 'package:wolfera/features/search_and_filteration/presentation/manager/search_cubit/search_cubit.dart';
 import 'package:wolfera/services/supabase_service.dart';
 
 class CarDetalisAppbar extends StatefulWidget implements PreferredSizeWidget {
@@ -67,9 +69,80 @@ class _CarDetalisAppbarState extends State<CarDetalisAppbar> with SingleTickerPr
     } else if (f is int) {
       _isFeatured = f == 1;
     }
-
     // Check if current user is admin
     _initAdmin();
+  }
+
+  Future<void> _adminRemoveCarAction() async {
+    if (!_isAdmin) {
+      showMessage('only_admin_can_remove'.tr(), isSuccess: false);
+      return;
+    }
+    final carId = widget.carData?['id']?.toString();
+    if (carId == null || carId.isEmpty) {
+      showMessage('car_not_found'.tr(), isSuccess: false);
+      return;
+    }
+
+    final controller = TextEditingController();
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF1E1F24),
+          title: Text('admin_remove_car'.tr(), style: const TextStyle(color: Colors.white)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('admin_remove_car_desc'.tr(), style: const TextStyle(color: Colors.white70)),
+              const SizedBox(height: 12),
+              TextField(
+                controller: controller,
+                maxLines: 3,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  labelText: 'reason'.tr(),
+                  hintText: 'reason_hint'.tr(),
+                  labelStyle: const TextStyle(color: Colors.white70),
+                  hintStyle: const TextStyle(color: Colors.white54),
+                  enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.white24)),
+                  focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: Text('cancel'.tr()),
+            ),
+            FilledButton(
+              style: FilledButton.styleFrom(backgroundColor: Colors.redAccent),
+              onPressed: () {
+                final v = controller.text.trim();
+                if (v.isEmpty) return; // اجعل السبب مطلوباً
+                Navigator.of(ctx).pop(true);
+              },
+              child: Text('remove'.tr()),
+            ),
+          ],
+        );
+      },
+    );
+    if (confirmed != true) return;
+
+    final reason = controller.text.trim();
+    try {
+      await SupabaseService.adminRemoveCar(carId: carId, reason: reason);
+      showMessage('removal_success'.tr(), isSuccess: true);
+      // Refresh home featured and search results
+      try { GetIt.I<HomeCubit>().getHomeData(); } catch (_) {}
+      try { GetIt.I<SearchCubit>().searchCars(); } catch (_) {}
+      if (mounted) Navigator.of(context).maybePop();
+    } catch (e) {
+      showMessage('removal_failed'.tr(), isSuccess: false);
+    }
   }
 
   Future<void> _initAdmin() async {
@@ -157,6 +230,18 @@ class _CarDetalisAppbarState extends State<CarDetalisAppbar> with SingleTickerPr
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (_isAdmin)
+              GestureDetector(
+                onTap: _adminRemoveCarAction,
+                child: Padding(
+                  padding: EdgeInsets.only(right: 14.w),
+                  child: Icon(
+                    CupertinoIcons.trash,
+                    size: 26.r,
+                    color: Colors.redAccent,
+                  ),
+                ),
+              ),
             if (_isAdmin)
               GestureDetector(
                 onTap: _toggleFeatured,

@@ -15,11 +15,8 @@ class SearchFilterService {
       var queryBuilder = SupabaseService.client
           .from('cars')
           .select('*')
-          .or('is_featured.is.null,is_featured.eq.false'); // exclude featured cars; include nulls
-
-      // ملاحظة: لا نقيّد الحالة هنا لضمان إرجاع كل السيارات
-      // RecommendedSection يفضّل 'available' ولكن يعود لقائمة كاملة عند عدم توفرها
-      // إذا رغبت بتفضيل 'available' يمكننا تطبيق ذلك لاحقاً كلوجيك بعد الجلب
+          // تشمل 'active' و 'available' لدعم بيانات قديمة
+          .inFilter('status', ['active', 'available']);
 
       // تجميع شروط OR (بحث نصي + ألوان)
       final List<String> orConditions = [];

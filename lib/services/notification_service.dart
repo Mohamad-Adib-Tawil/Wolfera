@@ -239,4 +239,26 @@ class NotificationService {
       },
     );
   }
+
+  // إرسال إشعار حذف سيارة من قبل الأدمن/السوبر أدمن
+  static Future<void> sendCarRemovedNotification({
+    required String recipientId,
+    required String carTitle,
+    required String reason,
+    required String carId,
+  }) async {
+    await sendNotificationToUser(
+      userId: recipientId,
+      // ملاحظة: قد يعرض النظام نص العنوان/المحتوى مباشرة، لذا نرسل نصًا مقروءًا افتراضيًا
+      title: 'تم حذف السيارة - $carTitle',
+      body: 'السبب: $reason',
+      type: 'car_removed',
+      data: {
+        'car_id': carId,
+        'car_title': carTitle,
+        'reason': reason,
+        'action': 'view_car',
+      },
+    );
+  }
 }

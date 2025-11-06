@@ -290,5 +290,16 @@
   "notif_like_title": "New like",
   "notif_like_body": "{0} liked your car {1}",
   "notif_comment_title": "New comment on {0}",
-  "notif_comment_body": "{0}: {1}"
+  "notif_comment_body": "{0}: {1}",
+  "notif_car_removed_title": "Listing removed - {0}",
+  "notif_car_removed_body": "Reason: {0}",
+  "only_admin_can_remove": "Only admins can remove listings",
+  "admin_remove_car": "Remove listing",
+  "admin_remove_car_desc": "Please provide a clear reason. The seller will be notified.",
+  "reason": "Reason",
+  "reason_hint": "Write the removal reason...",
+  "remove": "Remove",
+  "removal_success": "The listing was removed and the seller was notified.",
+  "removal_failed": "Failed to remove the listing.",
+  "car_not_found": "Car not found"
 }
