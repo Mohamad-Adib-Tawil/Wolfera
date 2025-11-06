@@ -278,5 +278,14 @@
   "google_auth_error": "خطأ في المصادقة. تحقق من إعدادات Supabase.",
   "google_signin_failed": "فشل تسجيل الدخول بـ Google. حاول مرة أخرى.",
   "nsfw_image_rejected": "تم رفض الصورة لمخالفة سياسة المحتوى.",
-  "nsfw_image_try_another": "يرجى اختيار صورة واضحة ومناسبة."
+  "nsfw_image_try_another": "يرجى اختيار صورة واضحة ومناسبة.",
+  "notification_default_title": "إشعار",
+  "notif_generic": "لديك إشعار جديد",
+  "notif_new_message_from": "رسالة جديدة من {name}",
+  "notif_new_offer_title": "عرض جديد على {0}",
+  "notif_new_offer_body": "{0} قدم عرضاً جديداً",
+  "notif_like_title": "إعجاب جديد",
+  "notif_like_body": "{0} أعجب بسيارتك {1}",
+  "notif_comment_title": "تعليق جديد على {0}",
+  "notif_comment_body": "{0}: {1}"
 }
