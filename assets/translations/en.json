@@ -58,7 +58,7 @@
   "photoOptions": "Photo options",
   "takePictureFromTheCamera": "Take a picture from the camera",
   "chooseAnImageFromTheGallery": "Choose an image from the gallery",
-  "wolferaCarsApp": "wolfera Cars Application",
+  "wolferaApp": "wolfera Cars Application",
   "back": "Back",
   "settings": "Settings",
   "settingsApp": {
@@ -79,6 +79,7 @@
   "Don't have an account?": "Don't have an account?",
   "OR": "OR",
   "Sign up with Google": "Sign up with Google",
+  "Sign in with Google": "Sign in with Google",
   "تسجيل الدخول بـ Google": "Sign in with Google",
   "🇦🇪": "🇦🇪",
   "971+": "+971",
@@ -136,7 +137,7 @@
   "chooseLang": "Choose Language",
   "language": "Language",
   "onboarding": {
-    "welcomeTowolferaCars": "Welcome to wolfera Cars",
+    "welcomeTowolfera": "Welcome to wolfera Cars",
     "buyAndSellCarsEffortlessly": "BUY AND SELL CARS EFFORTLESSLY",
     "YourPerfectRideisJustATapAway": "your perfect ride is just a tap away!",
     "skip": "Skip"
@@ -273,6 +274,12 @@
   "error": "Error: {}"
   ,"failed_to_load_seller_cars": "Failed to load seller cars",
   "no_cars_for_sale": "No cars for sale",
+  "google_signin_misconfigured": "Google Sign-In is misconfigured. Check SHA-1 fingerprints, package name, and Web Client ID.",
+  "google_signin_canceled": "Sign-in was canceled by the user.",
+  "google_signin_network_error": "Network error. Please check your internet connection.",
+  "google_play_services_missing": "Google Play Services is missing or out of date.",
+  "google_auth_error": "Authentication error. Check Supabase settings.",
+  "google_signin_failed": "Google Sign-In failed. Please try again.",
   "nsfw_image_rejected": "Image rejected due to content policy.",
   "nsfw_image_try_another": "Please choose a clear, appropriate photo."
 }

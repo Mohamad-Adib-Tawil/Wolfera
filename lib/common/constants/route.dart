@@ -1,6 +1,6 @@
 abstract class EndPoints {
   EndPoints._();
-  static const baseUrl = "http://api.wolferacars.com/";
+  static const baseUrl = "http://api.wolfera.com/";
   static const auth = _Auth();
 }
 

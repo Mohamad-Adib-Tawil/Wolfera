@@ -64,31 +64,27 @@ class SupabaseService {
       // Google Sign-In successful
       return response;
     } catch (e) {
-      // Handle specific Google Sign-In errors
-      String errorMessage = e.toString();
-      // Google Sign-In error: $errorMessage
-
-      if (errorMessage.contains('ApiException: 10')) {
-        throw 'خطأ في إعداد Google Sign-In:\n'
-            '1. تحقق من SHA1 fingerprint في Google Cloud Console\n'
-            '2. تحقق من Package name: com.wolfera.wolfera\n'
-            '3. تحقق من Web Client ID في الكود';
-      } else if (errorMessage.contains('sign_in_canceled') ||
-          errorMessage.contains('cancelled')) {
-        throw 'تم إلغاء تسجيل الدخول بواسطة المستخدم';
-      } else if (errorMessage.contains('network_error') ||
-          errorMessage.contains('SocketException')) {
-        throw 'خطأ في الشبكة. تحقق من اتصال الإنترنت';
-      } else if (errorMessage.contains('ApiException: 7')) {
-        throw 'خطأ في الشبكة. تحقق من اتصال الإنترنت';
-      } else if (errorMessage.contains('ApiException: 12500')) {
-        throw 'Google Play Services غير متوفر أو قديم';
-      } else if (errorMessage.contains('AuthException') ||
-          errorMessage.contains('Invalid')) {
-        throw 'خطأ في المصادقة. تحقق من إعدادات Supabase';
-      } else {
-        throw 'فشل تسجيل الدخول بـ Google: $errorMessage';
+      // Handle specific Google Sign-In errors and map to i18n keys
+      final error = e.toString();
+      if (error.contains('ApiException: 10') ||
+          error.contains('Developer console is not set up correctly')) {
+        throw 'google_signin_misconfigured';
       }
+      if (error.contains('sign_in_canceled') || error.contains('cancelled')) {
+        throw 'google_signin_canceled';
+      }
+      if (error.contains('network_error') ||
+          error.contains('SocketException') ||
+          error.contains('ApiException: 7')) {
+        throw 'google_signin_network_error';
+      }
+      if (error.contains('ApiException: 12500')) {
+        throw 'google_play_services_missing';
+      }
+      if (error.contains('AuthException') || error.contains('Invalid')) {
+        throw 'google_auth_error';
+      }
+      throw 'google_signin_failed';
     }
   }
 

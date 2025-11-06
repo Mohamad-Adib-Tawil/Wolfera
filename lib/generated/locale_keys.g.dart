@@ -56,7 +56,7 @@ abstract class LocaleKeys {
   static const photoOptions = 'photoOptions';
   static const takePictureFromTheCamera = 'takePictureFromTheCamera';
   static const chooseAnImageFromTheGallery = 'chooseAnImageFromTheGallery';
-  static const wolferaCarsApp = 'wolferaCarsApp';
+  static const wolferaApp = 'wolferaApp';
   static const back = 'back';
   static const settings = 'settings';
   static const settingsApp_privacyPolicy = 'settingsApp.privacyPolicy';
@@ -112,8 +112,7 @@ abstract class LocaleKeys {
   static const AppNetworkExceptionReason = 'AppNetworkExceptionReason';
   static const chooseLang = 'chooseLang';
   static const language = 'language';
-  static const onboarding_welcomeTowolferaCars =
-      'onboarding.welcomeTowolferaCars';
+  static const onboarding_welcomeTowolfera = 'onboarding.welcomeTowolfera';
   static const onboarding_buyAndSellCarsEffortlessly =
       'onboarding.buyAndSellCarsEffortlessly';
   static const onboarding_YourPerfectRideisJustATapAway =
