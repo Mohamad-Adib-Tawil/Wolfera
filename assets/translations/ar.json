@@ -288,4 +288,15 @@
   "notif_like_body": "{0} أعجب بسيارتك {1}",
   "notif_comment_title": "تعليق جديد على {0}",
   "notif_comment_body": "{0}: {1}"
+  ,"notif_car_removed_title": "تم حذف السيارة - {0}"
+  ,"notif_car_removed_body": "السبب: {0}"
+  ,"only_admin_can_remove": "فقط الأدمن يمكنه حذف الإعلانات"
+  ,"admin_remove_car": "حذف الإعلان"
+  ,"admin_remove_car_desc": "يرجى كتابة سبب واضح. سيتم إشعار البائع."
+  ,"reason": "السبب"
+  ,"reason_hint": "اكتب سبب الحذف..."
+  ,"remove": "حذف"
+  ,"removal_success": "تم حذف الإعلان وتم إشعار البائع."
+  ,"removal_failed": "فشل حذف الإعلان."
+  ,"car_not_found": "السيارة غير موجودة"
 }

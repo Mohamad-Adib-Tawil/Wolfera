@@ -1,5 +1,6 @@
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:wolfera/services/notification_service.dart';
 
 import '../core/config/supabase_config.dart';
 
@@ -112,6 +113,7 @@ class SupabaseService {
         .from('cars')
         .select('*')
         .eq('is_featured', true)
+        .inFilter('status', ['active', 'available'])
         .order('created_at', ascending: false);
     return (response as List).cast<Map<String, dynamic>>();
   }
@@ -129,6 +131,64 @@ class SupabaseService {
 
   static Future<void> deleteCar(String id) async {
     await client.from('cars').delete().eq('id', id);
+  }
+
+  // Admin/SuperAdmin: remove any car with a reason (soft delete)
+  static Future<void> adminRemoveCar({
+    required String carId,
+    required String reason,
+  }) async {
+    // Ensure privileges
+    final isAdmin = await isCurrentUserAdmin();
+    if (!isAdmin) {
+      throw Exception('admin_only_action');
+    }
+
+    // Fetch car owner and title
+    final car = await client
+        .from('cars')
+        .select('id,user_id,title,status')
+        .eq('id', carId)
+        .maybeSingle();
+    if (car == null) {
+      throw Exception('car_not_found');
+    }
+    final sellerId = car['user_id']?.toString();
+    final carTitle = car['title']?.toString() ?? 'Car';
+
+    // Update status to inactive + optional removal fields if present
+    var updated = false;
+    try {
+      await client.from('cars').update({
+        'status': 'inactive',
+        'removed_by': currentUser?.id,
+        'removed_at': DateTime.now().toIso8601String(),
+        'removal_reason': reason,
+      }).eq('id', carId);
+      updated = true;
+    } catch (e) {
+      // Fallback if columns don't exist: update status only
+      try {
+        await client.from('cars').update({'status': 'inactive'}).eq('id', carId);
+        updated = true;
+      } catch (e2) {
+        // RLS or other error – propagate to caller
+        throw Exception('car_update_failed');
+      }
+    }
+
+    // Notify seller ONLY if update succeeded
+    if (!updated) {
+      throw Exception('car_update_failed');
+    }
+    if (sellerId != null && sellerId.isNotEmpty) {
+      await NotificationService.sendCarRemovedNotification(
+        recipientId: sellerId,
+        carTitle: carTitle,
+        reason: reason,
+        carId: carId,
+      );
+    }
   }
 
   // Toggle is_featured flag (admin-only via RLS policy)
