@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:wolfera/services/notification_service.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 @lazySingleton
 class NotificationsCubit extends Cubit<NotificationsState> {
@@ -156,10 +157,51 @@ class NotificationsCubit extends Cubit<NotificationsState> {
   
   // عرض إشعار محلي
   void _showLocalNotification(Map<String, dynamic> notification) {
-    final title = notification['title']?.toString() ?? 'إشعار جديد';
-    final body = notification['body']?.toString() ?? '';
     final type = notification['type']?.toString() ?? 'general';
-    
+    final data = (notification['data'] as Map?)?.cast<String, dynamic>() ?? <String, dynamic>{};
+    String title = notification['title']?.toString() ?? 'notification'.tr();
+    String body = notification['body']?.toString() ?? '';
+
+    try {
+      switch (type) {
+        case 'new_message':
+          final senderName = (data['sender_name'] ?? data['other_user_name'] ?? '').toString();
+          final preview = (data['preview'] ?? '').toString();
+          title = 'notif_new_message_from'.tr(namedArgs: {'name': senderName});
+          body = preview.isNotEmpty ? preview : 'notif_generic'.tr();
+          break;
+        case 'new_offer':
+          final carTitle = (data['car_title'] ?? data['title'] ?? '').toString();
+          final senderName = (data['sender_name'] ?? '').toString();
+          title = 'notif_new_offer_title'.tr(args: [carTitle]);
+          body = 'notif_new_offer_body'.tr(args: [senderName]);
+          break;
+        case 'car_like':
+          final liker = (data['liker_name'] ?? data['sender_name'] ?? '').toString();
+          final carTitle = (data['car_title'] ?? '').toString();
+          title = 'notif_like_title'.tr();
+          body = 'notif_like_body'.tr(args: [liker, carTitle]);
+          break;
+        case 'car_comment':
+          final commenter = (data['commenter_name'] ?? data['sender_name'] ?? '').toString();
+          final carTitle = (data['car_title'] ?? '').toString();
+          final comment = (data['comment'] ?? '').toString();
+          title = 'notif_comment_title'.tr(args: [carTitle]);
+          body = comment.isNotEmpty
+              ? 'notif_comment_body'.tr(args: [commenter, comment])
+              : 'notif_generic'.tr();
+          break;
+        case 'car_removed':
+          final carTitle = (data['car_title'] ?? '').toString();
+          final reason = (data['reason'] ?? '').toString();
+          title = 'notif_car_removed_title'.tr(args: [carTitle]);
+          body = 'notif_car_removed_body'.tr(args: [reason]);
+          break;
+        default:
+          break;
+      }
+    } catch (_) {}
+
     NotificationService.showLocalNotification(
       id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
       title: title,

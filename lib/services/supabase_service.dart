@@ -15,6 +15,18 @@ class SupabaseService {
     );
   }
 
+  // Update preferred language for current user
+  static Future<void> updateUserLanguage(String languageCode) async {
+    final uid = currentUser?.id;
+    if (uid == null) return;
+    try {
+      await client
+          .from('users')
+          .update({'preferred_language': languageCode})
+          .eq('id', uid);
+    } catch (_) {}
+  }
+
   // Auth methods
   static Future<AuthResponse> signUp({
     required String email,

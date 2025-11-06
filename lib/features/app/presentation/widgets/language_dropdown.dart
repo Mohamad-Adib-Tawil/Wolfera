@@ -6,6 +6,7 @@ import 'package:wolfera/core/config/theme/typography.dart';
 import 'package:wolfera/core/utils/extensions/build_context.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
 import 'package:country_flags/country_flags.dart';
+import 'package:wolfera/services/supabase_service.dart';
 
 class LanguageDropdown extends StatelessWidget {
   const LanguageDropdown({super.key});
@@ -78,10 +79,11 @@ class LanguageDropdown extends StatelessWidget {
               ),
             ),
           ],
-          onChanged: (Locale? newLocale) {
-            if (newLocale != null) {
-              context.setLocale(newLocale);
-            }
+          onChanged: (Locale? newLocale) async {
+            if (newLocale == null) return;
+            await context.setLocale(newLocale);
+            final code = newLocale.languageCode;
+            await SupabaseService.updateUserLanguage(code);
           },
         ),
       ),

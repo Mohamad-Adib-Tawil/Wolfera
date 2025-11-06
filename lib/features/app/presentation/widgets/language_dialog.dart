@@ -10,6 +10,7 @@ import 'package:wolfera/core/utils/extensions/build_context.dart';
 import 'package:wolfera/core/utils/responsive_padding.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
 import 'package:wolfera/generated/locale_keys.g.dart';
+import 'package:wolfera/services/supabase_service.dart';
 
 class LanguageDialog extends StatefulWidget {
   const LanguageDialog({super.key});
@@ -59,6 +60,7 @@ class _LanguageDialogState extends State<LanguageDialog> {
             }
             await Future.wait([
               context.setLocale(const Locale('ar')),
+              SupabaseService.updateUserLanguage('ar'),
               HelperFunctions().refresh(),
             ]);
             GRouter.router.go(GRouter.config.krpRoot);
@@ -79,6 +81,7 @@ class _LanguageDialogState extends State<LanguageDialog> {
             }
             await Future.wait([
               context.setLocale(const Locale('en')),
+              SupabaseService.updateUserLanguage('en'),
               HelperFunctions().refresh(),
             ]);
             GRouter.router.go(GRouter.config.krpRoot);
