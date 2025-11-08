@@ -12,6 +12,7 @@ import 'package:wolfera/core/config/routing/router.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:wolfera/features/my_car/domain/usecases/sell_my_car_usecase.dart';
 import 'package:wolfera/features/home/presentation/manager/home_cubit/home_cubit.dart';
+import 'package:wolfera/features/search_and_filteration/presentation/manager/search_cubit/search_cubit.dart';
 import 'package:wolfera/generated/locale_keys.g.dart';
 import 'package:wolfera/core/constants/locations_data.dart';
 import 'package:wolfera/core/constants/currencies.dart';
@@ -97,6 +98,7 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
       // تحديث الصفحة الرئيسية
       try {
         GetIt.I<HomeCubit>().getHomeData();
+        GetIt.I<SearchCubit>().searchCars();
       } catch (_) {}
 
       EasyLoading.showSuccess('Rental prices updated');
@@ -188,6 +190,7 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
       // تحديث قائمة السيارات في الصفحة الرئيسية بعد الحذف الكلي
       try {
         GetIt.I<HomeCubit>().getHomeData();
+        GetIt.I<SearchCubit>().searchCars();
       } catch (e) {
         print('⚠️ Failed to refresh home after delete-all: $e');
       }
@@ -343,6 +346,7 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
           print('🔄 Refreshing Home cars list...');
           try {
             GetIt.I<HomeCubit>().getHomeData();
+            GetIt.I<SearchCubit>().searchCars();
             print('✅ Home refresh triggered');
           } catch (e) {
             print('⚠️  Failed to refresh home: $e');
@@ -688,6 +692,7 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
       // تحديث قائمة السيارات في الصفحة الرئيسية بعد الحذف
       try {
         GetIt.I<HomeCubit>().getHomeData();
+        GetIt.I<SearchCubit>().searchCars();
       } catch (e) {
         print('⚠️ Failed to refresh home after delete: $e');
       }
@@ -701,8 +706,8 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
 
   // تحديث حالة السيارة (active, sold, pending, inactive)
   Future<void> _onUpdateMyCarStatus(
-    UpdateMyCarStatusEvent event,
-    Emitter<MyCarsState> emit,
+      UpdateMyCarStatusEvent event,
+      Emitter<MyCarsState> emit,
   ) async {
     try {
       EasyLoading.show(status: 'Updating status...');
@@ -723,9 +728,10 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
       // إعادة تحميل القائمة بعد التحديث
       add(LoadMyCarsEvent());
 
-      // تحديث الصفحة الرئيسية
+      // تحديث الصفحة الرئيسية وقائمة البحث المجمّعة
       try {
         GetIt.I<HomeCubit>().getHomeData();
+        GetIt.I<SearchCubit>().searchCars();
       } catch (_) {}
 
       EasyLoading.showSuccess('Status updated');
@@ -753,9 +759,10 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
       // إعادة تحميل القائمة بعد التحديث
       add(LoadMyCarsEvent());
 
-      // تحديث الصفحة الرئيسية
+      // تحديث الصفحة الرئيسية وقائمة البحث المجمّعة
       try {
         GetIt.I<HomeCubit>().getHomeData();
+        GetIt.I<SearchCubit>().searchCars();
       } catch (_) {}
 
       EasyLoading.showSuccess('Price updated');
