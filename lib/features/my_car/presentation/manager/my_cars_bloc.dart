@@ -34,6 +34,7 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
     on<DeleteAllMyCarsEvent>(_onDeleteAllMyCars);
     on<UpdateMyCarStatusEvent>(_onUpdateMyCarStatus);
     on<UpdateMyCarPriceEvent>(_onUpdateMyCarPrice);
+    on<UpdateMyCarRentalPricesEvent>(_onUpdateMyCarRentalPrices);
 
     // Initialize dynamic validators for description form
     try {
@@ -41,6 +42,67 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
       updateValidatorsByListingType(lt);
     } catch (e) {
       // ignore
+    }
+  }
+
+  // تحديث أسعار الإيجار للسيارة
+  Future<void> _onUpdateMyCarRentalPrices(
+    UpdateMyCarRentalPricesEvent event,
+    Emitter<MyCarsState> emit,
+  ) async {
+    try {
+      EasyLoading.show(status: 'Updating rental prices...');
+
+      Map<String, dynamic> update = {
+        'updated_at': DateTime.now().toIso8601String(),
+      };
+
+      bool anyField = false;
+      void setField(String key, String? v) {
+        if (v == null) return; // skip if not provided
+        anyField = true;
+        final s = v.trim();
+        if (s.isEmpty) {
+          update[key] = null; // clear value
+          return;
+        }
+        final num? parsed = num.tryParse(s);
+        if (parsed == null) {
+          throw Exception('Invalid number for $key');
+        }
+        update[key] = parsed;
+      }
+
+      setField('rental_price_per_day', event.perDay);
+      setField('rental_price_per_week', event.perWeek);
+      setField('rental_price_per_month', event.perMonth);
+      setField('rental_price_per_3months', event.per3Months);
+      setField('rental_price_per_6months', event.per6Months);
+      setField('rental_price_per_year', event.perYear);
+
+      if (!anyField) {
+        EasyLoading.dismiss();
+        EasyLoading.showInfo('No changes to update');
+        return;
+      }
+
+      await SupabaseService.client
+          .from('cars')
+          .update(update)
+          .eq('id', event.carId);
+
+      // إعادة تحميل القائمة بعد التحديث
+      add(LoadMyCarsEvent());
+
+      // تحديث الصفحة الرئيسية
+      try {
+        GetIt.I<HomeCubit>().getHomeData();
+      } catch (_) {}
+
+      EasyLoading.showSuccess('Rental prices updated');
+    } catch (e) {
+      print('🔴 Error updating rental prices: $e');
+      EasyLoading.showError('Failed to update rental prices');
     }
   }
   final SellMyCarUsecase _sellMyCarUsecase;

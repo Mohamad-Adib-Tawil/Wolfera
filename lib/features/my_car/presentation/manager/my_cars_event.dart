@@ -41,3 +41,23 @@ class UpdateMyCarPriceEvent extends MyCarsEvent {
   final num newPrice;
   UpdateMyCarPriceEvent({required this.carId, required this.newPrice});
 }
+
+// تحديث أسعار الإيجار
+class UpdateMyCarRentalPricesEvent extends MyCarsEvent {
+  final String carId;
+  final String? perDay;
+  final String? perWeek;
+  final String? perMonth;
+  final String? per3Months;
+  final String? per6Months;
+  final String? perYear;
+  UpdateMyCarRentalPricesEvent({
+    required this.carId,
+    this.perDay,
+    this.perWeek,
+    this.perMonth,
+    this.per3Months,
+    this.per6Months,
+    this.perYear,
+  });
+}
