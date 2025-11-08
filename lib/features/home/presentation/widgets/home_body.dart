@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 // Removed legacy separate filter sections in favor of CombinedFiltersBar
 import 'package:wolfera/features/home/presentation/widgets/combined_filters_bar.dart';
 import 'package:wolfera/features/home/presentation/widgets/recommended_section.dart';
+import 'package:wolfera/features/home/presentation/widgets/rental_cars_section.dart';
 import 'package:wolfera/features/home/presentation/widgets/search_bar_button.dart';
 import 'package:wolfera/features/home/presentation/widgets/search_results_vertical_list.dart';
 
@@ -50,6 +51,8 @@ class HomeBody extends StatelessWidget {
           beginOffset: const Offset(-0.18, 0),
           child: const RecommendedSection(),
         ),
+        // Rental cars list from LEFT
+
         // Combined filters row + content below cars
         _DelayedFadeSlide(
           delay: const Duration(milliseconds: 360),

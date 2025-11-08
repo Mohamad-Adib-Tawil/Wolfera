@@ -27,6 +27,21 @@ class _EnterCarPriceAndDescriptionPageState
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             30.verticalSpace,
+            // Listing Type Selector
+            ReactiveValueListenableBuilder(
+              formControl: _myCarsBloc.descriptionSectionForm.control(_myCarsBloc.kFromListingType),
+              builder: (context, control, child) {
+                return ListingTypeSelector(
+                  selectedType: control.value as String?,
+                  onTypeChanged: (type) {
+                    _myCarsBloc.descriptionSectionForm
+                        .control(_myCarsBloc.kFromListingType)
+                        .updateValue(type);
+                  },
+                );
+              },
+            ),
+            30.verticalSpace,
             SellCarItem(
               title: 'Description',
               isDescription: true,
@@ -86,6 +101,32 @@ class _EnterCarPriceAndDescriptionPageState
                   textInputType: const TextInputType.numberWithOptions(
                       signed: false, decimal: false),
                 );
+              },
+            ),
+            // Rental Prices Section (show only if listing type is rent or both)
+            ReactiveValueListenableBuilder(
+              formControl: _myCarsBloc.descriptionSectionForm.control(_myCarsBloc.kFromListingType),
+              builder: (context, control, child) {
+                final listingType = control.value as String?;
+                if (listingType == 'rent' || listingType == 'both') {
+                  return ReactiveValueListenableBuilder(
+                    formControl: _myCarsBloc.descriptionSectionForm.control(_myCarsBloc.kFromCurrencyCode),
+                    builder: (context, currencyControl, child) {
+                      final code = currencyControl.value as String? ?? 'USD';
+                      final currency = CurrenciesData.findByCode(code) ?? CurrenciesData.defaultCurrency();
+                      return Column(
+                        children: [
+                          30.verticalSpace,
+                          RentalPriceSection(
+                            rentalPricesForm: _myCarsBloc.descriptionSectionForm,
+                            currencySymbol: currency.symbol,
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
+                return const SizedBox.shrink();
               },
             ),
             30.verticalSpace,

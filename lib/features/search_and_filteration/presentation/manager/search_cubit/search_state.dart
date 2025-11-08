@@ -3,6 +3,7 @@ part of 'search_cubit.dart';
 @immutable
 class SearchState {
   final String? selectedPrice;
+  final String? selectedListingType; // 'sale', 'rent', 'both', null = all
   final String? selectedTransmission;
   final String? seletedBodyType;
   final String? selectedCarMinKilometers;
@@ -28,9 +29,10 @@ class SearchState {
   // ترتيب النتائج
   final String sortBy; // e.g., 'created_at', 'price', 'year', 'mileage'
   final bool sortAsc;
-  @override
+  
   List<Object?> get props => [
         selectedPrice,
+        selectedListingType,
         selectedTransmission,
         seletedBodyType,
         selectedCarMinKilometers,
@@ -52,6 +54,7 @@ class SearchState {
       ];
   const SearchState({
     this.selectedPrice,
+    this.selectedListingType,
     this.selectedTransmission,
     this.seletedBodyType,
     this.selectedCarMinKilometers,
@@ -78,6 +81,7 @@ class SearchState {
   factory SearchState.initial() {
     return const SearchState(
       selectedPrice: null,
+      selectedListingType: null,
       selectedTransmission: null,
       seletedBodyType: null,
       selectedCarMinYear: null,
@@ -104,6 +108,7 @@ class SearchState {
 
   SearchState copyWith({
     Nullable<String?>? selectedPrice,
+    Nullable<String?>? selectedListingType,
     Nullable<String?>? selectedTransmission,
     Nullable<String?>? seletedBodyType,
     Nullable<int?>? selectedCarMinYear,
@@ -129,6 +134,9 @@ class SearchState {
     return SearchState(
       selectedPrice:
           selectedPrice != null ? selectedPrice.value : this.selectedPrice,
+      selectedListingType: selectedListingType != null
+          ? selectedListingType.value
+          : this.selectedListingType,
       selectedTransmission: selectedTransmission != null
           ? selectedTransmission.value
           : this.selectedTransmission,
@@ -185,6 +193,7 @@ class SearchState {
   int activeFilterCount() {
     int count = 0;
     if (selectedPrice != null) count++;
+    if (selectedListingType != null) count++;
     if (selectedTransmission != null) count++;
     if (seletedBodyType != null) count++;
     if (selectedCarMinKilometers != null) count++;

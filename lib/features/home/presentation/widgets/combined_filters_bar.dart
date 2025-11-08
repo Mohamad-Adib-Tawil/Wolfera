@@ -22,6 +22,7 @@ import 'package:wolfera/features/search_and_filteration/presentation/widget/year
 import 'package:wolfera/features/app/presentation/widgets/animated_dialog.dart';
 import 'package:wolfera/features/app/presentation/widgets/year_picker_dialog.dart';
 import 'package:wolfera/features/search_and_filteration/presentation/widget/kilometers_dialog.dart';
+import 'package:wolfera/features/search_and_filteration/presentation/widget/listing_type_filter.dart';
 
 /// A compact, professional filter bar showing categories in a row and the
 /// selected category content right below it. Reuses existing search widgets.
@@ -37,6 +38,7 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
 
   final _tabs = const [
     _FilterTab('Makers', Icons.local_offer_outlined),
+    _FilterTab('Type', Icons.category_outlined),
     _FilterTab('Location', Icons.place_outlined),
     _FilterTab('Budget', Icons.attach_money_rounded),
     _FilterTab('Body type', Icons.directions_car_filled_outlined),
@@ -163,27 +165,29 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
     switch (index) {
       case 0: // Makers: from left
         return const Offset(-0.22, 0);
-      case 1: // Location: from top
+      case 1: // Type: from top
         return const Offset(0, -0.22);
-      case 2: // Budget: from bottom
-        return const Offset(0, 0.22);
-      case 3: // Body type: from right
-        return const Offset(0.22, 0);
-      case 4: // Year: from left
-        return const Offset(-0.22, 0);
-      case 5: // Kilometers: from right
-        return const Offset(0.22, 0);
-      case 6: // Transmission: from bottom
-        return const Offset(0, 0.22);
-      case 7: // Fuel: from top
+      case 2: // Location: from top
         return const Offset(0, -0.22);
-      case 8: // Cylinders: from right
+      case 3: // Budget: from bottom
+        return const Offset(0, 0.22);
+      case 4: // Body type: from right
         return const Offset(0.22, 0);
-      case 9: // Seats: from left
+      case 5: // Year: from left
         return const Offset(-0.22, 0);
-      case 10: // Colors: from right
+      case 6: // Kilometers: from right
         return const Offset(0.22, 0);
-      case 11: // Condition: from bottom
+      case 7: // Transmission: from bottom
+        return const Offset(0, 0.22);
+      case 8: // Fuel: from top
+        return const Offset(0, -0.22);
+      case 9: // Cylinders: from right
+        return const Offset(0.22, 0);
+      case 10: // Seats: from left
+        return const Offset(-0.22, 0);
+      case 11: // Colors: from right
+        return const Offset(0.22, 0);
+      case 12: // Condition: from bottom
         return const Offset(0, 0.22);
       default:
         return const Offset(0.18, 0);
@@ -194,24 +198,26 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
     switch (index) {
       case 0: // Makers
         return 70.h;
-      case 1: // Location
+      case 1: // Type (Sale/Rent)
+        return 45.h;
+      case 2: // Location
         return 60.h;
-      case 2: // Budget
+      case 3: // Budget
         return 60.h;
-      case 3: // Body type
+      case 4: // Body type
         return 60.h;
-      case 4: // Year
+      case 5: // Year
         return 56.h;
-      case 5: // Kilometers
+      case 6: // Kilometers
         return 56.h;
-      case 6: // Transmission
-      case 7: // Fuel
-      case 8: // Cylinders
-      case 9: // Seats
+      case 7: // Transmission
+      case 8: // Fuel
+      case 9: // Cylinders
+      case 10: // Seats
         return 56.h;
-      case 10: // Colors
+      case 11: // Colors
         return 84.h; // circle (≈55) + gap (≈10-12) + text (≈18)
-      case 11: // Condition
+      case 12: // Condition
         return 56.h;
       default:
         return 60.h;
@@ -222,16 +228,18 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
     switch (index) {
       case 0: // Makers
         return const MakersListViewFilter();
-      case 1: // Location
+      case 1: // Type (Sale/Rent)
+        return const ListingTypeFilter();
+      case 2: // Location
         return Align(
           alignment: Alignment.centerLeft,
           child: CityDropdown(onChanged: (_) => _searchCubit.searchCars()),
         );
-      case 2: // Budget
+      case 3: // Budget
         return const BudgetListView();
-      case 3: // Body Type
+      case 4: // Body Type
         return const CarBodyTypeListView();
-      case 4: // Year quick controls
+      case 5: // Year quick controls
         return Padding(
           padding: HWEdgeInsets.symmetric(horizontal: 10),
           child: BlocBuilder<SearchCubit, SearchState>(
@@ -291,7 +299,7 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
             },
           ),
         );
-      case 5: // Kilometers quick controls
+      case 6: // Kilometers quick controls
         return Padding(
           padding: HWEdgeInsets.symmetric(horizontal: 10),
           child: BlocBuilder<SearchCubit, SearchState>(
@@ -350,17 +358,17 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
             },
           ),
         );
-      case 6: // Transmission
+      case 7: // Transmission
         return const TransmissionListView();
-      case 7: // Fuel Type
+      case 8: // Fuel Type
         return const FuelTypeListView();
-      case 8: // Cylinders
+      case 9: // Cylinders
         return const CylindersListView();
-      case 9: // Seats
+      case 10: // Seats
         return const SeatsListView();
-      case 10: // Colors
+      case 11: // Colors
         return const ColorsListView();
-      case 11: // Condition
+      case 12: // Condition
         return const ConditionListView();
       default:
         return const SizedBox.shrink();

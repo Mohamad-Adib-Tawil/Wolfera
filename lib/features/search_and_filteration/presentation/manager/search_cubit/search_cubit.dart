@@ -200,6 +200,11 @@ class SearchCubit extends Cubit<SearchState> {
     _applyFiltersAndSearch();
   }
 
+  void selectListingType(String? listingType) {
+    emit(state.copyWith(selectedListingType: Nullable.value(listingType)));
+    _applyFiltersAndSearch();
+  }
+
   void selectTransmission(String? transmissionType) {
     final updatedState =
         _searchFilterService.selectTransmission(state, transmissionType);

@@ -40,9 +40,31 @@ class SearchFilterService {
         queryBuilder = queryBuilder.or(orConditions.join(','));
       }
 
+      // فلتر نوع الإعلان (بيع/إيجار)
+      if (filters.selectedListingType != null && 
+          filters.selectedListingType!.isNotEmpty) {
+        if (filters.selectedListingType == 'both') {
+          // عرض السيارات التي تدعم البيع والإيجار معاً
+          queryBuilder = queryBuilder.eq('listing_type', 'both');
+        } else {
+          // عرض السيارات للبيع أو الإيجار أو كليهما
+          queryBuilder = queryBuilder.inFilter('listing_type', 
+            [filters.selectedListingType!, 'both']);
+        }
+      }
+
       // تطبيق الفلاتر
       if (filters.selectedCarMakersFilter.isNotEmpty) {
-        queryBuilder = queryBuilder.inFilter('brand', filters.selectedCarMakersFilter);
+        final variants = <String>{};
+        for (final b in filters.selectedCarMakersFilter) {
+          if (b.trim().isEmpty) continue;
+          variants.add(b);
+          variants.add(b.toLowerCase());
+          variants.add(b.toUpperCase());
+          final title = b.isNotEmpty ? '${b[0].toUpperCase()}${b.substring(1).toLowerCase()}' : b;
+          variants.add(title);
+        }
+        queryBuilder = queryBuilder.inFilter('brand', variants.toList());
       }
 
       if (filters.selectedTransmission != null) {
