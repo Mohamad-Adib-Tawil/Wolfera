@@ -5,6 +5,7 @@ import 'package:wolfera/core/config/theme/colors_app.dart';
 import 'package:wolfera/core/config/theme/typography.dart';
 import 'package:wolfera/core/utils/extensions/build_context.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
+import 'package:wolfera/core/utils/money_formatter.dart';
 import '../../../app/presentation/widgets/bottom_section_car_mini_details_card.dart';
 import '../../../app/presentation/widgets/status_section_widget.dart';
 import '../../../app/presentation/widgets/top_secrion_car_mini_details_card.dart';
@@ -42,9 +43,46 @@ class CarMiniDetailsCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     double h = isStatus ? 200.h + 60.h : 215.h;
     
-    // Check if this is a rental car
-    final listingType = carData?['listing_type']?.toString();
-    final isRental = listingType == 'rent' || listingType == 'both';
+    // Listing type and status
+    final listingType = carData?['listing_type']?.toString().toLowerCase();
+    final status = carData?['status']?.toString().toLowerCase();
+    final isSold = status == 'sold';
+    
+    // Compute effective price if not provided
+    String? effectivePrice = price;
+    if ((effectivePrice == null || effectivePrice.isEmpty) && carData != null) {
+      final currency = carData!['currency']?.toString() ?? r'$';
+      String? rentalPrice() {
+        final candidates = const [
+          ['rental_price_per_day', 'day'],
+          ['rental_price_per_week', 'week'],
+          ['rental_price_per_month', 'month'],
+          ['rental_price_per_3months', '3 months'],
+          ['rental_price_per_6months', '6 months'],
+          ['rental_price_per_year', 'year'],
+        ];
+        for (final c in candidates) {
+          final raw = carData![c[0]];
+          if (raw != null) {
+            final num? v = raw is num ? raw : num.tryParse(raw.toString());
+            if (v != null) {
+              final compact = MoneyFormatter.compact(v, symbol: currency);
+              if (compact != null) return '$compact / ${c[1]}';
+            }
+          }
+        }
+        return null;
+      }
+      if (listingType == 'rent' || listingType == 'both') {
+        effectivePrice = rentalPrice();
+        if (effectivePrice == null && listingType == 'both') {
+          final sale = MoneyFormatter.compactFromString(carData!['price']?.toString(), symbol: currency);
+          effectivePrice = sale;
+        }
+      } else {
+        effectivePrice = MoneyFormatter.compactFromString(carData!['price']?.toString(), symbol: currency);
+      }
+    }
     
     return GestureDetector(
       onTap: () => GRouter.router.pushNamed(
@@ -75,35 +113,73 @@ class CarMiniDetailsCardWidget extends StatelessWidget {
                   mileage: mileage,
                   fuel: fuel,
                   location: location,
-                  price: price,
+                  price: effectivePrice,
                 ),
                 if (isStatus) const StatusSectionWidget()
               ],
             ),
-            // Rental/Sale Badge
-            if (isRental)
+            // Status/Listing Badges
+            if (isSold)
               Positioned(
                 top: 10.h,
                 left: 10.w,
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
                   decoration: BoxDecoration(
-                    color: listingType == 'rent' 
-                        ? AppColors.primary.withOpacity(0.9)
-                        : Colors.green.withOpacity(0.9),
+                    color: Colors.red.withOpacity(0.95),
                     borderRadius: BorderRadius.circular(12.r),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
-                        listingType == 'rent' ? Icons.car_rental : Icons.all_inclusive,
+                        Icons.sell_rounded,
                         size: 14.sp,
                         color: AppColors.white,
                       ),
                       4.horizontalSpace,
                       AppText(
-                        listingType == 'rent' ? 'For Rent' : 'Sale & Rent',
+                        'Sold',
+                        style: context.textTheme.bodySmall?.b.withColor(AppColors.white),
+                        translation: false,
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            else if (listingType == 'rent' || listingType == 'both' || listingType == 'sale')
+              Positioned(
+                top: 10.h,
+                left: 10.w,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                  decoration: BoxDecoration(
+                    color: listingType == 'rent'
+                        ? AppColors.primary.withOpacity(0.9)
+                        : listingType == 'both'
+                            ? Colors.green.withOpacity(0.9)
+                            : Colors.blueGrey.withOpacity(0.9),
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        listingType == 'rent'
+                            ? Icons.car_rental
+                            : listingType == 'both'
+                                ? Icons.all_inclusive
+                                : Icons.sell_outlined,
+                        size: 14.sp,
+                        color: AppColors.white,
+                      ),
+                      4.horizontalSpace,
+                      AppText(
+                        listingType == 'rent'
+                            ? 'For Rent'
+                            : listingType == 'both'
+                                ? 'Sale & Rent'
+                                : 'For Sale',
                         style: context.textTheme.bodySmall?.b.withColor(AppColors.white),
                         translation: false,
                       ),

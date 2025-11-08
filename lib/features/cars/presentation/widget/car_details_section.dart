@@ -5,6 +5,7 @@ import 'package:wolfera/core/utils/responsive_padding.dart';
 import 'package:wolfera/features/cars/presentation/widget/car_details_item.dart';
 import 'package:wolfera/features/cars/presentation/widget/car_name_and_price_row_widget.dart';
 import 'package:wolfera/features/cars/presentation/widget/car_detailes_grid_view.dart';
+import 'package:wolfera/core/utils/money_formatter.dart';
 import 'package:wolfera/features/chat/presentation/widgets/white_divider.dart';
 
 class CarDetailsSection extends StatelessWidget {
@@ -71,6 +72,26 @@ class CarDetailsSection extends StatelessWidget {
     addBool('Service History', carData['service_history']);
     addBool('Warranty', carData['warranty']);
     if (resolvedLocation != null) addItem('Location', resolvedLocation);
+
+    // Rental prices (show if listing type is rent or both)
+    final listingType = carData['listing_type']?.toString();
+    if (listingType == 'rent' || listingType == 'both') {
+      final currency = carData['currency']?.toString() ?? r'$';
+      String? fmt(num? v) => MoneyFormatter.compact(v, symbol: currency);
+      // For each available rental field, add an item
+      void addRental(String title, dynamic raw) {
+        if (raw == null) return;
+        final num? val = raw is num ? raw : num.tryParse(raw.toString());
+        final f = fmt(val);
+        if (f != null) items.add(CarDetailsItem(title: title, value: f));
+      }
+      addRental('Rent per Day', carData['rental_price_per_day']);
+      addRental('Rent per Week', carData['rental_price_per_week']);
+      addRental('Rent per Month', carData['rental_price_per_month']);
+      addRental('Rent per 3 Months', carData['rental_price_per_3months']);
+      addRental('Rent per 6 Months', carData['rental_price_per_6months']);
+      addRental('Rent per Year', carData['rental_price_per_year']);
+    }
 
     return Padding(
       padding: HWEdgeInsets.symmetric(horizontal: 11),
