@@ -67,6 +67,14 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
   final String kFromRegionOrCity = 'regionOrCity';
   // Price currency selection (new)
   final String kFromCurrencyCode = 'currencyCode';
+  // Listing type and rental prices (new)
+  final String kFromListingType = 'listingType';
+  final String kFromRentalPricePerDay = 'rental_price_per_day';
+  final String kFromRentalPricePerWeek = 'rental_price_per_week';
+  final String kFromRentalPricePerMonth = 'rental_price_per_month';
+  final String kFromRentalPricePerThreeMonths = 'rental_price_per_3months';
+  final String kFromRentalPricePerSixMonths = 'rental_price_per_6months';
+  final String kFromRentalPricePerYear = 'rental_price_per_year';
   final String kFromCarImageFullRight = 'carImageFullRight';
   final String kFromCarImageFullLeft = 'carImageFullLeft';
   final String kFromCarImageRear = 'carImageRear';
@@ -200,6 +208,14 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
         ],
         createAt: DateTime.now(),
         updateAt: DateTime.now(),
+        // Listing type and rental prices
+        listingType: descriptionSectionForm.control(kFromListingType).value as String?,
+        rentalPricePerDay: descriptionSectionForm.control(kFromRentalPricePerDay).value as String?,
+        rentalPricePerWeek: descriptionSectionForm.control(kFromRentalPricePerWeek).value as String?,
+        rentalPricePerMonth: descriptionSectionForm.control(kFromRentalPricePerMonth).value as String?,
+        rentalPricePerThreeMonths: descriptionSectionForm.control(kFromRentalPricePerThreeMonths).value as String?,
+        rentalPricePerSixMonths: descriptionSectionForm.control(kFromRentalPricePerSixMonths).value as String?,
+        rentalPricePerYear: descriptionSectionForm.control(kFromRentalPricePerYear).value as String?,
       );
       print('\n🔵 MyCarsBloc: Calling sellMyCarUsecase...');
       final result = await _sellMyCarUsecase(params);
@@ -390,6 +406,15 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
     kFromCarPrice: FormControl<String>(validators: [Validators.required], value: "15000"),
     // currency code with default USD
     kFromCurrencyCode: FormControl<String>(value: 'USD'),
+    // Listing type (sale/rent/both)
+    kFromListingType: FormControl<String>(value: 'sale', validators: [Validators.required]),
+    // Rental prices (optional, only required if listing type is rent or both)
+    kFromRentalPricePerDay: FormControl<String>(),
+    kFromRentalPricePerWeek: FormControl<String>(),
+    kFromRentalPricePerMonth: FormControl<String>(),
+    kFromRentalPricePerThreeMonths: FormControl<String>(),
+    kFromRentalPricePerSixMonths: FormControl<String>(),
+    kFromRentalPricePerYear: FormControl<String>(),
     // legacy location field (unused now in mapping, kept to avoid breaking)
     kFromCarLocation: FormControl<String>(value: ''),
     // Address selections (new) - will be initialized from user prefs

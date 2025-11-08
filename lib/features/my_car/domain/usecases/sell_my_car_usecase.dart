@@ -50,6 +50,14 @@ class SellMyCarParams {
   final String? warranty;
   final DateTime? createAt;
   final DateTime? updateAt;
+  // Listing type and rental prices
+  final String? listingType;
+  final String? rentalPricePerDay;
+  final String? rentalPricePerWeek;
+  final String? rentalPricePerMonth;
+  final String? rentalPricePerThreeMonths;
+  final String? rentalPricePerSixMonths;
+  final String? rentalPricePerYear;
 
   SellMyCarParams({
     required this.userId,
@@ -85,6 +93,13 @@ class SellMyCarParams {
     this.warranty,
     this.createAt,
     this.updateAt,
+    this.listingType,
+    this.rentalPricePerDay,
+    this.rentalPricePerWeek,
+    this.rentalPricePerMonth,
+    this.rentalPricePerThreeMonths,
+    this.rentalPricePerSixMonths,
+    this.rentalPricePerYear,
   });
 
   Map<String, dynamic> toMapWithUrls(List<String> uploadedUrls) {
@@ -146,6 +161,15 @@ class SellMyCarParams {
       
       // Status
       'status': status.toLowerCase(),
+      
+      // Listing type and rental prices
+      'listing_type': listingType ?? 'sale',
+      'rental_price_per_day': rentalPricePerDay != null && rentalPricePerDay!.isNotEmpty ? num.tryParse(rentalPricePerDay!) : null,
+      'rental_price_per_week': rentalPricePerWeek != null && rentalPricePerWeek!.isNotEmpty ? num.tryParse(rentalPricePerWeek!) : null,
+      'rental_price_per_month': rentalPricePerMonth != null && rentalPricePerMonth!.isNotEmpty ? num.tryParse(rentalPricePerMonth!) : null,
+      'rental_price_per_3months': rentalPricePerThreeMonths != null && rentalPricePerThreeMonths!.isNotEmpty ? num.tryParse(rentalPricePerThreeMonths!) : null,
+      'rental_price_per_6months': rentalPricePerSixMonths != null && rentalPricePerSixMonths!.isNotEmpty ? num.tryParse(rentalPricePerSixMonths!) : null,
+      'rental_price_per_year': rentalPricePerYear != null && rentalPricePerYear!.isNotEmpty ? num.tryParse(rentalPricePerYear!) : null,
       
       // Warranty
       'warranty': warranty != null && warranty!.isNotEmpty,

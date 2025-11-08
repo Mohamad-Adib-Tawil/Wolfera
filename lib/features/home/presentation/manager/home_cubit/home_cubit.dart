@@ -16,6 +16,61 @@ class HomeCubit extends Cubit<HomeState> {
       )
       : super(const HomeState());
 
+  void getRentalCars() async {
+    print('\n🚗 HomeCubit: Fetching RENTAL cars from Supabase...');
+    emit(state.copyWith(rentalCarsState: const PageState.loading()));
+    List<Map<String, dynamic>> rentalCars = [];
+
+    // Primary query
+    try {
+      final primary = await SupabaseService.client
+          .from('cars')
+          .select('*')
+          .inFilter('listing_type', ['rent', 'both'])
+          .inFilter('status', ['active', 'available', 'Active', 'Available'])
+          .order('created_at', ascending: false)
+          .limit(20);
+      rentalCars = (primary as List).cast<Map<String, dynamic>>();
+      print('✅ HomeCubit: Primary query returned ${rentalCars.length} cars');
+    } catch (e) {
+      print('⚠️ HomeCubit: Primary rental query failed: $e');
+    }
+
+    // Fallback if primary failed or returned empty
+    if (rentalCars.isEmpty) {
+      try {
+        print('ℹ️ HomeCubit: Trying fallback rental fetch...');
+        final fallback = await SupabaseService.client
+            .from('cars')
+            .select('*')
+            .order('created_at', ascending: false)
+            .limit(50);
+        final list = (fallback as List).cast<Map<String, dynamic>>();
+        rentalCars = list.where((c) {
+          final lt = c['listing_type']?.toString().toLowerCase();
+          final anyRental = c['rental_price_per_day'] != null ||
+              c['rental_price_per_week'] != null ||
+              c['rental_price_per_month'] != null ||
+              c['rental_price_per_3months'] != null ||
+              c['rental_price_per_6months'] != null ||
+              c['rental_price_per_year'] != null;
+          final status = c['status']?.toString().toLowerCase();
+          final isActive = status == null || status == 'active' || status == 'available';
+          return isActive && (lt == 'rent' || lt == 'both' || anyRental);
+        }).take(20).toList();
+        print('✅ HomeCubit: Fallback produced ${rentalCars.length} cars');
+      } catch (e) {
+        print('❌ HomeCubit: Fallback rental fetch failed: $e');
+        emit(state.copyWith(
+            rentalCarsState: PageState.error(
+                exception: e is Exception ? e : Exception(e.toString()))));
+        return;
+      }
+    }
+
+    emit(state.copyWith(rentalCarsState: PageState.loaded(data: rentalCars)));
+  }
+
   void getHomeData() async {
     print('\n🏠 HomeCubit: Fetching FEATURED cars from Supabase...');
     emit(state.copyWith(carsState: const PageState.loading()));

@@ -8,6 +8,8 @@ import 'package:wolfera/features/my_car/presentation/manager/my_cars_bloc.dart';
 import 'package:wolfera/features/my_car/presentation/widgets/car_add_image_item.dart';
 import 'package:wolfera/features/my_car/presentation/widgets/car_add_image_item_empty_optional.dart';
 import 'package:wolfera/features/my_car/presentation/widgets/colors_dialog.dart';
+import 'package:wolfera/features/my_car/presentation/widgets/listing_type_selector.dart';
+import 'package:wolfera/features/my_car/presentation/widgets/rental_price_section.dart';
 import 'package:wolfera/features/my_car/presentation/widgets/condition_dialog.dart';
 import 'package:wolfera/features/my_car/presentation/widgets/cylinders_dialog.dart';
 import 'package:wolfera/features/my_car/presentation/widgets/exterior_features_dialog.dart';
