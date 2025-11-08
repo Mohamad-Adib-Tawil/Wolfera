@@ -39,7 +39,11 @@ class _HomePageState extends State<HomePage>
       child: SafeArea(
         child: Scaffold(
           body: RefreshListWidget(
-            onRefresh: _homeCubit.getHomeData,
+            onRefresh: () async {
+              // Refresh Recommended (featured) and Combined Search lists
+              _homeCubit.getHomeData(); // returns void
+              await GetIt.I<SearchCubit>().searchCars();
+            },
             child: CustomScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
