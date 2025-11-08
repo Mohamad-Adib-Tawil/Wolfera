@@ -173,7 +173,34 @@ class _SearchResultsVerticalListState extends State<SearchResultsVerticalList> {
                 final location = (car['city'] ?? car['location'])?.toString();
                 final priceVal = car['price']?.toString();
                 final currency = car['currency']?.toString() ?? r'$';
-                final price = MoneyFormatter.compactFromString(priceVal, symbol: currency);
+                final lt = car['listing_type']?.toString().toLowerCase();
+                String? price;
+                if (lt == 'rent' || lt == 'both') {
+                  final candidates = [
+                    ['rental_price_per_day', 'day'],
+                    ['rental_price_per_week', 'week'],
+                    ['rental_price_per_month', 'month'],
+                    ['rental_price_per_3months', '3 months'],
+                    ['rental_price_per_6months', '6 months'],
+                    ['rental_price_per_year', 'year'],
+                  ];
+                  for (final c in candidates) {
+                    final raw = car[c[0]];
+                    if (raw != null) {
+                      final num? v = raw is num ? raw : num.tryParse(raw.toString());
+                      if (v != null) {
+                        final compact = MoneyFormatter.compact(v, symbol: currency);
+                        price = compact != null ? '$compact / ${c[1]}' : null;
+                        break;
+                      }
+                    }
+                  }
+                  if (price == null && lt == 'both') {
+                    price = MoneyFormatter.compactFromString(priceVal, symbol: currency);
+                  }
+                } else {
+                  price = MoneyFormatter.compactFromString(priceVal, symbol: currency);
+                }
 
                 final itemKey = 'item-${car['id']?.toString() ?? '$index'}|${state.sortBy}|${state.sortAsc}';
                 final baseMs = 500;

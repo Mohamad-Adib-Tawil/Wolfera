@@ -22,7 +22,33 @@ class CarNameAndPriceRowWidget extends StatelessWidget {
     final model = carData['model']?.toString() ?? '';
     final priceRaw = carData['price']?.toString();
     final currency = carData['currency']?.toString() ?? '\$';
-    final compactPrice = MoneyFormatter.compactFromString(priceRaw, symbol: currency) ?? '0\$';
+    final listingType = carData['listing_type']?.toString();
+    String displayPrice;
+    if (listingType == 'rent') {
+      final candidates = [
+        ['rental_price_per_day', 'day'],
+        ['rental_price_per_week', 'week'],
+        ['rental_price_per_month', 'month'],
+        ['rental_price_per_3months', '3 months'],
+        ['rental_price_per_6months', '6 months'],
+        ['rental_price_per_year', 'year'],
+      ];
+      String? rp;
+      for (final c in candidates) {
+        final raw = carData[c[0]];
+        if (raw != null) {
+          final num? v = raw is num ? raw : num.tryParse(raw.toString());
+          if (v != null) {
+            final compact = MoneyFormatter.compact(v, symbol: currency);
+            rp = compact != null ? '$compact / ${c[1]}' : null;
+            break;
+          }
+        }
+      }
+      displayPrice = rp ?? (MoneyFormatter.compactFromString(priceRaw, symbol: currency) ?? '');
+    } else {
+      displayPrice = MoneyFormatter.compactFromString(priceRaw, symbol: currency) ?? '';
+    }
     
     return Row(
       children: [
@@ -48,7 +74,7 @@ class CarNameAndPriceRowWidget extends StatelessWidget {
         ),
         10.horizontalSpace,
         AppText(
-          compactPrice,
+          displayPrice,
           translation: false,
           style:
               context.textTheme.bodyLarge!.s20.xb.withColor(AppColors.primary),

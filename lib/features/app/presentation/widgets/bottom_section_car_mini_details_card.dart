@@ -104,7 +104,7 @@ class BottomSectionCarMiniDetailsCard extends StatelessWidget {
           ),
           const Spacer(),
           AppText(
-            price ?? r'34,999$',
+            price ?? '',
             translation: false,
             style: context.textTheme.titleMedium!.xb.withColor(AppColors.white),
           ),

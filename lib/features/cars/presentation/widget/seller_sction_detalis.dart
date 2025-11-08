@@ -13,6 +13,7 @@ import 'package:wolfera/features/cars/presentation/widget/user_section_with_loca
 import 'package:wolfera/features/chat/presentation/widgets/white_divider.dart';
 import 'package:wolfera/generated/assets.dart';
 import 'package:wolfera/features/app/presentation/widgets/shimmer_loading.dart';
+import 'package:wolfera/services/supabase_service.dart';
 
 class SellerSctionDetalis extends StatelessWidget {
   final Map<String, dynamic> carData;
@@ -52,6 +53,18 @@ class SellerSctionDetalis extends StatelessWidget {
       '123456',
     };
     return !banned.contains(digits);
+  }
+
+  // استنتاج معرف البائع من بيانات السيارة
+  String? _resolveSellerId() {
+    // Prefer Supabase user_id from carData; then try owner.user_id; then owner.id (if looks like uuid)
+    String? sellerId = carData['user_id']?.toString();
+    sellerId ??= owner?['user_id']?.toString();
+    final rawOwnerId = owner?['id']?.toString();
+    if (sellerId == null && rawOwnerId != null && rawOwnerId.contains('-')) {
+      sellerId = rawOwnerId; // likely a UUID
+    }
+    return sellerId;
   }
 
   // وظيفة الاتصال بالهاتف
@@ -102,13 +115,7 @@ class SellerSctionDetalis extends StatelessWidget {
 
   // وظيفة فتح الشات الداخلي
   void _openInAppChat(BuildContext context) {
-    // Prefer Supabase user_id from carData; then try owner.user_id; then owner.id (if looks like uuid)
-    String? sellerId = carData['user_id']?.toString();
-    sellerId ??= owner?['user_id']?.toString();
-    final rawOwnerId = owner?['id']?.toString();
-    if (sellerId == null && rawOwnerId != null && rawOwnerId.contains('-')) {
-      sellerId = rawOwnerId; // likely a UUID
-    }
+    final sellerId = _resolveSellerId();
 
     if (sellerId == null || sellerId.isEmpty) {
       showMessage('Cannot start chat: seller information not available',
@@ -137,6 +144,10 @@ class SellerSctionDetalis extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool loadingOwner = owner == null;
+    // تحقق إن كان المستخدم الحالي هو صاحب السيارة
+    final currentUserId = SupabaseService.currentUser?.id;
+    final sellerId = _resolveSellerId();
+    final bool isSelf = currentUserId != null && sellerId != null && currentUserId == sellerId;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
@@ -199,11 +210,12 @@ class SellerSctionDetalis extends StatelessWidget {
           ),
           18.verticalSpace,
           GestureDetector(
-            onTap: () => _openInAppChat(context),
+            onTap: isSelf ? null : () => _openInAppChat(context),
             child: ContectButton(
               textWidth: 260.w,
               svg: Assets.svgMessageSquare,
               title: 'Send Message to $sellerName',
+              disabled: isSelf,
             ),
           ),
           15.verticalSpace,

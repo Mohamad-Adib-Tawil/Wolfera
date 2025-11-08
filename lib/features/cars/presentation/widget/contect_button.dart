@@ -13,16 +13,18 @@ class ContectButton extends StatelessWidget {
     required this.title,
     required this.svg,
     this.textWidth,
+    this.disabled = false,
   });
   final String title, svg;
   final double? textWidth;
+  final bool disabled;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       child: Container(
         padding: HWEdgeInsets.only(left: 18, top: 10, bottom: 10, right: 20),
         decoration: BoxDecoration(
-            color: AppColors.white,
+            color: disabled ? AppColors.greyStroke : AppColors.white,
             borderRadius: BorderRadius.circular(10.r),
             boxShadow: [
               BoxShadow(
@@ -51,7 +53,7 @@ class ContectButton extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.center,
                   style: context.textTheme.bodyLarge!.s18.b
-                      .withColor(AppColors.blackLight),
+                      .withColor(disabled ? AppColors.grey : AppColors.blackLight),
                 ),
               )
             else
@@ -63,7 +65,7 @@ class ContectButton extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.center,
                   style: context.textTheme.bodyLarge!.s18.b
-                      .withColor(AppColors.blackLight),
+                      .withColor(disabled ? AppColors.grey : AppColors.blackLight),
                 ),
               ),
           ],

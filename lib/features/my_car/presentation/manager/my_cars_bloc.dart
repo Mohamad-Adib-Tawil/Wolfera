@@ -34,6 +34,14 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
     on<DeleteAllMyCarsEvent>(_onDeleteAllMyCars);
     on<UpdateMyCarStatusEvent>(_onUpdateMyCarStatus);
     on<UpdateMyCarPriceEvent>(_onUpdateMyCarPrice);
+
+    // Initialize dynamic validators for description form
+    try {
+      final lt = descriptionSectionForm.control(kFromListingType).value as String? ?? 'sale';
+      updateValidatorsByListingType(lt);
+    } catch (e) {
+      // ignore
+    }
   }
   final SellMyCarUsecase _sellMyCarUsecase;
   final String kFromCarMaker = 'carMaker';
@@ -138,6 +146,35 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
         dismissOnTap: false,
       );
       final String userId = SupabaseService.currentUser!.id;
+
+      // Validate listing type / pricing consistency before building params
+      final listingType = descriptionSectionForm.control(kFromListingType).value as String? ?? 'sale';
+      final salePriceStr = (descriptionSectionForm.control(kFromCarPrice).value as String?)?.trim() ?? '';
+      final rentals = <String?>[
+        descriptionSectionForm.control(kFromRentalPricePerDay).value as String?,
+        descriptionSectionForm.control(kFromRentalPricePerWeek).value as String?,
+        descriptionSectionForm.control(kFromRentalPricePerMonth).value as String?,
+        descriptionSectionForm.control(kFromRentalPricePerThreeMonths).value as String?,
+        descriptionSectionForm.control(kFromRentalPricePerSixMonths).value as String?,
+        descriptionSectionForm.control(kFromRentalPricePerYear).value as String?,
+      ].map((e) => e?.trim()).toList();
+      final hasAnyRental = rentals.any((v) => v != null && v.isNotEmpty);
+      if (listingType == 'rent' && !hasAnyRental) {
+        EasyLoading.dismiss();
+        emit(state.copyWith(
+            sellMyCarStatus:
+                const BlocStatus.fail(error: 'Please enter at least one rental price')));
+        EasyLoading.showError('Please enter at least one rental price');
+        return;
+      }
+      if (listingType == 'both' && (!hasAnyRental || salePriceStr.isEmpty)) {
+        EasyLoading.dismiss();
+        emit(state.copyWith(
+            sellMyCarStatus: const BlocStatus.fail(
+                error: 'Please enter sale price and at least one rental price')));
+        EasyLoading.showError('Please enter sale price and at least one rental price');
+        return;
+      }
 
       // ===== Address validation (required unless Worldwide) =====
       final bool isWorldwide =
@@ -398,6 +435,44 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
       value: ['Heated Seats', 'Ambient Lighting'],
     ),
   });
+
+  // Apply validators based on listing type selection
+  void updateValidatorsByListingType(String type) {
+    final priceControl = descriptionSectionForm.control(kFromCarPrice) as FormControl<String>;
+    if (type == 'rent') {
+      priceControl.setValidators([]);
+    } else {
+      priceControl.setValidators([Validators.required]);
+    }
+    priceControl.updateValueAndValidity();
+    descriptionSectionForm.updateValueAndValidity();
+  }
+
+  // Central method to change listing type and normalize fields
+  void applyListingType(String type) {
+    descriptionSectionForm.control(kFromListingType).updateValue(type);
+    updateValidatorsByListingType(type);
+    if (type == 'rent') {
+      // Clear sale price when rent-only
+      descriptionSectionForm.control(kFromCarPrice).updateValue('');
+    }
+    if (type == 'sale') {
+      // Clear rental prices when sale-only
+      for (final name in [
+        kFromRentalPricePerDay,
+        kFromRentalPricePerWeek,
+        kFromRentalPricePerMonth,
+        kFromRentalPricePerThreeMonths,
+        kFromRentalPricePerSixMonths,
+        kFromRentalPricePerYear,
+      ]) {
+        descriptionSectionForm.control(name).updateValue('');
+      }
+    }
+    descriptionSectionForm.markAsDirty();
+    descriptionSectionForm.updateValueAndValidity();
+  }
+
 
   late final descriptionSectionForm = FormGroup({
     kFromCarDescription: FormControl<String>(
