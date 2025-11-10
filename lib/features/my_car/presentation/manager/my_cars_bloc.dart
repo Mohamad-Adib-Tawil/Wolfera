@@ -13,6 +13,7 @@ import 'package:reactive_forms/reactive_forms.dart';
 import 'package:wolfera/features/my_car/domain/usecases/sell_my_car_usecase.dart';
 import 'package:wolfera/features/home/presentation/manager/home_cubit/home_cubit.dart';
 import 'package:wolfera/features/search_and_filteration/presentation/manager/search_cubit/search_cubit.dart';
+import 'package:wolfera/features/faviorate/presentation/manager/favorite_cubit.dart';
 import 'package:wolfera/generated/locale_keys.g.dart';
 import 'package:wolfera/core/constants/locations_data.dart';
 import 'package:wolfera/core/constants/currencies.dart';
@@ -210,12 +211,13 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
       // إعادة تحميل القائمة بعد الحذف
       add(LoadMyCarsEvent());
 
-      // تحديث قائمة السيارات في الصفحة الرئيسية بعد الحذف الكلي
+      // تحديث قائمة السيارات في الصفحة الرئيسية بعد الحذف الكلي + تحديث المفضلة
       try {
         GetIt.I<HomeCubit>().getHomeData();
         GetIt.I<SearchCubit>().searchCars();
+        GetIt.I<FavoriteCubit>().init();
       } catch (e) {
-        print('⚠️ Failed to refresh home after delete-all: $e');
+        print('⚠️ Failed to refresh after delete-all: $e');
       }
 
       EasyLoading.showSuccess('All cars deleted successfully');
@@ -712,12 +714,13 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
       // إعادة تحميل القائمة بعد الحذف
       add(LoadMyCarsEvent());
 
-      // تحديث قائمة السيارات في الصفحة الرئيسية بعد الحذف
+      // تحديث قائمة السيارات في الصفحة الرئيسية بعد الحذف + تحديث المفضلة
       try {
         GetIt.I<HomeCubit>().getHomeData();
         GetIt.I<SearchCubit>().searchCars();
+        GetIt.I<FavoriteCubit>().init();
       } catch (e) {
-        print('⚠️ Failed to refresh home after delete: $e');
+        print('⚠️ Failed to refresh after delete: $e');
       }
 
       EasyLoading.showSuccess('Car deleted successfully');
