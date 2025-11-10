@@ -44,7 +44,7 @@ class _CarDescriptionState extends State<CarDescription> {
         children: [
           10.verticalSpace,
           AppText(
-            "Description",
+            "description",
             style: context.textTheme.bodySmall.s18.b.withColor(AppColors.grey),
           ),
           16.verticalSpace,

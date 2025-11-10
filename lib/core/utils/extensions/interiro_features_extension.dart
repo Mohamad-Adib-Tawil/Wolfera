@@ -1,48 +1,49 @@
 import 'package:wolfera/common/enums/interior_features.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 extension InteriorFeatureExtension on InteriorFeature {
   String get featureName {
     switch (this) {
       case InteriorFeature.leatherSeats:
-        return 'Leather Seats';
+        return 'interior_features_list.leather_seats'.tr();
       case InteriorFeature.heatedSeats:
-        return 'Heated Seats';
+        return 'interior_features_list.heated_seats'.tr();
       case InteriorFeature.ventilatedSeats:
-        return 'Ventilated Seats';
+        return 'interior_features_list.ventilated_seats'.tr();
       case InteriorFeature.sunroof:
-        return 'Sunroof';
+        return 'interior_features_list.sunroof'.tr();
       case InteriorFeature.moonroof:
-        return 'Moonroof';
+        return 'interior_features_list.moonroof'.tr();
       case InteriorFeature.backupCamera:
-        return 'Backup Camera';
+        return 'interior_features_list.backup_camera'.tr();
       case InteriorFeature.navigationSystem:
-        return 'Navigation System';
+        return 'interior_features_list.navigation_system'.tr();
       case InteriorFeature.bluetooth:
-        return 'Bluetooth';
+        return 'interior_features_list.bluetooth'.tr();
       case InteriorFeature.premiumAudio:
-        return 'Premium Audio';
+        return 'interior_features_list.premium_audio'.tr();
       case InteriorFeature.cruiseControl:
-        return 'Cruise Control';
+        return 'interior_features_list.cruise_control'.tr();
       case InteriorFeature.remoteStart:
-        return 'Remote Start';
+        return 'interior_features_list.remote_start'.tr();
       case InteriorFeature.keylessEntry:
-        return 'Keyless Entry';
+        return 'interior_features_list.keyless_entry'.tr();
       case InteriorFeature.heatedSteeringWheel:
-        return 'Heated Steering Wheel';
+        return 'interior_features_list.heated_steering_wheel'.tr();
       case InteriorFeature.powerWindows:
-        return 'Power Windows';
+        return 'interior_features_list.power_windows'.tr();
       case InteriorFeature.powerSeats:
-        return 'Power Seats';
+        return 'interior_features_list.power_seats'.tr();
       case InteriorFeature.thirdRowSeating:
-        return 'Third Row Seating';
+        return 'interior_features_list.third_row_seating'.tr();
       case InteriorFeature.ambientLighting:
-        return 'Ambient Lighting';
+        return 'interior_features_list.ambient_lighting'.tr();
       case InteriorFeature.wirelessCharging:
-        return 'Wireless Charging';
+        return 'interior_features_list.wireless_charging'.tr();
       case InteriorFeature.appleCarplay:
-        return 'Apple CarPlay';
+        return 'interior_features_list.apple_carplay'.tr();
       case InteriorFeature.androidAuto:
-        return 'Android Auto';
+        return 'interior_features_list.android_auto'.tr();
     }
   }
 }

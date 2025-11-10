@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
 import 'package:wolfera/core/config/theme/typography.dart';
 import 'package:wolfera/core/utils/extensions/build_context.dart';
@@ -22,7 +23,7 @@ class ListingTypeFilter extends StatelessWidget {
             children: [
               _buildChip(
                 context: context,
-                label: 'All',
+                label: 'listing_types.all'.tr(),
                 value: null,
                 isSelected: state.selectedListingType == null,
                 icon: Icons.all_inclusive,
@@ -30,7 +31,7 @@ class ListingTypeFilter extends StatelessWidget {
               8.horizontalSpace,
               _buildChip(
                 context: context,
-                label: 'For Sale',
+                label: 'listing_types.for_sale'.tr(),
                 value: 'sale',
                 isSelected: state.selectedListingType == 'sale',
                 icon: Icons.sell_outlined,
@@ -38,7 +39,7 @@ class ListingTypeFilter extends StatelessWidget {
               8.horizontalSpace,
               _buildChip(
                 context: context,
-                label: 'For Rent',
+                label: 'listing_types.for_rent'.tr(),
                 value: 'rent',
                 isSelected: state.selectedListingType == 'rent',
                 icon: Icons.car_rental,

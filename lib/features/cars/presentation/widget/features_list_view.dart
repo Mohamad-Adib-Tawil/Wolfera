@@ -29,7 +29,7 @@ class FeaturesListView extends StatelessWidget {
             iconColor: AppColors.grey,
             collapsedIconColor: AppColors.grey,
             title: AppText(
-              'Safety',
+              'safety_features',
               style:
                   context.textTheme.bodyMedium?.s18.b.withColor(AppColors.grey),
             ),
@@ -41,7 +41,7 @@ class FeaturesListView extends StatelessWidget {
             iconColor: AppColors.grey,
             collapsedIconColor: AppColors.grey,
             title: AppText(
-              'Exterior',
+              'exterior_features',
               style: context.textTheme.bodyMedium.s18.b.withColor(AppColors.grey),
             ),
             children: [FeaturesGridView(features: exteriorFeatures)],
@@ -52,7 +52,7 @@ class FeaturesListView extends StatelessWidget {
             collapsedIconColor: AppColors.grey,
             iconColor: AppColors.grey,
             title: AppText(
-              'Interior',
+              'interior_features',
               style: context.textTheme.bodyMedium.s18.b.withColor(AppColors.grey),
             ),
             children: [FeaturesGridView(features: interiorFeatures)],

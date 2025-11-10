@@ -234,7 +234,7 @@ class _CarDetalisAppbarState extends State<CarDetalisAppbar> with SingleTickerPr
               GestureDetector(
                 onTap: _adminRemoveCarAction,
                 child: Padding(
-                  padding: EdgeInsets.only(right: 14.w),
+                  padding: EdgeInsets.only(right: 20.w),
                   child: Icon(
                     CupertinoIcons.trash,
                     size: 26.r,
@@ -246,7 +246,7 @@ class _CarDetalisAppbarState extends State<CarDetalisAppbar> with SingleTickerPr
               GestureDetector(
                 onTap: _toggleFeatured,
                 child: Padding(
-                  padding: EdgeInsets.only(right: 14.w),
+                  padding: EdgeInsets.only(right: 20.w),
                   child: Icon(
                     _isFeatured ? CupertinoIcons.star_fill : CupertinoIcons.star,
                     size: 26.r,
