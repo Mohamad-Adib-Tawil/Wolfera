@@ -77,10 +77,13 @@ class ChatAppbar extends StatelessWidget implements PreferredSizeWidget {
           height: 35.h,
           width: 35.w,
           padding: HWEdgeInsets.only(left: 8, top: 5, bottom: 5),
-          child: AppSvgPicture(
-            Assets.svgArrowLeft,
-            height: 35.h,
-            width: 35.w,
+          child: Transform.rotate(
+            angle: context.locale.languageCode == 'ar' ? 3.14 : 0,
+            child: AppSvgPicture(
+              Assets.svgArrowLeft,
+              height: 35.h,
+              width: 35.w,
+            ),
           ),
         ),
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
 import 'package:wolfera/core/config/theme/typography.dart';
 import 'package:wolfera/core/utils/extensions/build_context.dart';
@@ -43,7 +44,7 @@ class ProfileItemSettingsWidget extends StatelessWidget {
             const Spacer(),
             isLastItem
                 ? Transform.rotate(
-                    angle: 3.14,
+                    angle: context.locale.languageCode == 'ar' ? 0 : 3.14,
                     child: AppSvgPicture(
                       Assets.svgArrowLeft,
                       height: 25.h,

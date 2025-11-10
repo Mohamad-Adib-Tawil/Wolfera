@@ -66,8 +66,11 @@ class _ResetPasswordState extends State<ResetPassword> {
                       ),
                       leading: IconButton(
                         onPressed: () => GoRouter.of(context).pop(),
-                        icon: const Icon(Icons.arrow_back_ios_rounded,
-                            color: AppColors.white),
+                        icon: Transform.rotate(
+                          angle: context.locale.languageCode == 'ar' ? 3.14 : 0,
+                          child: const Icon(Icons.arrow_back_ios_rounded,
+                              color: AppColors.white),
+                        ),
                         padding: EdgeInsets.zero,
                       ),
                       actions: const [],
@@ -87,8 +90,11 @@ class _ResetPasswordState extends State<ResetPassword> {
                     ),
                     leading: IconButton(
                       onPressed: () => GoRouter.of(context).pop(),
-                      icon: const Icon(Icons.arrow_back_ios_rounded,
-                          color: AppColors.white),
+                      icon: Transform.rotate(
+                        angle: context.locale.languageCode == 'ar' ? 3.14 : 0,
+                        child: const Icon(Icons.arrow_back_ios_rounded,
+                            color: AppColors.white),
+                      ),
                       padding: EdgeInsets.zero,
                     ),
                     actions: const [],

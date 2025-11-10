@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:wolfera/core/config/theme/typography.dart';
 import 'package:wolfera/core/utils/extensions/build_context.dart';
 import 'package:wolfera/core/utils/responsive_padding.dart';
@@ -43,10 +44,13 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
                       width: 35.w,
                       padding:
                           HWEdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                      child: AppSvgPicture(
-                        Assets.svgArrowLeft,
-                        height: 35.h,
-                        width: 35.w,
+                      child: Transform.rotate(
+                        angle: context.locale.languageCode == 'ar' ? 3.14 : 0,
+                        child: AppSvgPicture(
+                          Assets.svgArrowLeft,
+                          height: 35.h,
+                          width: 35.w,
+                        ),
                       ),
                     ),
                   )
