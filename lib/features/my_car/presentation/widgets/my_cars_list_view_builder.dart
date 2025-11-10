@@ -251,12 +251,12 @@ class MyCarsListViewBuilder extends StatelessWidget {
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        _rentalField('Per day', dayCtrl),
-                                        _rentalField('Per week', weekCtrl),
-                                        _rentalField('Per month', monthCtrl),
-                                        _rentalField('Per 3 months', m3Ctrl),
-                                        _rentalField('Per 6 months', m6Ctrl),
-                                        _rentalField('Per year', yearCtrl),
+                                        _rentalField('rental_periods.per_day'.tr(), dayCtrl),
+                                        _rentalField('rental_periods.per_week'.tr(), weekCtrl),
+                                        _rentalField('rental_periods.per_month'.tr(), monthCtrl),
+                                        _rentalField('rental_periods.per_3months'.tr(), m3Ctrl),
+                                        _rentalField('rental_periods.per_6months'.tr(), m6Ctrl),
+                                        _rentalField('rental_periods.per_year'.tr(), yearCtrl),
                                       ],
                                     ),
                                   ),

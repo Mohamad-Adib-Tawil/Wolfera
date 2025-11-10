@@ -1,12 +1,16 @@
-enum FuelType {
-  diesel('Diesel'),
-  gasoline('Gasoline'),
-  petrol('Petrol'),
-  hydrogen('Hydrogen');
+import 'package:easy_localization/easy_localization.dart';
 
-  final String name;
+enum FuelType {
+  diesel('fuel_types.diesel'),
+  gasoline('fuel_types.gasoline'),
+  petrol('fuel_types.petrol'),
+  electric('fuel_types.electric');
+
+  final String translationKey;
 
   const FuelType(
-    this.name,
+    this.translationKey,
   );
+  
+  String get name => translationKey.tr();
 }

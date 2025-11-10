@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
 import 'package:wolfera/core/utils/responsive_padding.dart';
 import 'package:wolfera/features/cars/presentation/widget/car_details_item.dart';
@@ -85,12 +86,12 @@ class CarDetailsSection extends StatelessWidget {
         final f = fmt(val);
         if (f != null) items.add(CarDetailsItem(title: title, value: f));
       }
-      addRental('Rent per Day', carData['rental_price_per_day']);
-      addRental('Rent per Week', carData['rental_price_per_week']);
-      addRental('Rent per Month', carData['rental_price_per_month']);
-      addRental('Rent per 3 Months', carData['rental_price_per_3months']);
-      addRental('Rent per 6 Months', carData['rental_price_per_6months']);
-      addRental('Rent per Year', carData['rental_price_per_year']);
+      addRental('rental_labels.rent_per_day'.tr(), carData['rental_price_per_day']);
+      addRental('rental_labels.rent_per_week'.tr(), carData['rental_price_per_week']);
+      addRental('rental_labels.rent_per_month'.tr(), carData['rental_price_per_month']);
+      addRental('rental_labels.rent_per_3months'.tr(), carData['rental_price_per_3months']);
+      addRental('rental_labels.rent_per_6months'.tr(), carData['rental_price_per_6months']);
+      addRental('rental_labels.rent_per_year'.tr(), carData['rental_price_per_year']);
     }
 
     return Padding(

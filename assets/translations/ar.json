@@ -234,6 +234,154 @@
   "syria_visibility_updated": "تم تحديث رؤية سوريا",
   "restart_required": "إعادة التشغيل مطلوبة",
   "restart_app_message": "يرجى إعادة تشغيل التطبيق لتطبيق التغييرات.",
+  
+  "rental_periods": {
+    "per_day": "يومياً",
+    "per_week": "أسبوعياً", 
+    "per_month": "شهرياً",
+    "per_3months": "كل 3 أشهر",
+    "per_6months": "كل 6 أشهر",
+    "per_year": "سنوياً"
+  },
+  
+  "rental_labels": {
+    "rent_per_day": "إيجار يومي",
+    "rent_per_week": "إيجار أسبوعي",
+    "rent_per_month": "إيجار شهري",
+    "rent_per_3months": "إيجار كل 3 أشهر",
+    "rent_per_6months": "إيجار كل 6 أشهر",
+    "rent_per_year": "إيجار سنوي"
+  },
+  
+  "car_filters": {
+    "condition": "الحالة",
+    "seats": "المقاعد",
+    "cylinders": "الأسطوانات", 
+    "fuel_type": "نوع الوقود",
+    "transmission": "ناقل الحركة",
+    "body_type": "نوع الهيكل",
+    "color": "اللون",
+    "brand": "الماركة",
+    "model": "الموديل",
+    "year": "السنة",
+    "price_range": "نطاق السعر"
+  },
+  
+  "car_conditions": {
+    "new": "جديدة",
+    "excellent": "ممتازة", 
+    "very_good": "جيدة جداً",
+    "good": "جيدة",
+    "fair": "مقبولة",
+    "poor": "ضعيفة"
+  },
+  
+  "fuel_types": {
+    "gasoline": "بنزين",
+    "diesel": "ديزل", 
+    "petrol": "بترول",
+    "electric": "كهربائي",
+    "hybrid": "هجين"
+  },
+  
+  "transmission_types": {
+    "automatic": "أوتوماتيك",
+    "manual": "يدوي",
+    "semi_automatic": "نصف أوتوماتيك"
+  },
+  
+  "body_types": {
+    "sedan": "سيدان",
+    "suv": "دفع رباعي",
+    "hatchback": "هاتشباك",
+    "coupe": "كوبيه",
+    "convertible": "قابل للتحويل",
+    "wagon": "عائلية",
+    "pickup": "بيك أب",
+    "van": "فان",
+    "truck": "شاحنة"
+  },
+  
+  "seats_count": {
+    "2_seats": "مقعدان",
+    "3_seats": "3 مقاعد",
+    "4_seats": "4 مقاعد", 
+    "5_seats": "5 مقاعد",
+    "6_seats": "6 مقاعد",
+    "7_seats": "7 مقاعد",
+    "8_seats": "8 مقاعد",
+    "9_plus_seats": "9+ مقاعد"
+  },
+  
+  "cylinders_count": {
+    "2_cylinders": "أسطوانتان",
+    "3_cylinders": "3 أسطوانات",
+    "4_cylinders": "4 أسطوانات",
+    "5_cylinders": "5 أسطوانات", 
+    "6_cylinders": "6 أسطوانات",
+    "8_cylinders": "8 أسطوانات",
+    "10_cylinders": "10 أسطوانات",
+    "11_cylinders": "11 أسطوانة",
+    "12_cylinders": "12 أسطوانة",
+    "16_cylinders": "16 أسطوانة"
+  },
+  
+  "sell_car": {
+    "title": "بيع سيارتي",
+    "step_1": "تفاصيل السيارة",
+    "step_2": "المميزات", 
+    "step_3": "السعر والوصف",
+    "step_4": "الصور",
+    "next": "التالي",
+    "previous": "السابق",
+    "finish": "إنهاء",
+    "car_maker": "صانع السيارة",
+    "car_model": "موديل السيارة",
+    "manufacturing_year": "سنة الصنع",
+    "select_maker": "اختر الصانع",
+    "select_model": "اختر الموديل",
+    "select_year": "اختر السنة",
+    "select_condition": "اختر الحالة",
+    "select_fuel_type": "اختر نوع الوقود",
+    "select_transmission": "اختر ناقل الحركة",
+    "select_body_type": "اختر نوع الهيكل",
+    "select_color": "اختر اللون",
+    "select_seats": "اختر عدد المقاعد",
+    "select_cylinders": "اختر عدد الأسطوانات",
+    "mileage": "المسافة المقطوعة (كم)",
+    "enter_mileage": "أدخل المسافة المقطوعة",
+    "listing_type": "نوع الإعلان",
+    "for_sale": "للبيع",
+    "for_rent": "للإيجار", 
+    "both": "كلاهما (بيع وإيجار)",
+    "sale_price": "سعر البيع",
+    "rental_prices": "أسعار الإيجار",
+    "enter_price": "أدخل السعر",
+    "description": "الوصف",
+    "enter_description": "أدخل وصف السيارة",
+    "location": "الموقع",
+    "select_country": "اختر البلد",
+    "select_city": "اختر المدينة",
+    "currency": "العملة",
+    "features": "المميزات",
+    "interior_features": "المميزات الداخلية",
+    "exterior_features": "المميزات الخارجية", 
+    "safety_features": "مميزات الأمان",
+    "add_images": "إضافة صور",
+    "main_image": "الصورة الرئيسية",
+    "additional_images": "صور إضافية",
+    "upload_image": "رفع صورة",
+    "image_required": "مطلوب صورة واحدة على الأقل",
+    "car_added_success": "تم إضافة السيارة بنجاح!"
+  },
+  
+  "chat": {
+    "empty_title": "لا توجد رسائل بعد",
+    "empty_subtitle": "ابدأ محادثة للحصول على المساعدة أو طرح الأسئلة",
+    "type_message": "اكتب رسالة...",
+    "send": "إرسال"
+  },
+  
   "mycars_empty_title": "لا توجد لديك سيارات بعد",
   "mycars_empty_subtitle": "ابدأ بإضافة سيارتك الأولى لبيعها على وولفيرا.",
   "edit_price": "تعديل السعر",
