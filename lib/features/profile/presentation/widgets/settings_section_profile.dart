@@ -11,7 +11,10 @@ import 'package:wolfera/features/profile/presentation/pages/profile_page.dart';
 import 'package:wolfera/features/profile/presentation/widgets/logout_bottom_sheet.dart';
 import 'package:wolfera/generated/assets.dart';
 import 'package:wolfera/services/supabase_service.dart';
+import 'package:wolfera/services/app_settings_service.dart';
 import 'package:wolfera/features/profile/presentation/widgets/add_admin_dialog.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import 'profile_item_settings_widget.dart';
 
@@ -37,13 +40,19 @@ class SettingsSectionProfile extends StatelessWidget {
           builder: (context, snapshot) {
             final isSuper = snapshot.data == true;
             if (!isSuper) return const SizedBox.shrink();
-            return ProfileItemSettingsWidget(
-              title: 'add_admin_title',
-              svgIcon: Assets.svgPerson,
-              onTap: () => showDialog(
-                context: context,
-                builder: (_) => const AddAdminDialog(),
-              ),
+            return Column(
+              children: [
+                ProfileItemSettingsWidget(
+                  title: 'add_admin_title',
+                  svgIcon: Assets.svgPerson,
+                  onTap: () => showDialog(
+                    context: context,
+                    builder: (_) => const AddAdminDialog(),
+                  ),
+                ),
+                // خيار إخفاء/إظهار سوريا
+                _SyriaVisibilityToggle(),
+              ],
             );
           },
         ),
@@ -96,6 +105,76 @@ class SettingsSectionProfile extends StatelessWidget {
           },
         ),
       ],
+    );
+  }
+}
+
+/// ويدجت لتبديل إخفاء/إظهار سوريا (للسوبر أدمن فقط)
+class _SyriaVisibilityToggle extends StatefulWidget {
+  const _SyriaVisibilityToggle();
+
+  @override
+  State<_SyriaVisibilityToggle> createState() => _SyriaVisibilityToggleState();
+}
+
+class _SyriaVisibilityToggleState extends State<_SyriaVisibilityToggle> {
+  bool _isHidden = false;
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _isHidden = AppSettingsService.instance.isSyriaHidden;
+  }
+
+  Future<void> _toggleVisibility() async {
+    setState(() => _isLoading = true);
+    
+    try {
+      EasyLoading.show(status: 'Updating...');
+      final newValue = !_isHidden;
+      await AppSettingsService.instance.setSyriaVisibility(newValue);
+      
+      setState(() => _isHidden = newValue);
+      
+      EasyLoading.dismiss();
+      EasyLoading.showSuccess(
+        'syria_visibility_updated'.tr(),
+        duration: const Duration(seconds: 2),
+      );
+      
+      // إعادة تحميل التطبيق لتطبيق التغييرات
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: Text('restart_required'.tr()),
+            content: Text('restart_app_message'.tr()),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: Text('ok'.tr()),
+              ),
+            ],
+          ),
+        );
+      }
+    } catch (e) {
+      EasyLoading.dismiss();
+      EasyLoading.showError('Failed: $e');
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ProfileItemSettingsWidget(
+      title: _isHidden ? 'show_syria' : 'hide_syria',
+      svgIcon: Assets.svgGlobe,
+      onTap: _isLoading ? null : _toggleVisibility,
     );
   }
 }

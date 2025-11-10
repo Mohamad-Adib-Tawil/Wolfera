@@ -6,6 +6,7 @@ import 'package:wolfera/features/faviorate/presentation/manager/favorite_cubit.d
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../services/firebase_service.dart';
+import '../services/app_settings_service.dart';
 import 'di/di_container.dart';
 
 Future<void> initialization(
@@ -20,6 +21,9 @@ Future<void> initialization(
     getIt.registerLazySingleton<FavoriteCubit>(() => FavoriteCubit());
   }
   await AppService.initializeApp();
+  
+  // تحميل إعدادات التطبيق مرة واحدة عند البدء (مثل إخفاء سوريا)
+  await AppSettingsService.instance.initialize();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitDown,
     DeviceOrientation.portraitUp,

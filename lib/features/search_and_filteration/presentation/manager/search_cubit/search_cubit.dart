@@ -6,6 +6,7 @@ import 'package:wolfera/core/utils/debouncer.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:wolfera/core/utils/nullable.dart';
 import 'package:wolfera/services/search_and_filters_service.dart';
+import 'package:wolfera/services/app_settings_service.dart';
 import 'package:wolfera/core/constants/locations_data.dart';
 import 'package:get_it/get_it.dart';
 import 'package:wolfera/features/app/domin/repositories/prefs_repository.dart';
@@ -57,10 +58,13 @@ class SearchCubit extends Cubit<SearchState> {
       ));
 
       // جلب السيارات من Supabase مع البحث والفلاتر
-      final results = await _searchFilterService.searchCars(
+      var results = await _searchFilterService.searchCars(
         query: searchQuery,
         filters: state,
       );
+
+      // تطبيق فلترة سوريا
+      results = AppSettingsService.instance.filterCars(results);
 
       emit(state.copyWith(
         isSearching: false,
@@ -77,10 +81,12 @@ class SearchCubit extends Cubit<SearchState> {
           searchQuery: '',
           searchError: const Nullable.value(null),
         ));
-        final fallbackResults = await _searchFilterService.searchCars(
+        var fallbackResults = await _searchFilterService.searchCars(
           query: '',
           filters: resetState,
         );
+        // تطبيق فلترة سوريا على النتائج البديلة
+        fallbackResults = AppSettingsService.instance.filterCars(fallbackResults);
         emit(resetState.copyWith(
           isSearching: false,
           searchResults: fallbackResults,

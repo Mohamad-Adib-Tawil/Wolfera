@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:wolfera/common/models/page_state/page_state.dart';
 import 'package:wolfera/services/supabase_service.dart';
+import 'package:wolfera/services/app_settings_service.dart';
 
 part 'home_state.dart';
 
@@ -31,7 +32,9 @@ class HomeCubit extends Cubit<HomeState> {
           .order('created_at', ascending: false)
           .limit(20);
       rentalCars = (primary as List).cast<Map<String, dynamic>>();
-      print('✅ HomeCubit: Primary query returned ${rentalCars.length} cars');
+      // تطبيق فلترة سوريا
+      rentalCars = AppSettingsService.instance.filterCars(rentalCars);
+      print('✅ HomeCubit: Primary query returned ${rentalCars.length} cars (after Syria filter)');
     } catch (e) {
       print('⚠️ HomeCubit: Primary rental query failed: $e');
     }
@@ -58,7 +61,9 @@ class HomeCubit extends Cubit<HomeState> {
           final isActive = status == null || status == 'active' || status == 'available';
           return isActive && (lt == 'rent' || lt == 'both' || anyRental);
         }).take(20).toList();
-        print('✅ HomeCubit: Fallback produced ${rentalCars.length} cars');
+        // تطبيق فلترة سوريا على النتائج البديلة
+        rentalCars = AppSettingsService.instance.filterCars(rentalCars);
+        print('✅ HomeCubit: Fallback produced ${rentalCars.length} cars (after Syria filter)');
       } catch (e) {
         print('❌ HomeCubit: Fallback rental fetch failed: $e');
         emit(state.copyWith(
@@ -85,8 +90,10 @@ class HomeCubit extends Cubit<HomeState> {
               .contains('available'))
           .toList();
 
-      final finalList = filtered.isEmpty ? cars : filtered;
-      print('✅ HomeCubit: Showing ${finalList.length} featured cars (available subset: ${filtered.length})');
+      var finalList = filtered.isEmpty ? cars : filtered;
+      // تطبيق فلترة سوريا
+      finalList = AppSettingsService.instance.filterCars(finalList);
+      print('✅ HomeCubit: Showing ${finalList.length} featured cars (available subset: ${filtered.length}, after Syria filter)');
 
       emit(state.copyWith(carsState: PageState.loaded(data: finalList)));
     } catch (e) {
