@@ -233,6 +233,154 @@
   "syria_visibility_updated": "Syria visibility updated",
   "restart_required": "Restart Required",
   "restart_app_message": "Please restart the app to apply changes.",
+  
+  "rental_periods": {
+    "per_day": "Per Day",
+    "per_week": "Per Week", 
+    "per_month": "Per Month",
+    "per_3months": "Per 3 Months",
+    "per_6months": "Per 6 Months",
+    "per_year": "Per Year"
+  },
+  
+  "rental_labels": {
+    "rent_per_day": "Rent per Day",
+    "rent_per_week": "Rent per Week",
+    "rent_per_month": "Rent per Month",
+    "rent_per_3months": "Rent per 3 Months",
+    "rent_per_6months": "Rent per 6 Months",
+    "rent_per_year": "Rent per Year"
+  },
+  
+  "car_filters": {
+    "condition": "Condition",
+    "seats": "Seats",
+    "cylinders": "Cylinders", 
+    "fuel_type": "Fuel Type",
+    "transmission": "Transmission",
+    "body_type": "Body Type",
+    "color": "Color",
+    "brand": "Brand",
+    "model": "Model",
+    "year": "Year",
+    "price_range": "Price Range"
+  },
+  
+  "car_conditions": {
+    "new": "New",
+    "excellent": "Excellent", 
+    "very_good": "Very Good",
+    "good": "Good",
+    "fair": "Fair",
+    "poor": "Poor"
+  },
+  
+  "fuel_types": {
+    "gasoline": "Gasoline",
+    "diesel": "Diesel", 
+    "petrol": "Petrol",
+    "electric": "Electric",
+    "hybrid": "Hybrid"
+  },
+  
+  "transmission_types": {
+    "automatic": "Automatic",
+    "manual": "Manual",
+    "semi_automatic": "Semi-Automatic"
+  },
+  
+  "body_types": {
+    "sedan": "Sedan",
+    "suv": "SUV",
+    "hatchback": "Hatchback",
+    "coupe": "Coupe",
+    "convertible": "Convertible",
+    "wagon": "Wagon",
+    "pickup": "Pickup",
+    "van": "Van",
+    "truck": "Truck"
+  },
+  
+  "seats_count": {
+    "2_seats": "2 Seats",
+    "3_seats": "3 Seats",
+    "4_seats": "4 Seats", 
+    "5_seats": "5 Seats",
+    "6_seats": "6 Seats",
+    "7_seats": "7 Seats",
+    "8_seats": "8 Seats",
+    "9_plus_seats": "9+ Seats"
+  },
+  
+  "cylinders_count": {
+    "2_cylinders": "2 Cylinders",
+    "3_cylinders": "3 Cylinders",
+    "4_cylinders": "4 Cylinders",
+    "5_cylinders": "5 Cylinders", 
+    "6_cylinders": "6 Cylinders",
+    "8_cylinders": "8 Cylinders",
+    "10_cylinders": "10 Cylinders",
+    "11_cylinders": "11 Cylinders",
+    "12_cylinders": "12 Cylinders",
+    "16_cylinders": "16 Cylinders"
+  },
+  
+  "sell_car": {
+    "title": "Sell My Car",
+    "step_1": "Car Details",
+    "step_2": "Features", 
+    "step_3": "Price & Description",
+    "step_4": "Images",
+    "next": "Next",
+    "previous": "Previous",
+    "finish": "Finish",
+    "car_maker": "Car Maker",
+    "car_model": "Car Model",
+    "manufacturing_year": "Manufacturing Year",
+    "select_maker": "Select Maker",
+    "select_model": "Select Model",
+    "select_year": "Select Year",
+    "select_condition": "Select Condition",
+    "select_fuel_type": "Select Fuel Type",
+    "select_transmission": "Select Transmission",
+    "select_body_type": "Select Body Type",
+    "select_color": "Select Color",
+    "select_seats": "Select Number of Seats",
+    "select_cylinders": "Select Number of Cylinders",
+    "mileage": "Mileage (KM)",
+    "enter_mileage": "Enter mileage",
+    "listing_type": "Listing Type",
+    "for_sale": "For Sale",
+    "for_rent": "For Rent", 
+    "both": "Both (Sale & Rent)",
+    "sale_price": "Sale Price",
+    "rental_prices": "Rental Prices",
+    "enter_price": "Enter price",
+    "description": "Description",
+    "enter_description": "Enter car description",
+    "location": "Location",
+    "select_country": "Select Country",
+    "select_city": "Select City",
+    "currency": "Currency",
+    "features": "Features",
+    "interior_features": "Interior Features",
+    "exterior_features": "Exterior Features", 
+    "safety_features": "Safety Features",
+    "add_images": "Add Images",
+    "main_image": "Main Image",
+    "additional_images": "Additional Images",
+    "upload_image": "Upload Image",
+    "image_required": "At least one image is required",
+    "car_added_success": "Car added successfully!"
+  },
+  
+  "chat": {
+    "empty_title": "No messages yet",
+    "empty_subtitle": "Start a conversation to get help or ask questions",
+    "type_message": "Type a message...",
+    "send": "Send"
+  },
+  
   "address": "Address",
   "car_owner": "Car Owner",
   "mycars_empty_title": "You have no cars yet",

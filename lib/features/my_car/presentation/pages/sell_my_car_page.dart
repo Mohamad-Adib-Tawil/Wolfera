@@ -112,10 +112,10 @@ class _Header extends StatelessWidget {
   _Header();
 
   final steps = [
-    "Details",
-    "Features",
-    "Description",
-    "Images",
+    "sell_car.step_1",
+    "sell_car.step_2", 
+    "sell_car.step_3",
+    "sell_car.step_4",
   ];
 
   @override
@@ -145,8 +145,7 @@ class _Header extends StatelessWidget {
               ),
               62.horizontalSpace,
               AppText(
-                "Sell My Car",
-                translation: false,
+                "sell_car.title",
                 style: context.textTheme.titleSmall.m!
                     .copyWith(color: AppColors.white, fontSize: 22.sp),
               ),
@@ -220,7 +219,6 @@ class _Header extends StatelessWidget {
                               ),
                               child: AppText(
                                 title,
-                                translation: false,
                                 style: context.textTheme.labelSmall.s13.m
                                     .withColor(
                                   activeStep >= index &&

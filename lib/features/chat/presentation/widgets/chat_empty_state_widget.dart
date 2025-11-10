@@ -30,7 +30,7 @@ class ChatsEmptyStateWidget extends StatelessWidget {
           left: 0,
           right: 0,
           child: AppText(
-            "No messages",
+            "chat.empty_title",
             textAlign: TextAlign.center,
             style: context.textTheme.bodyMedium?.s20.sb,
           ),
@@ -40,7 +40,7 @@ class ChatsEmptyStateWidget extends StatelessWidget {
           left: 0,
           right: 0,
           child: AppText(
-            "You have no active chats",
+            "chat.empty_subtitle",
             textAlign: TextAlign.center,
             style: context.textTheme.bodyMedium.s18.r.withColor(AppColors.grey),
           ),
