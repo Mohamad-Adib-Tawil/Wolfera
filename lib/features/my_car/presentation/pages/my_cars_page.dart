@@ -34,9 +34,9 @@ class _MyCarsPageState extends State<MyCarsPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Show delete-all only if user has cars
+    // Show delete-all only if loading finished successfully AND user has cars
     final showDeleteAll = context.select<MyCarsBloc, bool>(
-      (bloc) => bloc.state.myCars.isNotEmpty,
+      (bloc) => bloc.state.loadCarsStatus.isSuccess() && bloc.state.myCars.isNotEmpty,
     );
     return SafeArea(
       child: Scaffold(

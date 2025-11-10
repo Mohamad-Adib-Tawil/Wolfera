@@ -182,7 +182,30 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
         return;
       }
 
+      bool bulkDeleted = false;
+    try {
       await SupabaseService.client.from('cars').delete().eq('user_id', userId);
+      bulkDeleted = true;
+    } catch (e) {
+      print('⚠️ Bulk delete failed, falling back to per-car delete: $e');
+    }
+
+    if (!bulkDeleted) {
+      final rows = await SupabaseService.client
+          .from('cars')
+          .select('id')
+          .eq('user_id', userId);
+      for (final row in (rows as List)) {
+        final id = row['id']?.toString();
+        if (id != null && id.isNotEmpty) {
+          try {
+            await SupabaseService.deleteCar(id);
+          } catch (e) {
+            print('🔴 Failed to delete car $id during delete-all fallback: $e');
+          }
+        }
+      }
+    }
 
       // إعادة تحميل القائمة بعد الحذف
       add(LoadMyCarsEvent());
