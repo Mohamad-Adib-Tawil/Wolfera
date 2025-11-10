@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:wolfera/core/utils/extensions/build_context.dart';
 import 'package:photo_view/photo_view.dart';
 import '../../../../core/utils/responsive_padding.dart';
@@ -184,10 +185,13 @@ class AppPhotoViewer extends StatelessWidget {
                   Navigator.pop(context);
                 },
                 child: Center(
-                  child: Icon(
-                    Icons.arrow_back_ios_rounded,
-                    color: context.colorScheme.onBackground,
-                    size: 20.sp,
+                  child: Transform.rotate(
+                    angle: context.locale.languageCode == 'ar' ? 3.14 : 0,
+                    child: Icon(
+                      Icons.arrow_back_ios_rounded,
+                      color: context.colorScheme.onBackground,
+                      size: 20.sp,
+                    ),
                   ),
                 ),
               ),
