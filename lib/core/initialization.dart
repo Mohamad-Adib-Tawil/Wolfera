@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:wolfera/core/models/localization_config.dart';
+import 'package:get_it/get_it.dart';
+import 'package:wolfera/features/faviorate/presentation/manager/favorite_cubit.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../services/firebase_service.dart';
@@ -12,6 +14,11 @@ Future<void> initialization(
 }) async {
   WidgetsFlutterBinding.ensureInitialized();
   await configureDependencies();
+  // Ensure FavoriteCubit is available via GetIt for cross-feature refreshes
+  final getIt = GetIt.I;
+  if (!getIt.isRegistered<FavoriteCubit>()) {
+    getIt.registerLazySingleton<FavoriteCubit>(() => FavoriteCubit());
+  }
   await AppService.initializeApp();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitDown,

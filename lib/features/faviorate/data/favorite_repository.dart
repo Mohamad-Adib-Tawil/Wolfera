@@ -132,23 +132,18 @@ class FavoriteRepository {
 
   // ============ استراتيجية هجينة (Hybrid Strategy) ============
 
-  /// تحميل المفضلات: محاولة من Supabase أولاً، ثم Cache
+  /// تحميل المفضلات: الاعتماد على Supabase دائماً عند النجاح (حتى لو كانت فارغة)
+  /// وفي حال فشل Supabase فقط نرجع إلى الكاش المحلي.
   Future<List<Map<String, dynamic>>> loadFavorites(String userId) async {
     try {
-      // محاولة جلب من Supabase
       final supabaseFavorites = await loadFavoritesFromSupabase(userId);
-      
-      if (supabaseFavorites.isNotEmpty) {
-        // حفظ في Cache للاستخدام السريع لاحقاً
-        await saveFavoritesToCache(userId, supabaseFavorites);
-        return supabaseFavorites;
-      }
+      // حدّث الكاش دائماً ليعكس الحقيقة الحالية (قد تكون فارغة بعد حذف سيارة)
+      await saveFavoritesToCache(userId, supabaseFavorites);
+      return supabaseFavorites;
     } catch (e) {
       // في حالة فشل Supabase، استخدم Cache
+      return await loadFavoritesFromCache(userId);
     }
-    
-    // الرجوع إلى Cache المحلي
-    return await loadFavoritesFromCache(userId);
   }
 
   /// حفظ المفضلات: في كلا المكانين

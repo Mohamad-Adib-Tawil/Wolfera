@@ -21,7 +21,7 @@ class ServiceProvider extends StatelessWidget {
         BlocProvider(create: (_) => GetIt.I<SearchCubit>()),
         BlocProvider(create: (_) => GetIt.I<MyCarsBloc>()),
         // Cubit خاص بالمفضلة على مستوى التطبيق بالكامل
-        BlocProvider(create: (_) => FavoriteCubit()..init()),
+        BlocProvider(create: (_) => GetIt.I<FavoriteCubit>()..init()),
       ],
       child: child,
     );
