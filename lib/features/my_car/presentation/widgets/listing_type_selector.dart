@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
 import 'package:wolfera/core/config/theme/typography.dart';
 import 'package:wolfera/core/utils/extensions/build_context.dart';
@@ -26,21 +27,20 @@ class ListingTypeSelector extends StatelessWidget {
           style: context.textTheme.titleMedium?.s13.m.withColor(AppColors.white),
           translation: false,
         ),
-        10.verticalSpace,
         Row(
           children: [
             _buildOption(
               context: context,
               value: 'sale',
-              label: 'For Sale',
+              label: 'listing_types.for_sale'.tr(),
               icon: Icons.sell_outlined,
               isSelected: selectedType == 'sale',
             ),
-            10.horizontalSpace,
+            12.horizontalSpace,
             _buildOption(
               context: context,
               value: 'rent',
-              label: 'For Rent',
+              label: 'listing_types.for_rent'.tr(),
               icon: Icons.car_rental,
               isSelected: selectedType == 'rent',
             ),
@@ -48,7 +48,7 @@ class ListingTypeSelector extends StatelessWidget {
             _buildOption(
               context: context,
               value: 'both',
-              label: 'Both',
+              label: 'listing_types.both'.tr(),
               icon: Icons.all_inclusive,
               isSelected: selectedType == 'both',
             ),

@@ -176,12 +176,11 @@ class CarMiniDetailsCardWidget extends StatelessWidget {
                       4.horizontalSpace,
                       AppText(
                         listingType == 'rent'
-                            ? 'For Rent'
+                            ? 'listing_types.for_rent'
                             : listingType == 'both'
-                                ? 'Sale & Rent'
-                                : 'For Sale',
+                                ? 'listing_types.both'
+                                : 'listing_types.for_sale',
                         style: context.textTheme.bodySmall?.b.withColor(AppColors.white),
-                        translation: false,
                       ),
                     ],
                   ),

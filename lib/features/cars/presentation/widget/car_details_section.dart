@@ -39,40 +39,36 @@ class CarDetailsSection extends StatelessWidget {
     }
     void addBool(String title, dynamic value) {
       if (value is bool) {
-        items.add(CarDetailsItem(title: title, value: value ? 'Yes' : 'No'));
+        items.add(CarDetailsItem(title: title, value: value ? 'yes'.tr() : 'no'.tr()));
       }
     }
 
-    addItem('Brand', carData['brand']);
-    addItem('Model', carData['model']);
-    addItem('Year Model', carData['year']);
-    addItem('Color', carData['color']);
-    addItem('Trim', carData['trim']);
-    addItem('Paint Parts', carData['paint_parts']);
-    addItem('Plate', carData['plate']);
-    addItem('Seat Material', carData['seat_material']);
-    addItem('Wheels', carData['wheels']);
-    addItem('Cylinders', carData['cylinders']);
-    addItem('Seat Number', carData['seats']);
-    addItem('Condition', carData['condition']);
-    addItem('Vehicle Type', carData['body_type']);
-    addItem('Gearbox', carData['transmission']);
+    addItem('brand'.tr(), carData['brand']);
+    addItem('model'.tr(), carData['model']);
+    addItem('year_model'.tr(), carData['year']);
+    addItem('color'.tr(), carData['color']);
+    addItem('trim'.tr(), carData['trim']);
+    addItem('paint_parts'.tr(), carData['paint_parts']);
+    addItem('plate'.tr(), carData['plate']);
+    addItem('seat_material'.tr(), carData['seat_material']);
+    addItem('wheels'.tr(), carData['wheels']);
+    addItem('cylinders'.tr(), carData['cylinders']);
+    addItem('seat_number'.tr(), carData['seats']);
     // metrics
     final mileage = _stringValue(carData['mileage']);
     if (mileage != null) {
-      items.add(CarDetailsItem(title: 'Mileage', value: '$mileage KM'));
+      items.add(CarDetailsItem(title: 'mileage'.tr(), value: '$mileage KM'));
     }
-    addItem('Fuel Type', carData['fuel_type']);
-    addItem('Doors', carData['doors']);
-    addItem('Drive Type', carData['drive_type']);
-    addItem('Interior Color', carData['interior_color']);
-    addItem('Exterior Color', carData['exterior_color']);
-    addItem('Engine Capacity', carData['engine_capacity'] == null ? null : carData['engine_capacity']);
-    // booleans
-    addBool('Accidents History', carData['accidents_history']);
-    addBool('Service History', carData['service_history']);
-    addBool('Warranty', carData['warranty']);
-    if (resolvedLocation != null) addItem('Location', resolvedLocation);
+    addItem('fuel_type'.tr(), carData['fuel_type']);
+    addItem('doors'.tr(), carData['doors']);
+    addItem('seats'.tr(), carData['seats']);
+    addItem('cylinders'.tr(), carData['cylinders']);
+    addItem('transmission'.tr(), carData['transmission']);
+    addItem('car_filters.body_type'.tr(), carData['body_type']);
+    addBool('accidents_history'.tr(), carData['accidents_history']);
+    addBool('service_history'.tr(), carData['service_history']);
+    addBool('warranty'.tr(), carData['warranty']);
+    if (resolvedLocation != null) addItem('location'.tr(), resolvedLocation);
 
     // Rental prices (show if listing type is rent or both)
     final listingType = carData['listing_type']?.toString();

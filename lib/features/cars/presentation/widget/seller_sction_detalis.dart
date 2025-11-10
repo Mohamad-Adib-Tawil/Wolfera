@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:wolfera/core/api/api_utils.dart';
 import 'package:wolfera/core/config/routing/router.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
@@ -154,7 +155,7 @@ class SellerSctionDetalis extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AppText(
-            'Seller',
+            'seller',
             style: context.textTheme.bodyLarge!.s17.b.withColor(AppColors.grey),
           ),
           14.verticalSpace,
@@ -184,24 +185,24 @@ class SellerSctionDetalis extends StatelessWidget {
                           Expanded(
                             child: GestureDetector(
                               onTap: _makePhoneCall,
-                              child: const ContectButton(
-                                  svg: Assets.svgPhone, title: 'Call'),
+                              child: ContectButton(
+                                  svg: Assets.svgPhone, title: 'call'.tr()),
                             ),
                           ),
                           8.horizontalSpace,
                           Expanded(
                             child: GestureDetector(
                               onTap: _openWhatsApp,
-                              child: const ContectButton(
-                                  svg: Assets.svgWhatsapp, title: 'Chat'),
+                              child: ContectButton(
+                                  svg: Assets.svgWhatsapp, title: 'whatsapp'.tr()),
                             ),
                           ),
                           8.horizontalSpace,
                           Expanded(
                             child: GestureDetector(
                               onTap: _sendSms,
-                              child: const ContectButton(
-                                  svg: Assets.svgMessageSquare, title: 'SMS'),
+                              child: ContectButton(
+                                  svg: Assets.svgMessageSquare, title: 'message'.tr()),
                             ),
                           ),
                         ],
