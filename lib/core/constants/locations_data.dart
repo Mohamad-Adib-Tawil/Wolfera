@@ -1,3 +1,5 @@
+import 'package:wolfera/services/app_settings_service.dart';
+
 class CountryOption {
   final String code; // ISO code or 'WW'
   final String name; // Display name
@@ -15,7 +17,7 @@ class CountryOption {
 class LocationsData {
   static const String worldwideCode = 'WW';
 
-  static const List<CountryOption> countries = [
+  static const List<CountryOption> _allCountries = [
     CountryOption(
       code: worldwideCode,
       name: 'Worldwide',
@@ -107,6 +109,16 @@ class LocationsData {
       ],
     ),
   ];
+
+  /// قائمة الدول المفلترة حسب إعدادات التطبيق (تخفي سوريا إذا كان مطلوباً)
+  static List<CountryOption> get countries {
+    final settings = AppSettingsService.instance;
+    if (!settings.isInitialized || !settings.isSyriaHidden) {
+      return _allCountries;
+    }
+    // إخفاء سوريا
+    return _allCountries.where((c) => c.code != 'SY').toList();
+  }
 
   static CountryOption? findByCode(String? code) {
     if (code == null) return null;
