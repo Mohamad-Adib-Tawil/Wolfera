@@ -65,48 +65,194 @@ class CarValueTranslator {
   static String translateCity(String? city, {String? country}) {
     if (city == null || city.trim().isEmpty) return '-';
     final code = detectCountryIso2(country);
+    // Prefer localization keys under 'cities.*' via alias mapping
+    final lower = city.toLowerCase().trim();
+    final normalized = lower
+        .replaceAll(RegExp(r"[().,_-]+"), " ")
+        .replaceAll(RegExp(r"\s+"), " ")
+        .replaceAll("’", "'");
+    // alias -> cities.<key>
+    const Map<String, String> aliasToKey = {
+      // UAE
+      'dubai': 'cities.dubai',
+      'abu dhabi': 'cities.abu_dhabi',
+      'abudhabi': 'cities.abu_dhabi',
+      'sharjah': 'cities.sharjah',
+      'ajman': 'cities.ajman',
+      'umm al quwain': 'cities.umm_al_quwain',
+      'umm alqwain': 'cities.umm_al_quwain',
+      'ras al khaimah': 'cities.ras_al_khaimah',
+      'ras alkhaimah': 'cities.ras_al_khaimah',
+      'fujairah': 'cities.fujairah',
+      // Qatar
+      'doha': 'cities.doha',
+      'al rayyan': 'cities.al_rayyan',
+      'al wakrah': 'cities.al_wakrah',
+      'al khor': 'cities.al_khor',
+      'umm salal': 'cities.umm_salal',
+      'al daayen': 'cities.al_daayen',
+      'madinat ash shamal': 'cities.madinat_ash_shamal',
+      'al shahaniya': 'cities.al_shahaniya',
+      // Saudi Arabia regions
+      'riyadh': 'cities.riyadh',
+      'makkah': 'cities.makkah',
+      'mecca': 'cities.makkah',
+      'madinah': 'cities.madinah',
+      'medina': 'cities.madinah',
+      'eastern province': 'cities.eastern_province',
+      'asir': 'cities.asir',
+      'tabuk': 'cities.tabuk',
+      'qassim': 'cities.qassim',
+      "ha'il": 'cities.hail',
+      'hail': 'cities.hail',
+      'jazan': 'cities.jazan',
+      'najran': 'cities.najran',
+      'al bahah': 'cities.al_bahah',
+      'al jawf': 'cities.al_jawf',
+      'northern borders': 'cities.northern_borders',
+      // Syria
+      'idlib': 'cities.idlib',
+      'idleb': 'cities.idlib',
+      'damascus': 'cities.damascus',
+      'aleppo': 'cities.aleppo',
+      'homs': 'cities.homs',
+      'hama': 'cities.hama',
+      'latakia': 'cities.latakia',
+      'tartus': 'cities.tartus',
+      'daraa': 'cities.daraa',
+      'deraa': 'cities.daraa',
+      'deir ez zor': 'cities.deir_ez_zor',
+      'deir ezzor': 'cities.deir_ez_zor',
+      'raqqa': 'cities.raqqa',
+      'hasakah': 'cities.hasakah',
+      'quneitra': 'cities.quneitra',
+      'as suwayda': 'cities.as_suwayda',
+      'suwayda': 'cities.as_suwayda',
+      'as sweida': 'cities.as_suwayda',
+      'sweida': 'cities.as_suwayda',
+      'as swaida': 'cities.as_suwayda',
+      'swaida': 'cities.as_suwayda',
+      'al suwayda': 'cities.as_suwayda',
+      'al sweida': 'cities.as_suwayda',
+      'as suweida': 'cities.as_suwayda',
+      'suweida': 'cities.as_suwayda',
+      'as suwaida': 'cities.as_suwayda',
+      'suwaida': 'cities.as_suwayda',
+      // Lebanon
+      'beirut': 'cities.beirut',
+      // Jordan
+      'amman': 'cities.amman',
+      // Egypt
+      'cairo': 'cities.cairo',
+      // Yemen
+      'sanaa': 'cities.sanaa',
+      // Morocco/Algeria/Tunisia/Libya
+      'rabat': 'cities.rabat',
+      'casablanca': 'cities.casablanca',
+      'algiers': 'cities.algiers',
+      'tunis': 'cities.tunis',
+      'tripoli': 'cities.tripoli_ly',
+      // GCC
+      'manama': 'cities.manama',
+      'muscat': 'cities.muscat',
+      'kuwait city': 'cities.kuwait_city',
+      // Arabic aliases
+      'أبوظبي': 'cities.abu_dhabi',
+      'راس الخيمة': 'cities.ras_al_khaimah',
+      'رأس الخيمة': 'cities.ras_al_khaimah',
+      'أم القيوين': 'cities.umm_al_quwain',
+      'الشارقة': 'cities.sharjah',
+      'عجمان': 'cities.ajman',
+      'الدوحة': 'cities.doha',
+      'الريان': 'cities.al_rayyan',
+      'الوكرة': 'cities.al_wakrah',
+      'الخور': 'cities.al_khor',
+      'أم صلال': 'cities.umm_salal',
+      'الظعاين': 'cities.al_daayen',
+      'مدينة الشمال': 'cities.madinat_ash_shamal',
+      'الشحانية': 'cities.al_shahaniya',
+      'الرياض': 'cities.riyadh',
+      'مكة': 'cities.makkah',
+      'المدينة': 'cities.madinah',
+      'المنطقة الشرقية': 'cities.eastern_province',
+      'عسير': 'cities.asir',
+      'تبوك': 'cities.tabuk',
+      'القصيم': 'cities.qassim',
+      'حائل': 'cities.hail',
+      'جازان': 'cities.jazan',
+      'نجران': 'cities.najran',
+      'الباحة': 'cities.al_bahah',
+      'الحدود الشمالية': 'cities.northern_borders',
+      'الجوف': 'cities.al_jawf',
+      'إدلب': 'cities.idlib',
+      'ادلب': 'cities.idlib',
+      'دمشق': 'cities.damascus',
+      'حلب': 'cities.aleppo',
+      'حمص': 'cities.homs',
+      'حماة': 'cities.hama',
+      'اللاذقية': 'cities.latakia',
+      'طرطوس': 'cities.tartus',
+      'درعا': 'cities.daraa',
+      'دير الزور': 'cities.deir_ez_zor',
+      'الرقة': 'cities.raqqa',
+      'الحسكة': 'cities.hasakah',
+      'القنيطرة': 'cities.quneitra',
+      'السويداء': 'cities.as_suwayda',
+      'سويداء': 'cities.as_suwayda',
+      'بيروت': 'cities.beirut',
+      'عمان': 'cities.amman',
+      'القاهرة': 'cities.cairo',
+      'صنعاء': 'cities.sanaa',
+      'الجزائر': 'cities.algiers',
+      'الرباط': 'cities.rabat',
+      'الدار البيضاء': 'cities.casablanca',
+      'تونس': 'cities.tunis',
+      'طرابلس': 'cities.tripoli_ly',
+      'مسقط': 'cities.muscat',
+      'المنامة': 'cities.manama',
+      'مدينة الكويت': 'cities.kuwait_city',
+    };
+    final key = aliasToKey[normalized] ?? aliasToKey[city] ?? aliasToKey[lower];
+    if (key != null) {
+      final t = key.tr();
+      if (t != key) return t;
+    }
+    // Pattern-based detection for common governorate/city variants
+    if (normalized.contains('suwayda') || normalized.contains('sweida') ||
+        normalized.contains('swaida') || normalized.contains('suweida') ||
+        normalized.contains('suwaida')) {
+      final t = 'cities.as_suwayda'.tr();
+      if (t != 'cities.as_suwayda') return t;
+    }
+    if (normalized.contains('idlib') || normalized.contains('idleb')) {
+      final t = 'cities.idlib'.tr();
+      if (t != 'cities.idlib') return t;
+    }
+    // For Arab countries, fallback to best-effort Arabic mapping (legacy)
     const arab = {
       'ae','sa','qa','kw','om','bh','jo','lb','eg','iq','sy','ye','ps','ma','dz','tn','ly','sd'
     };
-    if (code == null || !arab.contains(code)) return city; // non-Arab: keep original
-
-    final key = city.toLowerCase().trim().replaceAll(RegExp(r"[^a-z\u0600-\u06FF0-9\s]"), "").replaceAll(RegExp(r"\s+"), " ");
-    // Common Arabic cities mapping (best-effort)
+    if (code == null || !arab.contains(code)) return city;
+    final norm2 = lower.replaceAll(RegExp(r"[^a-z\u0600-\u06FF0-9\s]"), " ").replaceAll(RegExp(r"\s+"), " ");
     const Map<String, String> m = {
-      // UAE
       'dubai': 'دبي','abu dhabi': 'أبوظبي','sharjah': 'الشارقة','ajman': 'عجمان','fujairah': 'الفجيرة','ras al khaimah': 'رأس الخيمة','umm al quwain': 'أم القيوين',
-      // Saudi
       'riyadh': 'الرياض','jeddah': 'جدة','dammam': 'الدمام','khobar': 'الخبر','mecca': 'مكة','makkah': 'مكة','medina': 'المدينة','madinah': 'المدينة',
-      // Qatar
       'doha': 'الدوحة','al rayyan': 'الريان',
-      // Kuwait & Oman & Bahrain
       'kuwait city': 'مدينة الكويت','muscat': 'مسقط','salalah': 'صلالة','manama': 'المنامة',
-      // Jordan & Lebanon
       'amman': 'عمان','irbid': 'إربد','zarqa': 'الزرقاء','beirut': 'بيروت','tripoli': 'طرابلس',
-      // Egypt
       'cairo': 'القاهرة','giza': 'الجيزة','alexandria': 'الإسكندرية','mansoura': 'المنصورة','tanta': 'طنطا','aswan': 'أسوان','luxor': 'الأقصر',
-      // Iraq
       'baghdad': 'بغداد','basra': 'البصرة','erbil': 'أربيل','mosul': 'الموصل','najaf': 'النجف','karbala': 'كربلاء',
-      // Syria
-      'damascus': 'دمشق','aleppo': 'حلب','homs': 'حمص','hama': 'حماة','latakia': 'اللاذقية','tartus': 'طرطوس','deraa': 'درعا','daraa': 'درعا','deir ezzor': 'دير الزور','raqqa': 'الرقة',
-      // Yemen
+      'damascus': 'دمشق','aleppo': 'حلب','homs': 'حمص','hama': 'حماة','latakia': 'اللاذقية','tartus': 'طرطوس','deraa': 'درعا','daraa': 'درعا','deir ezzor': 'دير الزور','deir ez zor': 'دير الزور','raqqa': 'الرقة',
       'sanaa': 'صنعاء','aden': 'عدن','taiz': 'تعز','hodeidah': 'الحديدة','ib': 'إب','ibb': 'إب','marib': 'مأرب',
-      // Palestine
       'gaza': 'غزة','jerusalem': 'القدس','ramallah': 'رام الله','nablus': 'نابلس','hebron': 'الخليل',
-      // Morocco
       'rabat': 'الرباط','casablanca': 'الدار البيضاء','marrakesh': 'مراكش','tangier': 'طنجة','fes': 'فاس','meknes': 'مكناس',
-      // Algeria
       'algiers': 'الجزائر','oran': 'وهران','constantine': 'قسنطينة','annaba': 'عنابة','batna': 'باتنة',
-      // Tunisia
       'tunis': 'تونس','sfax': 'صفاقس','sousse': 'سوسة','monastir': 'المنستير','gabes': 'قابس',
-      // Libya
       'benghazi': 'بنغازي','misrata': 'مصراتة',
-      // Sudan
       'khartoum': 'الخرطوم','omdurman': 'أم درمان','port sudan': 'بورتسودان',
     };
-    // If already Arabic letters, keep as is
     if (RegExp(r"[\u0600-\u06FF]").hasMatch(city)) return city;
-    return m[key] ?? city;
+    return m[norm2] ?? city;
   }
 
   /// Translate fuel type

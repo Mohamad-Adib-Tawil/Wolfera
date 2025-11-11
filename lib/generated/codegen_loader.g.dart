@@ -14,7 +14,7 @@ class CodegenLoader extends AssetLoader{
     return Future.value(mapLocales[locale.toString()]);
   }
 
-  static final Map<String,dynamic> _en = {
+  static const Map<String,dynamic> _en = {
   "letsgo": "Let's Go",
   "home": "Home",
   "ok": "Ok",
@@ -610,9 +610,49 @@ class CodegenLoader extends AssetLoader{
   "remove": "Remove",
   "removal_success": "The listing was removed and the seller was notified.",
   "removal_failed": "Failed to remove the listing.",
-  "car_not_found": "Car not found"
+  "car_not_found": "Car not found",
+  "days": {
+    "sunday": "Sunday",
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday"
+  },
+  "cities": {
+    "idlib": "Idlib",
+    "damascus": "Damascus",
+    "aleppo": "Aleppo",
+    "homs": "Homs",
+    "hama": "Hama",
+    "latakia": "Latakia",
+    "tartus": "Tartus",
+    "raqqa": "Raqqa",
+    "deir_ez_zor": "Deir ez-Zor",
+    "hasakah": "Hasakah",
+    "daraa": "Daraa",
+    "as_suwayda": "As-Suwayda",
+    "beirut": "Beirut",
+    "amman": "Amman",
+    "cairo": "Cairo",
+    "riyadh": "Riyadh",
+    "jeddah": "Jeddah",
+    "dubai": "Dubai",
+    "abu_dhabi": "Abu Dhabi",
+    "doha": "Doha",
+    "manama": "Manama",
+    "muscat": "Muscat",
+    "kuwait_city": "Kuwait City",
+    "tripoli_ly": "Tripoli",
+    "tunis": "Tunis",
+    "algiers": "Algiers",
+    "rabat": "Rabat",
+    "casablanca": "Casablanca",
+    "sanaa": "Sana'a"
+  }
 };
-static final Map<String,dynamic> _ar = {
+static const Map<String,dynamic> _ar = {
   "letsgo": "هيا بنا",
   "home": "الرئيسية",
   "ok": "موافق",
@@ -1211,7 +1251,47 @@ static final Map<String,dynamic> _ar = {
   "remove": "حذف",
   "removal_success": "تم حذف الإعلان وتم إشعار البائع.",
   "removal_failed": "فشل حذف الإعلان.",
-  "car_not_found": "السيارة غير موجودة"
+  "car_not_found": "السيارة غير موجودة",
+  "days": {
+    "sunday": "الأحد",
+    "monday": "الاثنين",
+    "tuesday": "الثلاثاء",
+    "wednesday": "الأربعاء",
+    "thursday": "الخميس",
+    "friday": "الجمعة",
+    "saturday": "السبت"
+  },
+  "cities": {
+    "idlib": "إدلب",
+    "damascus": "دمشق",
+    "aleppo": "حلب",
+    "homs": "حمص",
+    "hama": "حماة",
+    "latakia": "اللاذقية",
+    "tartus": "طرطوس",
+    "raqqa": "الرقة",
+    "deir_ez_zor": "دير الزور",
+    "hasakah": "الحسكة",
+    "daraa": "درعا",
+    "as_suwayda": "السويداء",
+    "beirut": "بيروت",
+    "amman": "عمّان",
+    "cairo": "القاهرة",
+    "riyadh": "الرياض",
+    "jeddah": "جدة",
+    "dubai": "دبي",
+    "abu_dhabi": "أبوظبي",
+    "doha": "الدوحة",
+    "manama": "المنامة",
+    "muscat": "مسقط",
+    "kuwait_city": "مدينة الكويت",
+    "tripoli_ly": "طرابلس",
+    "tunis": "تونس",
+    "algiers": "الجزائر",
+    "rabat": "الرباط",
+    "casablanca": "الدار البيضاء",
+    "sanaa": "صنعاء"
+  }
 };
-static final Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
+static const Map<String, Map<String,dynamic>> mapLocales = {"en": _en, "ar": _ar};
 }

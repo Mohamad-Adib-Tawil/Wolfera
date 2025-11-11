@@ -610,16 +610,86 @@
   "notif_like_title": "إعجاب جديد",
   "notif_like_body": "{0} أعجب بسيارتك {1}",
   "notif_comment_title": "تعليق جديد على {0}",
-  "notif_comment_body": "{0}: {1}"
-  ,"notif_car_removed_title": "تم حذف السيارة - {0}"
-  ,"notif_car_removed_body": "السبب: {0}"
-  ,"only_admin_can_remove": "فقط الأدمن يمكنه حذف الإعلانات"
-  ,"admin_remove_car": "حذف الإعلان"
-  ,"admin_remove_car_desc": "يرجى كتابة سبب واضح. سيتم إشعار البائع."
-  ,"reason": "السبب"
-  ,"reason_hint": "اكتب سبب الحذف..."
-  ,"remove": "حذف"
-  ,"removal_success": "تم حذف الإعلان وتم إشعار البائع."
-  ,"removal_failed": "فشل حذف الإعلان."
-  ,"car_not_found": "السيارة غير موجودة"
+  "notif_comment_body": "{0}: {1}",
+  "notif_car_removed_title": "تم حذف السيارة - {0}",
+  "notif_car_removed_body": "السبب: {0}",
+  "only_admin_can_remove": "فقط الأدمن يمكنه حذف الإعلانات",
+  "admin_remove_car": "حذف الإعلان",
+  "admin_remove_car_desc": "يرجى كتابة سبب واضح. سيتم إشعار البائع.",
+  "reason": "السبب",
+  "reason_hint": "اكتب سبب الحذف...",
+  "remove": "حذف",
+  "removal_success": "تم حذف الإعلان وتم إشعار البائع.",
+  "removal_failed": "فشل حذف الإعلان.",
+  "car_not_found": "السيارة غير موجودة",
+  "days": {
+    "sunday": "الأحد",
+    "monday": "الاثنين",
+    "tuesday": "الثلاثاء",
+    "wednesday": "الأربعاء",
+    "thursday": "الخميس",
+    "friday": "الجمعة",
+    "saturday": "السبت"
+  },
+  "cities": {
+    "idlib": "إدلب",
+    "damascus": "دمشق",
+    "aleppo": "حلب",
+    "homs": "حمص",
+    "hama": "حماة",
+    "latakia": "اللاذقية",
+    "tartus": "طرطوس",
+    "raqqa": "الرقة",
+    "deir_ez_zor": "دير الزور",
+    "hasakah": "الحسكة",
+    "daraa": "درعا",
+    "as_suwayda": "السويداء",
+    "beirut": "بيروت",
+    "amman": "عمّان",
+    "cairo": "القاهرة",
+    "riyadh": "الرياض",
+    "jeddah": "جدة",
+    "dubai": "دبي",
+    "abu_dhabi": "أبوظبي",
+    "doha": "الدوحة",
+    "manama": "المنامة",
+    "muscat": "مسقط",
+    "kuwait_city": "مدينة الكويت",
+    "tripoli_ly": "طرابلس",
+    "tunis": "تونس",
+    "algiers": "الجزائر",
+  "rabat": "الرباط",
+  "casablanca": "الدار البيضاء",
+  "sanaa": "صنعاء",
+  "quneitra": "القنيطرة",
+  "sharjah": "الشارقة",
+  "ajman": "عجمان",
+  "umm_al_quwain": "أم القيوين",
+  "ras_al_khaimah": "رأس الخيمة",
+  "fujairah": "الفجيرة",
+  "al_rayyan": "الريان",
+  "al_wakrah": "الوكرة",
+  "al_khor": "الخور",
+  "umm_salal": "أم صلال",
+  "al_daayen": "الظعاين",
+  "madinat_ash_shamal": "مدينة الشمال",
+  "al_shahaniya": "الشحانية",
+  "makkah": "مكة",
+  "madinah": "المدينة",
+  "eastern_province": "المنطقة الشرقية",
+  "asir": "عسير",
+  "tabuk": "تبوك",
+  "qassim": "القصيم",
+  "hail": "حائل",
+  "jazan": "جازان",
+  "najran": "نجران",
+  "al_bahah": "الباحة",
+  "northern_borders": "الحدود الشمالية",
+  "al_jawf": "الجوف"
+  },
+  "Worldwide": "حول العالم",
+  "Choose Country": "اختر الدولة",
+  "Faviorate": "المفضلة",
+  "Notifications": "الإشعارات",
+  "Chat": "الدردشة"
 }
