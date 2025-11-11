@@ -4,6 +4,7 @@ import 'package:wolfera/features/home/presentation/widgets/car_mini_details_card
 import 'package:wolfera/generated/assets.dart';
 import 'package:wolfera/core/utils/money_formatter.dart';
 import 'package:wolfera/core/utils/car_value_translator.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class CarsListViewBuilder extends StatelessWidget {
   final Axis scrollDirection;
@@ -112,7 +113,8 @@ class CarsListViewBuilder extends StatelessWidget {
               final num? v = raw is num ? raw : num.tryParse(raw.toString());
               if (v != null) {
                 final compact = MoneyFormatter.compact(v, symbol: currency);
-                price = compact != null ? '$compact / ${c[1]}' : null;
+                final period = (c[1] as String);
+                price = compact != null ? '$compact / ${period.tr()}' : null;
                 break;
               }
             }

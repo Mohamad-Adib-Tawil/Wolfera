@@ -227,7 +227,8 @@ class _SearchResultsVerticalListState extends State<SearchResultsVerticalList> {
                       final num? v = raw is num ? raw : num.tryParse(raw.toString());
                       if (v != null) {
                         final compact = MoneyFormatter.compact(v, symbol: currency);
-                        price = compact != null ? '$compact / ${c[1]}' : null;
+                        final period = (c[1] as String);
+                        price = compact != null ? '$compact / ${period.tr()}' : null;
                         break;
                       }
                     }
