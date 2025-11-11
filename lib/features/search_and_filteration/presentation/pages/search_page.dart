@@ -497,12 +497,12 @@ class _SearcgPageState extends State<SearchPage> {
     final options = [
       {'title': 'Newest', 'by': 'created_at', 'asc': false},
       {'title': 'Oldest', 'by': 'created_at', 'asc': true},
-      {'title': 'Price: Low to High', 'by': 'price', 'asc': true},
-      {'title': 'Price: High to Low', 'by': 'price', 'asc': false},
-      {'title': 'Year: New to Old', 'by': 'year', 'asc': false},
-      {'title': 'Year: Old to New', 'by': 'year', 'asc': true},
-      {'title': 'Mileage: Low to High', 'by': 'mileage', 'asc': true},
-      {'title': 'Mileage: High to Low', 'by': 'mileage', 'asc': false},
+      {'title': 'sort_price_low_to_high', 'by': 'price', 'asc': true},
+      {'title': 'sort_price_high_to_low', 'by': 'price', 'asc': false},
+      {'title': 'sort_year_new_to_old', 'by': 'year', 'asc': false},
+      {'title': 'sort_year_old_to_new', 'by': 'year', 'asc': true},
+      {'title': 'sort_mileage_low_to_high', 'by': 'mileage', 'asc': true},
+      {'title': 'sort_mileage_high_to_low', 'by': 'mileage', 'asc': false},
     ];
 
     showModalBottomSheet(

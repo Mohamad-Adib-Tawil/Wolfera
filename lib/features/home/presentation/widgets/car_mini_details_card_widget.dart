@@ -48,10 +48,18 @@ class CarMiniDetailsCardWidget extends StatelessWidget {
     final status = carData?['status']?.toString().toLowerCase();
     final isSold = status == 'sold';
     
-    // Compute effective price if not provided
-    String? effectivePrice = price;
-    if ((effectivePrice == null || effectivePrice.isEmpty) && carData != null) {
+    // Compute sale and rent prices, and choose how to display them
+    String? effectivePrice = price; // fallback single-line
+    String? salePriceDisplay;
+    String? rentPriceDisplay;
+    if (carData != null) {
       final currency = carData!['currency']?.toString() ?? r'$';
+      // Sale price
+      salePriceDisplay = MoneyFormatter.compactFromString(
+        carData!['price']?.toString(),
+        symbol: currency,
+      );
+      // Rent price (first available period)
       String? rentalPrice() {
         final candidates = const [
           ['rental_price_per_day', 'day'],
@@ -73,14 +81,17 @@ class CarMiniDetailsCardWidget extends StatelessWidget {
         }
         return null;
       }
-      if (listingType == 'rent' || listingType == 'both') {
-        effectivePrice = rentalPrice();
-        if (effectivePrice == null && listingType == 'both') {
-          final sale = MoneyFormatter.compactFromString(carData!['price']?.toString(), symbol: currency);
-          effectivePrice = sale;
-        }
+      rentPriceDisplay = rentalPrice();
+
+      // Determine single or double-line price
+      if (listingType == 'both') {
+        // Show sale price on top, rent price under it
+        // If one is missing, fall back to the other
+        effectivePrice = salePriceDisplay ?? rentPriceDisplay ?? price;
+      } else if (listingType == 'rent') {
+        effectivePrice = rentPriceDisplay ?? price;
       } else {
-        effectivePrice = MoneyFormatter.compactFromString(carData!['price']?.toString(), symbol: currency);
+        effectivePrice = salePriceDisplay ?? price;
       }
     }
     
@@ -113,7 +124,9 @@ class CarMiniDetailsCardWidget extends StatelessWidget {
                   mileage: mileage,
                   fuel: fuel,
                   location: location,
-                  price: effectivePrice,
+                  // When listing is both, ensure sale is on top and rent below
+                  price: listingType == 'both' ? (salePriceDisplay ?? effectivePrice) : effectivePrice,
+                  secondPrice: listingType == 'both' ? rentPriceDisplay : null,
                 ),
                 if (isStatus) const StatusSectionWidget()
               ],
