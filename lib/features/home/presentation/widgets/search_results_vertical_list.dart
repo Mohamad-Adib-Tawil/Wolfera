@@ -8,6 +8,7 @@ import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
 import 'package:wolfera/features/home/presentation/widgets/car_mini_details_card_widget.dart';
 import 'package:wolfera/features/app/presentation/widgets/shimmer_loading.dart';
 import 'package:wolfera/features/search_and_filteration/presentation/manager/search_cubit/search_cubit.dart';
+import 'package:wolfera/core/utils/car_value_translator.dart';
 
 class SearchResultsVerticalList extends StatefulWidget {
   const SearchResultsVerticalList({super.key});
@@ -170,7 +171,25 @@ class _SearchResultsVerticalListState extends State<SearchResultsVerticalList> {
                 final mileageVal = car['mileage']?.toString();
                 final mileage = mileageVal != null && mileageVal.isNotEmpty ? '$mileageVal KM' : null;
                 final fuel = car['fuel_type']?.toString();
-                final location = (car['city'] ?? car['location'])?.toString();
+                // Build translated location: prefer city + translated country, else translated parts
+                final city = car['city']?.toString();
+                final countryRaw = car['country']?.toString();
+                final locationRaw = car['location']?.toString();
+                String? location;
+                if (city != null && city.isNotEmpty && countryRaw != null && countryRaw.isNotEmpty) {
+                  final c = CarValueTranslator.translateCountry(countryRaw);
+                  final tCity = CarValueTranslator.translateCity(city, country: countryRaw);
+                  location = '${tCity.isNotEmpty ? tCity : city}, ${c != '-' ? c : countryRaw}';
+                } else if (countryRaw != null && countryRaw.isNotEmpty) {
+                  final c = CarValueTranslator.translateCountry(countryRaw);
+                  location = c != '-' ? c : countryRaw;
+                } else if (city != null && city.isNotEmpty) {
+                  final tCity = CarValueTranslator.translateCity(city, country: countryRaw);
+                  location = tCity.isNotEmpty ? tCity : city;
+                } else if (locationRaw != null && locationRaw.isNotEmpty) {
+                  final c = CarValueTranslator.translateCountry(locationRaw);
+                  location = c != '-' ? c : locationRaw;
+                }
                 final priceVal = car['price']?.toString();
                 final currency = car['currency']?.toString() ?? r'$';
                 final lt = car['listing_type']?.toString().toLowerCase();

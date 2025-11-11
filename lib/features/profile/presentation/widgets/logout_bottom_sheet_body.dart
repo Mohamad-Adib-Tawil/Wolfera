@@ -21,7 +21,7 @@ class LogoutBottomSheetBody extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         AppText(
-          'Logout',
+          LocaleKeys.logout,
           style:
               context.textTheme.bodyLarge!.s20.xb.withColor(AppColors.primary),
         ),
@@ -34,7 +34,7 @@ class LogoutBottomSheetBody extends StatelessWidget {
         ),
         30.verticalSpace,
         AppText(
-          'Are you sure to logout ?',
+          LocaleKeys.areYouSureYouWantToLogout,
           style: context.textTheme.bodyLarge!.s20.xb.withColor(AppColors.white),
         ),
         30.verticalSpace,

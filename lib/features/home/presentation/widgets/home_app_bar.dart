@@ -13,6 +13,8 @@ import 'package:wolfera/features/chat/presentation/widgets/circlue_user_image_wi
 import 'package:wolfera/features/home/presentation/widgets/city_dropdown.dart';
 import 'package:wolfera/features/notifications/presentation/manager/notifications_cubit.dart';
 import 'package:wolfera/generated/assets.dart';
+import 'package:wolfera/features/search_and_filteration/presentation/manager/search_cubit/search_cubit.dart';
+import 'package:wolfera/features/home/presentation/manager/home_cubit/home_cubit.dart';
 
 class HomeAppBar extends StatelessWidget {
   const HomeAppBar({
@@ -87,7 +89,24 @@ class HomeAppBar extends StatelessWidget {
                 ),
               ),
               CityDropdown(
-                onChanged: (m) {},
+                onChanged: (label) {
+                  final v = label ?? 'Worldwide';
+                  final searchCubit = GetIt.I<SearchCubit>();
+                  final homeCubit = GetIt.I<HomeCubit>();
+                  if (v == 'Worldwide') {
+                    searchCubit.setWorldwide(true);
+                    homeCubit.getHomeData();
+                    return;
+                  }
+                  final idx = v.indexOf(' - ');
+                  final countryName = idx == -1 ? v : v.substring(0, idx);
+                  final region = idx == -1 ? null : v.substring(idx + 3);
+                  searchCubit.selectCountryByName(countryName);
+                  if (region != null && region.isNotEmpty) {
+                    searchCubit.selectRegionOrCity(region);
+                  }
+                  homeCubit.getHomeData();
+                },
               ),
               GestureDetector(
                 onTap: () {

@@ -1,31 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:wolfera/common/enums/car_color.dart';
 
 extension CarColorExtension on CarColor {
   String get displayName {
     switch (this) {
       case CarColor.beige:
-        return 'Beige';
+        return 'colors.beige'.tr();
       case CarColor.black:
-        return 'Black';
+        return 'colors.black'.tr();
       case CarColor.blue:
-        return 'Blue';
+        return 'colors.blue'.tr();
       case CarColor.white:
-        return 'White';
+        return 'colors.white'.tr();
       case CarColor.brown:
-        return 'Brown';
+        return 'colors.brown'.tr();
       case CarColor.gold:
-        return 'Gold';
+        return 'colors.gold'.tr();
       case CarColor.green:
-        return 'Green';
+        return 'colors.green'.tr();
       case CarColor.grey:
-        return 'Grey';
+        return 'colors.grey'.tr();
       case CarColor.orange:
-        return 'Orange';
+        return 'colors.orange'.tr();
       case CarColor.red:
-        return 'Red';
+        return 'colors.red'.tr();
       case CarColor.silver:
-        return 'Silver';
+        return 'colors.silver'.tr();
     }
   }
 

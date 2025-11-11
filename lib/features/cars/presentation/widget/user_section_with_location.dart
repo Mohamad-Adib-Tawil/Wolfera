@@ -9,6 +9,7 @@ import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
 import 'package:wolfera/features/chat/presentation/widgets/circlue_user_image_widget.dart';
 import 'package:wolfera/generated/assets.dart';
 import 'package:wolfera/services/supabase_service.dart';
+import 'package:wolfera/core/utils/car_value_translator.dart';
 import 'package:wolfera/features/app/presentation/widgets/shimmer_loading.dart';
 
 class UserSectionWithLocation extends StatelessWidget {
@@ -35,14 +36,20 @@ class UserSectionWithLocation extends StatelessWidget {
     
     // بناء نص الموقع
     String locationText = 'Worldwide'.tr();
-    if (userCity != null && userCountry != null) {
-      locationText = '$userCity, $userCountry';
+    final translatedCountry =
+        userCountry != null ? CarValueTranslator.translateCountry(userCountry) : null;
+    final translatedCity =
+        userCity != null ? CarValueTranslator.translateCity(userCity, country: userCountry) : null;
+    if (translatedCity != null && translatedCity.isNotEmpty && translatedCountry != null && translatedCountry != '-') {
+      locationText = '$translatedCity, $translatedCountry';
     } else if (userCity != null) {
-      locationText = userCity;
-    } else if (userCountry != null) {
-      locationText = userCountry;
+      locationText = translatedCity ?? userCity;
+    } else if (translatedCountry != null && translatedCountry.isNotEmpty && translatedCountry != '-') {
+      locationText = translatedCountry;
     } else if (userLocation != null) {
-      locationText = userLocation;
+      // Try translate location as country if it matches, otherwise keep as-is
+      final loc = CarValueTranslator.translateCountry(userLocation);
+      locationText = loc != '-' ? loc : userLocation;
     }
     
     // Read avatar from multiple possible keys and ignore empty values

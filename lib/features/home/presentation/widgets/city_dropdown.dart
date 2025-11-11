@@ -14,6 +14,7 @@ import 'package:wolfera/generated/assets.dart';
 import 'package:wolfera/generated/locale_keys.g.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:wolfera/core/constants/locations_data.dart';
+import 'package:wolfera/core/utils/car_value_translator.dart';
 import 'package:country_flags/country_flags.dart';
 
 class CityDropdown extends StatelessWidget {
@@ -135,7 +136,15 @@ class CityDropdown extends StatelessWidget {
         }
         final cName = countryNameOf(label);
         final co = LocationsData.findByName(cName);
+        final region = regionOf(label);
         final code = (co?.code ?? 'WW').toUpperCase();
+        final localizedCountry = CarValueTranslator.translateCountry(cName);
+        final translatedRegion = region == null
+            ? null
+            : CarValueTranslator.translateCity(region, country: cName);
+        final displayText = region == null
+            ? localizedCountry
+            : '$localizedCountry - ${translatedRegion ?? region}';
         return Row(
           mainAxisSize: MainAxisSize.max,
           children: [
@@ -153,7 +162,7 @@ class CityDropdown extends StatelessWidget {
             6.horizontalSpace,
             Expanded(
               child: Text(
-                label == 'Worldwide' ? 'Worldwide'.tr() : label,
+                label == 'Worldwide' ? 'Worldwide'.tr() : displayText,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: context.textTheme.titleSmall.b.withColor(AppColors.white),
@@ -173,7 +182,15 @@ class CityDropdown extends StatelessWidget {
           final isWw = label == 'Worldwide';
           final cName = countryNameOf(label);
           final co = LocationsData.findByName(cName);
+          final region = regionOf(label);
           final code = (co?.code ?? 'WW').toUpperCase();
+          final localizedCountry = CarValueTranslator.translateCountry(cName);
+          final translatedRegion = region == null
+              ? null
+              : CarValueTranslator.translateCity(region, country: cName);
+          final displayText = isWw
+              ? 'Worldwide'.tr()
+              : (region == null ? localizedCountry : '$localizedCountry - ${translatedRegion ?? region}');
           return Padding(
             padding: HWEdgeInsets.symmetric(horizontal: 16.0, vertical: 12),
             child: Row(
@@ -190,7 +207,7 @@ class CityDropdown extends StatelessWidget {
                     ),
                   ),
                 10.horizontalSpace,
-                Expanded(child: Text(isWw ? 'Worldwide'.tr() : label, style: context.textTheme.labelLarge.m)),
+                Expanded(child: Text(displayText, style: context.textTheme.labelLarge.m)),
                 if (isSelected) const Icon(Icons.done_rounded)
               ],
             ),

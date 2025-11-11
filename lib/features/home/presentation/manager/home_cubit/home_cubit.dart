@@ -4,6 +4,9 @@ import 'package:injectable/injectable.dart';
 import 'package:wolfera/common/models/page_state/page_state.dart';
 import 'package:wolfera/services/supabase_service.dart';
 import 'package:wolfera/services/app_settings_service.dart';
+import 'package:get_it/get_it.dart';
+import 'package:wolfera/features/app/domin/repositories/prefs_repository.dart';
+import 'package:wolfera/core/constants/locations_data.dart';
 
 part 'home_state.dart';
 
@@ -93,6 +96,22 @@ class HomeCubit extends Cubit<HomeState> {
       var finalList = filtered.isEmpty ? cars : filtered;
       // تطبيق فلترة سوريا
       finalList = AppSettingsService.instance.filterCars(finalList);
+
+      // تطبيق فلترة البلد/المدينة المحددين من المستخدم
+      try {
+        final prefs = GetIt.I<PrefsRepository>();
+        if (!prefs.isWorldwide) {
+          final code = prefs.selectedCountryCode;
+          final region = prefs.selectedRegionOrCity;
+          final countryName = code != null ? LocationsData.findByCode(code)?.name : null;
+          if (countryName != null && countryName.isNotEmpty) {
+            finalList = finalList.where((e) => (e['country']?.toString() ?? '') == countryName).toList();
+          }
+          if (region != null && region.isNotEmpty) {
+            finalList = finalList.where((e) => (e['city']?.toString() ?? '') == region).toList();
+          }
+        }
+      } catch (_) {}
       print('✅ HomeCubit: Showing ${finalList.length} featured cars (available subset: ${filtered.length}, after Syria filter)');
 
       emit(state.copyWith(carsState: PageState.loaded(data: finalList)));

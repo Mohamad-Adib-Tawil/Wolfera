@@ -7,6 +7,8 @@ import 'package:wolfera/core/utils/responsive_padding.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_svg_picture.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
 import 'package:wolfera/generated/assets.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:wolfera/core/utils/car_value_translator.dart';
 
 import 'space_text_widget.dart';
 
@@ -58,8 +60,9 @@ class BottomSectionCarMiniDetailsCard extends StatelessWidget {
                   ),
                   const SpaceTextWidget(),
                   AppText(
-                    spec2 ?? 'Manual',
-                    translation: false,
+                    spec2 != null
+                        ? CarValueTranslator.translateTransmission(spec2)
+                        : 'transmission_types.manual'.tr(),
                     style: context.textTheme.titleSmall!.s13.sb
                         .withColor(AppColors.white),
                   ),
@@ -69,16 +72,18 @@ class BottomSectionCarMiniDetailsCard extends StatelessWidget {
               Row(
                 children: [
                   AppText(
-                    mileage ?? '99,488 KM',
-                    translation: false,
+                    mileage != null
+                        ? '${mileage} ${'km'.tr()}'
+                        : '99,488 ${'km'.tr()}',
                     style: context.textTheme.titleSmall!.s13.sb
                         .withColor(AppColors.white),
                   ),
                   const SpaceTextWidget(),
 
                   AppText(
-                    fuel ?? 'Petrol',
-                    translation: false,
+                    fuel != null
+                        ? CarValueTranslator.translateFuelType(fuel)
+                        : 'fuel_types.petrol'.tr(),
                     style: context.textTheme.titleSmall!.s13.sb
                         .withColor(AppColors.white),
                   ),
@@ -93,8 +98,13 @@ class BottomSectionCarMiniDetailsCard extends StatelessWidget {
                     ),
                   ),
                   AppText(
-                    ' ${location ?? 'WorldWide'}',
-                    translation: false,
+                    () {
+                      if (location == null || location!.isEmpty) {
+                        return ' ${'Worldwide'.tr()}';
+                      }
+                      final translated = CarValueTranslator.translateCountry(location);
+                      return ' ${translated != '-' ? translated : location}';
+                    }(),
                     style: context.textTheme.titleSmall!.sb
                         .withColor(AppColors.white),
                   ),

@@ -198,7 +198,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       (exception, message) async {
         emit(state.copyWith(registerStatus: BlocStatus.fail(error: message)));
         EasyLoading.showError(
-          message ?? "Something went wrong!",
+          message ?? LocaleKeys.somethingWentWrong.tr(),
           duration: const Duration(seconds: 2),
           dismissOnTap: true,
         );
@@ -243,7 +243,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       (exception, message) async {
         emit(state.copyWith(loginStatus: BlocStatus.fail(error: message)));
         EasyLoading.showError(
-          message ?? "Something went wrong!",
+          message ?? LocaleKeys.somethingWentWrong.tr(),
           duration: const Duration(seconds: 4),
           dismissOnTap: true,
         );
@@ -396,7 +396,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     response.fold(
       (exception, message) {
         EasyLoading.showError(
-          message ?? "Unable to send verification email",
+          message ?? LocaleKeys.unableToSendVerificationEmail.tr(),
           duration: const Duration(seconds: 4),
           dismissOnTap: true,
         );
@@ -405,7 +405,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       },
       (value) {
         EasyLoading.showToast(
-          "Please check your email",
+          LocaleKeys.pleaseCheckYourEmail.tr(),
           duration: const Duration(seconds: 4),
           dismissOnTap: true,
         );
@@ -462,13 +462,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(state.copyWith(resetPasswordStatus: const BlocStatus.success()));
         if (value) {
           EasyLoading.showToast(
-            "Please check your email to reset password",
+            LocaleKeys.pleaseCheckYourEmailToResetPassword.tr(),
             duration: const Duration(seconds: 4),
             dismissOnTap: true,
           );
         } else {
           EasyLoading.showError(
-            "This email not exist !",
+            LocaleKeys.emailDoesNotExist.tr(),
             duration: const Duration(seconds: 4),
             dismissOnTap: true,
           );
