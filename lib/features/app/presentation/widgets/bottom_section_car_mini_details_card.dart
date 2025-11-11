@@ -22,6 +22,7 @@ class BottomSectionCarMiniDetailsCard extends StatelessWidget {
     this.fuel,
     this.location,
     this.price,
+    this.secondPrice,
   });
 
   final String? title;
@@ -31,6 +32,7 @@ class BottomSectionCarMiniDetailsCard extends StatelessWidget {
   final String? fuel;
   final String? location;
   final String? price;
+  final String? secondPrice;
 
   @override
   Widget build(BuildContext context) {
@@ -113,11 +115,35 @@ class BottomSectionCarMiniDetailsCard extends StatelessWidget {
             ],
           ),
           const Spacer(),
-          AppText(
-            price ?? '',
-            translation: false,
-            style: context.textTheme.titleMedium!.xb.withColor(AppColors.white),
-          ),
+          if (secondPrice != null) ...[
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                AppText(
+                  price ?? '',
+                  translation: false,
+                  style: context.textTheme.titleMedium!.xb
+                      .withColor(AppColors.white),
+                ),
+                4.verticalSpace,
+                AppText(
+                  secondPrice ?? '',
+                  translation: false,
+                  style: context.textTheme.titleSmall!.s13.sb
+                      .withColor(AppColors.white),
+                ),
+              ],
+            )
+          ]
+          else ...[
+            AppText(
+              price ?? '',
+              translation: false,
+              style:
+                  context.textTheme.titleMedium!.xb.withColor(AppColors.white),
+            ),
+          ],
         ],
       ),
     );
