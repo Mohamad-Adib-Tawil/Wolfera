@@ -5,37 +5,37 @@ extension SafetyFeatureExtension on SafetyFeature {
   String get featureName {
     switch (this) {
       case SafetyFeature.airbags:
-        return 'airbags'.tr();
+        return 'safety_features_list.airbags'.tr();
       case SafetyFeature.abs:
-        return 'abs'.tr();
+        return 'safety_features_list.abs'.tr();
       case SafetyFeature.tractionControl:
-        return 'traction_control'.tr();
+        return 'safety_features_list.traction_control'.tr();
       case SafetyFeature.laneDepartureWarning:
-        return "lane_departure_warning".tr();
+        return 'safety_features_list.lane_departure_warning'.tr();
       case SafetyFeature.blindSpotMonitoring:
-        return 'blind_spot_monitoring'.tr();
+        return 'safety_features_list.blind_spot_monitoring'.tr();
       case SafetyFeature.adaptiveCruiseControl:
-        return 'adaptive_cruise_control'.tr();
+        return 'safety_features_list.adaptive_cruise_control'.tr();
       case SafetyFeature.forwardCollisionWarning:
-        return 'forward_collision_warning'.tr();
+        return 'safety_features_list.forward_collision_warning'.tr();
       case SafetyFeature.automaticEmergencyBraking:
-        return 'automatic_emergency_braking'.tr();
+        return 'safety_features_list.automatic_emergency_braking'.tr();
       case SafetyFeature.rearCrossTrafficAlert:
-        return 'Rear Cross Traffic Alert'.tr();
+        return 'safety_features_list.rear_cross_traffic_alert'.tr();
       case SafetyFeature.tirePressureMonitoringSystem:
-        return 'tire_pressure_monitoring'.tr();
+        return 'safety_features_list.tire_pressure_monitoring'.tr();
       case SafetyFeature.stabilityControl:
-        return 'stability_control'.tr();
+        return 'safety_features_list.stability_control'.tr();
       case SafetyFeature.parkingSensors:
-        return 'parking_sensors'.tr();
+        return 'safety_features_list.parking_sensors'.tr();
       case SafetyFeature.rearviewCamera:
-        return 'Rearview Camera'.tr();
+        return 'safety_features_list.rearview_camera'.tr();
       case SafetyFeature.hillDescentControl:
-        return 'Hill Descent Control'.tr();
+        return 'safety_features_list.hill_descent_control'.tr();
       case SafetyFeature.driverDrowsinessMonitoring:
-        return 'Driver Drowsiness Monitoring'.tr();
+        return 'safety_features_list.driver_drowsiness_monitoring'.tr();
       case SafetyFeature.pedestrianDetection:
-        return 'Pedestrian Detection'.tr();
+        return 'safety_features_list.pedestrian_detection'.tr();
     }
   }
 }

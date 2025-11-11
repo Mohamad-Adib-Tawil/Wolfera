@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wolfera/common/enums/exterior_features.dart';
-import 'package:wolfera/core/api/api_utils.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
 import 'package:wolfera/core/config/theme/typography.dart';
 import 'package:wolfera/core/utils/extensions/build_context.dart';
@@ -10,7 +9,6 @@ import 'package:wolfera/core/utils/extensions/exterior_features_extension.dart';
 import 'package:wolfera/core/utils/responsive_padding.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
 import 'package:wolfera/features/my_car/presentation/widgets/feautres_list_view.dart';
-import 'package:wolfera/generated/locale_keys.g.dart';
 
 class ExteriorFeaturesDialog extends StatefulWidget {
   final Function(List<String>?) onItemSelected;
@@ -74,7 +72,7 @@ class _ExteriorFeaturesDialogState extends State<ExteriorFeaturesDialog> {
                 Size(140.w, 45.h),
               )),
           child: AppText(
-            'Confirm',
+            'confirm',
             style: context.textTheme.bodyMedium.b,
           ),
         ),
@@ -90,7 +88,7 @@ class _ExteriorFeaturesDialogState extends State<ExteriorFeaturesDialog> {
                 Size(35.w, 45.h),
               )),
           child: AppText(
-            'Reset',
+            'reset',
             style: context.textTheme.bodyMedium.b,
           ),
         ),
@@ -117,7 +115,7 @@ class _ExteriorFeaturesDialogState extends State<ExteriorFeaturesDialog> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         AppText(
-          'Exterior',
+          'exterior',
           style: context.textTheme.titleMedium?.s20.b,
         ),
         IconButton(
