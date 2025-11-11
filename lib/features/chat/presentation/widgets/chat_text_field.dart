@@ -62,7 +62,7 @@ class ChatTextFieldState extends State<ChatTextField> {
       child: Column(
         children: [
           Padding(
-            padding: HWEdgeInsets.only(left: 12, right: 12, top: 5),
+            padding: HWEdgeInsets.only(left: 12, right: 12, top: 5, bottom: 8),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
