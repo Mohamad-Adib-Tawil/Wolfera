@@ -484,13 +484,21 @@
     "alloy_wheels": "جنوط معدنية",
     "led_headlights": "مصابيح LED",
     "fog_lights": "أضواء ضباب",
+    "sunroof": "فتحة سقف",
+    "roof_rails": "قضبان سقف",
+    "tow_package": "عدة السحب",
+    "power_liftgate": "باب خلفي كهربائي",
+    "running_boards": "عتبات جانبية",
+    "rear_spoiler": "جناح خلفي",
     "roof_rack": "حامل سقف",
     "spoiler": "جناح خلفي",
     "tinted_windows": "نوافذ معتمة",
+    "heated_side_mirrors": "مرايا جانبية مدفأة",
     "power_mirrors": "مرايا كهربائية",
     "heated_mirrors": "مرايا مدفأة",
     "rain_sensing_wipers": "مساحات استشعار المطر",
-    "panoramic_roof": "سقف بانورامي"
+    "panoramic_roof": "سقف بانورامي",
+    "dual_exhaust": "عادم مزدوج"
   },
   
   "safety_features_list": {
@@ -503,7 +511,13 @@
     "forward_collision_warning": "تحذير تصادم أمامي",
     "adaptive_cruise_control": "مثبت سرعة تكيفي",
     "automatic_emergency_braking": "فرامل طوارئ أوتوماتيكية",
-    "tire_pressure_monitoring": "مراقبة ضغط الإطارات"
+    "tire_pressure_monitoring": "مراقبة ضغط الإطارات",
+    "rear_cross_traffic_alert": "تنبيه حركة المرور الخلفية",
+    "parking_sensors": "حساسات ركن",
+    "rearview_camera": "كاميرا خلفية",
+    "hill_descent_control": "التحكم في نزول المنحدرات",
+    "driver_drowsiness_monitoring": "مراقبة نعاس السائق",
+    "pedestrian_detection": "اكتشاف المشاة"
   },
   
   "brand": "الماركة",
@@ -729,6 +743,7 @@
   "min_kilometers": "الحد الأدنى للكيلومترات",
   "max_kilometers": "الحد الأقصى للكيلومترات",
   "km_10000": "10,000",
+  "km_20000": "20,000",
   "km_30000": "30,000",
   "km_40000": "40,000",
   "km_50000": "50,000",

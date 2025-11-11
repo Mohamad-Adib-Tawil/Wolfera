@@ -51,7 +51,6 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
     _FilterTab('car_filters.seats', Icons.airline_seat_recline_normal),
     _FilterTab('car_filters.color', Icons.color_lens_outlined),
     _FilterTab('car_filters.condition', Icons.check_circle_outline),
-    // _FilterTab('location', Icons.place_outlined),
   ];
 
   SearchCubit get _searchCubit => GetIt.I<SearchCubit>();
@@ -235,35 +234,35 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
         return const MakersListViewFilter();
       case 1: // Type (Sale/Rent)
         return const ListingTypeFilter();
-      case 2: // Location
-        return Align(
-          alignment: Alignment.centerLeft,
-          child: CityDropdown(
-            onChanged: (label) {
-              final v = label ?? 'Worldwide';
-              if (v == 'Worldwide') {
-                _searchCubit.setWorldwide(true);
-                return;
-              }
-              // Parse "Country - Region" or just "Country"
-              final idx = v.indexOf(' - ');
-              final countryName = idx == -1 ? v : v.substring(0, idx);
-              final region = idx == -1 ? null : v.substring(idx + 3);
-              _searchCubit.selectCountryByName(countryName);
-              if (region != null && region.isNotEmpty) {
-                _searchCubit.selectRegionOrCity(region);
-              }
-              try {
-                GetIt.I<HomeCubit>().getHomeData();
-              } catch (_) {}
-            },
-          ),
-        );
-      case 3: // Budget
+      // case 2: // Location
+      //   return Align(
+      //     alignment: Alignment.centerLeft,
+      //     child: CityDropdown(
+      //       onChanged: (label) {
+      //         final v = label ?? 'Worldwide';
+      //         if (v == 'Worldwide') {
+      //           _searchCubit.setWorldwide(true);
+      //           return;
+      //         }
+      //         // Parse "Country - Region" or just "Country"
+      //         final idx = v.indexOf(' - ');
+      //         final countryName = idx == -1 ? v : v.substring(0, idx);
+      //         final region = idx == -1 ? null : v.substring(idx + 3);
+      //         _searchCubit.selectCountryByName(countryName);
+      //         if (region != null && region.isNotEmpty) {
+      //           _searchCubit.selectRegionOrCity(region);
+      //         }
+      //         try {
+      //           GetIt.I<HomeCubit>().getHomeData();
+      //         } catch (_) {}
+      //       },
+      //     ),
+      //   );
+      case 2: // Budget
         return const BudgetListView();
-      case 4: // Body Type
+      case 3: // Body Type
         return const CarBodyTypeListView();
-      case 5: // Year quick controls
+      case 4: // Year quick controls
         return Padding(
           padding: HWEdgeInsets.symmetric(horizontal: 10),
           child: BlocBuilder<SearchCubit, SearchState>(
@@ -332,7 +331,7 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
             },
           ),
         );
-      case 6: // Kilometers quick controls
+      case 5: // Kilometers quick controls
         return Padding(
           padding: HWEdgeInsets.symmetric(horizontal: 10),
           child: BlocBuilder<SearchCubit, SearchState>(
@@ -412,17 +411,17 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
             },
           ),
         );
-      case 7: // Transmission
+      case 6: // Transmission
         return const TransmissionListView();
-      case 8: // Fuel Type
+      case 7: // Fuel Type
         return const FuelTypeListView();
-      case 9: // Cylinders
+      case 8: // Cylinders
         return const CylindersListView();
-      case 10: // Seats
+      case 9: // Seats
         return const SeatsListView();
-      case 11: // Colors
+      case 10: // Colors
         return const ColorsListView();
-      case 12: // Condition
+      case 11: // Condition
         return const ConditionListView();
       default:
         return const SizedBox.shrink();

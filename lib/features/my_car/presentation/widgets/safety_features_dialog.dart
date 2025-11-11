@@ -9,13 +9,11 @@ import 'package:wolfera/core/utils/extensions/safety_features_extension.dart';
 import 'package:wolfera/core/utils/responsive_padding.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
 import 'package:wolfera/features/my_car/presentation/widgets/feautres_list_view.dart';
-import 'package:wolfera/generated/locale_keys.g.dart';
 
 class SafetyFeaturesDialog extends StatefulWidget {
   final Function(List<String>?) onItemSelected;
 
   const SafetyFeaturesDialog({super.key, required this.onItemSelected});
-
   @override
   State<SafetyFeaturesDialog> createState() => _SafetyFeaturesDialogState();
 }
@@ -71,12 +69,11 @@ class _SafetyFeaturesDialogState extends State<SafetyFeaturesDialog> {
             Navigator.of(context).pop();
           },
           style: ButtonStyle(
-              backgroundColor: const WidgetStatePropertyAll(AppColors.primary),
-              minimumSize: WidgetStatePropertyAll(
-                Size(140.w, 45.h),
-              )),
+            backgroundColor: const WidgetStatePropertyAll(AppColors.primary),
+            minimumSize: WidgetStatePropertyAll(Size(140.w, 45.h)),
+          ),
           child: AppText(
-            'Confirm',
+            'confirm',
             style: context.textTheme.bodyMedium.b,
           ),
         ),
@@ -92,7 +89,7 @@ class _SafetyFeaturesDialogState extends State<SafetyFeaturesDialog> {
                 Size(35.w, 45.h),
               )),
           child: AppText(
-            'Reset',
+            'reset',
             style: context.textTheme.bodyMedium.b,
           ),
         ),
@@ -105,7 +102,7 @@ class _SafetyFeaturesDialogState extends State<SafetyFeaturesDialog> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         AppText(
-          'Safety',
+          'safety',
           style: context.textTheme.titleMedium?.s20.b,
         ),
         IconButton(

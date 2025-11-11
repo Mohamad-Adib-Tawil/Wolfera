@@ -191,7 +191,10 @@
     "noNotifications": "No Notifications",
     "noFavorite": "No Favorites",
     "noCars": "No Cars",
-    "noReviews": "No Reviews"
+    "noReviews": "No Reviews",
+    "noOrders": "No Orders",
+    "noBooking": "No Bookings",
+    "noRestaurants": "No Restaurants"
   },
   "youHaveNotLikedAnyCarYet": "You haven't liked any car yet.",
   "youHavenNotReceivedAnyNotificationsYet": "You haven't received any notifications yet.",
@@ -478,13 +481,21 @@
     "alloy_wheels": "Alloy Wheels",
     "led_headlights": "LED Headlights",
     "fog_lights": "Fog Lights",
+    "sunroof": "Sunroof",
+    "roof_rails": "Roof Rails",
+    "tow_package": "Tow Package",
+    "power_liftgate": "Power Liftgate",
+    "running_boards": "Running Boards",
+    "rear_spoiler": "Rear Spoiler",
     "roof_rack": "Roof Rack",
     "spoiler": "Spoiler",
     "tinted_windows": "Tinted Windows",
+    "heated_side_mirrors": "Heated Side Mirrors",
     "power_mirrors": "Power Mirrors",
     "heated_mirrors": "Heated Mirrors",
     "rain_sensing_wipers": "Rain Sensing Wipers",
-    "panoramic_roof": "Panoramic Roof"
+    "panoramic_roof": "Panoramic Roof",
+    "dual_exhaust": "Dual Exhaust"
   },
   
   "safety_features_list": {
@@ -497,7 +508,13 @@
     "forward_collision_warning": "Forward Collision Warning",
     "adaptive_cruise_control": "Adaptive Cruise Control",
     "automatic_emergency_braking": "Automatic Emergency Braking",
-    "tire_pressure_monitoring": "Tire Pressure Monitoring"
+    "tire_pressure_monitoring": "Tire Pressure Monitoring",
+    "rear_cross_traffic_alert": "Rear Cross Traffic Alert",
+    "parking_sensors": "Parking Sensors",
+    "rearview_camera": "Rearview Camera",
+    "hill_descent_control": "Hill Descent Control",
+    "driver_drowsiness_monitoring": "Driver Drowsiness Monitoring",
+    "pedestrian_detection": "Pedestrian Detection"
   },
   
   "brand": "Brand",
