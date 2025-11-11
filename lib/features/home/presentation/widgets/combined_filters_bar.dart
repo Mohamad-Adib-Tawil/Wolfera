@@ -41,7 +41,6 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
   final _tabs = const [
     _FilterTab('car_filters.brand', Icons.local_offer_outlined),
     _FilterTab('sell_car.listing_type', Icons.category_outlined),
-    _FilterTab('location', Icons.place_outlined),
     _FilterTab('car_filters.price_range', Icons.attach_money_rounded),
     _FilterTab('car_filters.body_type', Icons.directions_car_filled_outlined),
     _FilterTab('car_filters.year', Icons.calendar_month_outlined),
@@ -52,6 +51,7 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
     _FilterTab('car_filters.seats', Icons.airline_seat_recline_normal),
     _FilterTab('car_filters.color', Icons.color_lens_outlined),
     _FilterTab('car_filters.condition', Icons.check_circle_outline),
+    // _FilterTab('location', Icons.place_outlined),
   ];
 
   SearchCubit get _searchCubit => GetIt.I<SearchCubit>();
@@ -102,8 +102,8 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
                         8.horizontalSpace,
                         AppText(
                           t.label,
-                          style: context.textTheme.titleSmall?.s13.m
-                              .withColor(isSel ? AppColors.primary : AppColors.white),
+                          style: context.textTheme.titleSmall?.s13.m.withColor(
+                              isSel ? AppColors.primary : AppColors.white),
                         ),
                       ],
                     ),
@@ -142,10 +142,13 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
                     final offsetAnim = Tween<Offset>(
                       begin: _offsetForIndex(_selectedIndex),
                       end: Offset.zero,
-                    ).chain(CurveTween(curve: Curves.easeOutCubic)).animate(animation);
+                    )
+                        .chain(CurveTween(curve: Curves.easeOutCubic))
+                        .animate(animation);
                     return FadeTransition(
                       opacity: animation,
-                      child: SlideTransition(position: offsetAnim, child: child),
+                      child:
+                          SlideTransition(position: offsetAnim, child: child),
                     );
                   },
                   child: KeyedSubtree(
@@ -250,7 +253,9 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
               if (region != null && region.isNotEmpty) {
                 _searchCubit.selectRegionOrCity(region);
               }
-              try { GetIt.I<HomeCubit>().getHomeData(); } catch (_) {}
+              try {
+                GetIt.I<HomeCubit>().getHomeData();
+              } catch (_) {}
             },
           ),
         );
@@ -272,8 +277,8 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
                     selectedYear: state.selectedCarMinYear?.toString(),
                     onTap: () => AnimatedDialog.show(
                       context,
-                      insetPadding:
-                          HWEdgeInsets.only(top: 60, left: 40, right: 40, bottom: 30),
+                      insetPadding: HWEdgeInsets.only(
+                          top: 60, left: 40, right: 40, bottom: 30),
                       child: YearPickerDialog(
                         currentYear: state.selectedCarMinYear,
                         onYearChanged: (minYear) =>
@@ -291,14 +296,15 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
                       barrierLabel: 'YearPickerDialogMin',
                     ),
                   ),
-                  Container(width: 30.w, height: 0.5.h, color: AppColors.whiteLess),
+                  Container(
+                      width: 30.w, height: 0.5.h, color: AppColors.whiteLess),
                   YearItemWidget(
                     key: const Key('MaxYearQuick'),
                     selectedYear: state.selectedCarMaxYear?.toString(),
                     onTap: () => AnimatedDialog.show(
                       context,
-                      insetPadding:
-                          HWEdgeInsets.only(top: 60, left: 40, right: 40, bottom: 30),
+                      insetPadding: HWEdgeInsets.only(
+                          top: 60, left: 40, right: 40, bottom: 30),
                       child: YearPickerDialog(
                         currentYear: state.selectedCarMaxYear,
                         onYearChanged: (maxYear) {
@@ -340,12 +346,13 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
                     selectedYear: state.selectedCarMinKilometers,
                     onTap: () => AnimatedDialog.show(
                       context,
-                      insetPadding:
-                          HWEdgeInsets.only(top: 60, left: 40, right: 40, bottom: 30),
+                      insetPadding: HWEdgeInsets.only(
+                          top: 60, left: 40, right: 40, bottom: 30),
                       child: KilometersDialog(
                         isMin: true,
                         onSelectionConfirmed: (val) {
-                          _searchCubit.changeCarKilometersFilter(minKilometers: val);
+                          _searchCubit.changeCarKilometersFilter(
+                              minKilometers: val);
                           SchedulerBinding.instance.addPostFrameCallback((_) {
                             if (mounted && Navigator.canPop(context)) {
                               Navigator.of(context).pop();
@@ -353,7 +360,8 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
                           });
                         },
                         onReset: () {
-                          _searchCubit.resetKilometersFilter(resetMinKilometers: true);
+                          _searchCubit.resetKilometersFilter(
+                              resetMinKilometers: true);
                           SchedulerBinding.instance.addPostFrameCallback((_) {
                             if (mounted && Navigator.canPop(context)) {
                               Navigator.of(context).pop();
@@ -365,18 +373,20 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
                       barrierLabel: 'MinKilometersPickerDialog',
                     ),
                   ),
-                  Container(width: 30.w, height: 0.5.h, color: AppColors.whiteLess),
+                  Container(
+                      width: 30.w, height: 0.5.h, color: AppColors.whiteLess),
                   YearItemWidget(
                     key: const Key('MaxKilometersQuick'),
                     selectedYear: state.selectedCarMaxKilometers,
                     onTap: () => AnimatedDialog.show(
                       context,
-                      insetPadding:
-                          HWEdgeInsets.only(top: 60, left: 40, right: 40, bottom: 30),
+                      insetPadding: HWEdgeInsets.only(
+                          top: 60, left: 40, right: 40, bottom: 30),
                       child: KilometersDialog(
                         isMin: false,
                         onSelectionConfirmed: (val) {
-                          _searchCubit.changeCarKilometersFilter(maxKilometers: val);
+                          _searchCubit.changeCarKilometersFilter(
+                              maxKilometers: val);
                           SchedulerBinding.instance.addPostFrameCallback((_) {
                             if (mounted && Navigator.canPop(context)) {
                               Navigator.of(context).pop();
@@ -384,7 +394,8 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
                           });
                         },
                         onReset: () {
-                          _searchCubit.resetKilometersFilter(resetMaxKilometers: true);
+                          _searchCubit.resetKilometersFilter(
+                              resetMaxKilometers: true);
                           SchedulerBinding.instance.addPostFrameCallback((_) {
                             if (mounted && Navigator.canPop(context)) {
                               Navigator.of(context).pop();

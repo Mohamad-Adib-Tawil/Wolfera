@@ -12,10 +12,12 @@ import 'package:wolfera/features/app/presentation/widgets/custom_appbar.dart';
 import 'package:wolfera/features/auth/presentation/widgets/custom_textfeild.dart';
 import 'package:wolfera/features/chat/presentation/widgets/circlue_user_image_widget.dart';
 import 'package:wolfera/features/profile/presentation/manager/profile_bloc.dart';
+import 'package:wolfera/features/profile/presentation/widgets/profile_phone_text_field.dart';
 import 'package:wolfera/generated/assets.dart';
 import 'package:wolfera/generated/locale_keys.g.dart';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
+import 'package:country_picker/country_picker.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
@@ -45,7 +47,57 @@ class _EditProfilePageState extends State<EditProfilePage> {
     super.initState();
   }
 
+ 
   void initProfileFormGroup() {
+    // Extract phone number and country code if they exist
+    String? phoneWithoutCode = blocApp.state.user?.phoneNumber;
+    String? countryCode = ProfileBloc.initCountry.phoneCode;
+    
+    print('🔍 Original phone number: $phoneWithoutCode');
+    
+    if (phoneWithoutCode != null && phoneWithoutCode.isNotEmpty) {
+      // Remove + sign if present
+      String cleanPhone = phoneWithoutCode.startsWith('+') 
+          ? phoneWithoutCode.substring(1) 
+          : phoneWithoutCode;
+      
+      print('🧹 Clean phone: $cleanPhone');
+      
+      // Try different country code lengths (from longest to shortest)
+      // Common codes: 1-4 digits (e.g., 1, 20, 966, 1234)
+      bool foundCode = false;
+      for (int length = 4; length >= 1 && !foundCode; length--) {
+        if (cleanPhone.length > length) {
+          final testCode = cleanPhone.substring(0, length);
+          try {
+            final country = CountryParser.tryParsePhoneCode(testCode);
+            if (country != null) {
+              countryCode = testCode;
+              phoneWithoutCode = cleanPhone.substring(length);
+              foundCode = true;
+              print('✅ Found country code: $testCode, remaining: $phoneWithoutCode');
+            }
+          } catch (_) {
+            // Try next length
+          }
+        }
+      }
+      
+      // If no valid country code found, assume the whole number is local
+      if (!foundCode) {
+        phoneWithoutCode = cleanPhone;
+        print('⚠️ No country code found, using default: $countryCode');
+      }
+    }
+    
+    // Remove leading zero if present (national format)
+    if (phoneWithoutCode != null && phoneWithoutCode.startsWith('0')) {
+      phoneWithoutCode = phoneWithoutCode.substring(1);
+      print('🔄 Removed leading zero: $phoneWithoutCode');
+    }
+    
+    print('📱 Final: countryCode=$countryCode, phone=$phoneWithoutCode');
+    
     _profileCubit.profileForm = FormGroup(
       {
         _profileCubit.kFromName:
@@ -53,7 +105,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
         _profileCubit.kFromEmail: FormControl<String>(
             validators: [Validators.email], value: blocApp.state.user?.email),
         _profileCubit.kFromPhone:
-            FormControl<String>(value: blocApp.state.user?.phoneNumber),
+            FormControl<String>(value: phoneWithoutCode),
+        _profileCubit.kFromCountryCode:
+            FormControl<String>(value: countryCode),
       },
     );
   }
@@ -118,13 +172,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                     ),
                                   ),
                                   30.verticalSpace,
-                                  CustomTextField(
-                                    hint: LocaleKeys.enterPhoneHint,
-                                    formControlName: _profileCubit.kFromPhone,
-                                    textInputAction: TextInputAction.done,
-                                    prefixIcon: const AppSvgPicture(
-                                      Assets.svgPhone,
-                                    ),
+                                  ProfilePhoneTextField(
+                                    controlName: _profileCubit.kFromPhone,
+                                    onSelect: (value) => _profileCubit.profileForm
+                                        .control(_profileCubit.kFromCountryCode)
+                                        .value = value.phoneCode,
+                                    onInit: (value) => _profileCubit.profileForm
+                                        .control(_profileCubit.kFromCountryCode)
+                                        .value = value.phoneCode,
                                   ),
                                   80.verticalSpace,
                                   AppElevatedButton(
