@@ -1,10 +1,11 @@
 enum BudgetFiltertype {
-  lessThan10K('Less than', r"10,000 $"),
-  startingFrom10K('Starting from', r"10,000 $"),
-  startingFrom10Kto15K('Starting from', r"10K $ to 15K $"),
-  startingFrom15Kto20K('Starting from', r"15K $ to 20K $"),
-  startingFrom20Kto30K('Starting from', r"20K $ to 30K $"),
-  moreThan30K('More than', r"30,000 $"),
+  // Use localization keys; AppText will translate them.
+  lessThan10K('less_than', 'budget_10k'),
+  startingFrom10K('starting_from', 'budget_10k'),
+  startingFrom10Kto15K('starting_from', 'budget_10k_to_15k'),
+  startingFrom15Kto20K('starting_from', 'budget_15k_to_20k'),
+  startingFrom20Kto30K('starting_from', 'budget_20k_to_30k'),
+  moreThan30K('more_than', 'budget_30k'),
   ;
 
   final String title;

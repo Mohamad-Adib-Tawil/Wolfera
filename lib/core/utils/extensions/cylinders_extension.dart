@@ -25,7 +25,7 @@ extension CylindersExtension on Cylinders {
       case Cylinders.sixteen:
         return 'cylinders_count.16_cylinders'.tr();
       case Cylinders.none:
-        return 'None'.tr();
+        return 'none_label'.tr();
     }
   }
 }

@@ -146,7 +146,7 @@ class _SelectCountyPageState extends State<SelectCountyPage> {
                             },
                           ),
                           8.horizontalSpace,
-                          AppText('Worldwide',
+                          AppText('Worldwide'.tr(),
                               style: context.textTheme.bodyMedium?.m.withColor(AppColors.white)),
                         ],
                       ),

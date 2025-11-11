@@ -29,7 +29,8 @@ class _EnterCarPriceAndDescriptionPageState
             30.verticalSpace,
             // Listing Type Selector
             ReactiveValueListenableBuilder(
-              formControl: _myCarsBloc.descriptionSectionForm.control(_myCarsBloc.kFromListingType),
+              formControl: _myCarsBloc.descriptionSectionForm
+                  .control(_myCarsBloc.kFromListingType),
               builder: (context, control, child) {
                 return ListingTypeSelector(
                   selectedType: control.value as String?,
@@ -48,15 +49,18 @@ class _EnterCarPriceAndDescriptionPageState
             50.verticalSpace,
             // Show sale price only when listing_type is not 'rent'
             ReactiveValueListenableBuilder(
-              formControl: _myCarsBloc.descriptionSectionForm.control(_myCarsBloc.kFromListingType),
+              formControl: _myCarsBloc.descriptionSectionForm
+                  .control(_myCarsBloc.kFromListingType),
               builder: (context, ltControl, _) {
                 final lt = ltControl.value as String?;
                 if (lt == 'rent') return const SizedBox.shrink();
                 return ReactiveValueListenableBuilder(
-                  formControl: _myCarsBloc.descriptionSectionForm.control(_myCarsBloc.kFromCurrencyCode),
+                  formControl: _myCarsBloc.descriptionSectionForm
+                      .control(_myCarsBloc.kFromCurrencyCode),
                   builder: (context, currencyControl, child) {
                     final code = currencyControl.value as String? ?? 'USD';
-                    final selected = CurrenciesData.findByCode(code) ?? CurrenciesData.defaultCurrency();
+                    final selected = CurrenciesData.findByCode(code) ??
+                        CurrenciesData.defaultCurrency();
                     return SellCarItem(
                       title: 'Price'.tr(),
                       formControlName: _myCarsBloc.kFromCarPrice,
@@ -75,12 +79,15 @@ class _EnterCarPriceAndDescriptionPageState
                           popupProps: PopupProps.menu(
                             showSearchBox: false,
                             itemBuilder: (ctx, c, isSel) => Padding(
-                              padding: HWEdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                              padding: HWEdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 10),
                               child: Row(
                                 children: [
-                                  Text(c.symbol, style: context.textTheme.titleSmall?.b),
+                                  Text(c.symbol,
+                                      style: context.textTheme.titleSmall?.b),
                                   10.horizontalSpace,
-                                  Expanded(child: Text('${c.code} - ${c.name}')),
+                                  Expanded(
+                                      child: Text('${c.code} - ${c.name}')),
                                 ],
                               ),
                             ),
@@ -97,7 +104,8 @@ class _EnterCarPriceAndDescriptionPageState
                           },
                           borderColor: Colors.transparent,
                           filled: false,
-                          contentPadding: HWEdgeInsetsDirectional.only(start: 6, end: 4),
+                          contentPadding:
+                              HWEdgeInsetsDirectional.only(start: 6, end: 4),
                           baseStyle: context.textTheme.bodySmall?.m
                               .withColor(AppColors.white),
                         ),
@@ -111,20 +119,24 @@ class _EnterCarPriceAndDescriptionPageState
             ),
             // Rental Prices Section (show only if listing type is rent or both)
             ReactiveValueListenableBuilder(
-              formControl: _myCarsBloc.descriptionSectionForm.control(_myCarsBloc.kFromListingType),
+              formControl: _myCarsBloc.descriptionSectionForm
+                  .control(_myCarsBloc.kFromListingType),
               builder: (context, control, child) {
                 final listingType = control.value as String?;
                 if (listingType == 'rent' || listingType == 'both') {
                   return ReactiveValueListenableBuilder(
-                    formControl: _myCarsBloc.descriptionSectionForm.control(_myCarsBloc.kFromCurrencyCode),
+                    formControl: _myCarsBloc.descriptionSectionForm
+                        .control(_myCarsBloc.kFromCurrencyCode),
                     builder: (context, currencyControl, child) {
                       final code = currencyControl.value as String? ?? 'USD';
-                      final currency = CurrenciesData.findByCode(code) ?? CurrenciesData.defaultCurrency();
+                      final currency = CurrenciesData.findByCode(code) ??
+                          CurrenciesData.defaultCurrency();
                       return Column(
                         children: [
                           30.verticalSpace,
                           RentalPriceSection(
-                            rentalPricesForm: _myCarsBloc.descriptionSectionForm,
+                            rentalPricesForm:
+                                _myCarsBloc.descriptionSectionForm,
                             currencySymbol: currency.symbol,
                           ),
                         ],
@@ -144,10 +156,13 @@ class _EnterCarPriceAndDescriptionPageState
             10.verticalSpace,
             // Country dropdown (with flags)
             ReactiveValueListenableBuilder(
-              formControl: _myCarsBloc.descriptionSectionForm.control(_myCarsBloc.kFromCountryCode),
+              formControl: _myCarsBloc.descriptionSectionForm
+                  .control(_myCarsBloc.kFromCountryCode),
               builder: (context, control, child) {
                 final selectedCode = control.value as String?;
-                final selectedCountry = LocationsData.findByCode(selectedCode) ?? LocationsData.countries.first;
+                final selectedCountry =
+                    LocationsData.findByCode(selectedCode) ??
+                        LocationsData.countries.first;
                 final countries = LocationsData.countries;
                 return AppDropdownSearch<CountryOption>(
                   items: countries,
@@ -171,7 +186,7 @@ class _EnterCarPriceAndDescriptionPageState
                             ),
                           ),
                         8.horizontalSpace,
-                        Text(co?.name ?? 'Worldwide',
+                        Text(co?.name ?? 'Worldwide'.tr(),
                             style: context.textTheme.titleSmall.b
                                 .withColor(AppColors.blackLight)),
                       ],
@@ -182,7 +197,8 @@ class _EnterCarPriceAndDescriptionPageState
                     itemBuilder: (context, co, isSelected) {
                       final isWw = co.code == LocationsData.worldwideCode;
                       return Padding(
-                        padding: HWEdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        padding: HWEdgeInsets.symmetric(
+                            horizontal: 12, vertical: 10),
                         child: Row(
                           children: [
                             if (isWw)
@@ -208,7 +224,9 @@ class _EnterCarPriceAndDescriptionPageState
                     // تحديث الدولة ومسح المدينة
                     _myCarsBloc.descriptionSectionForm
                         .control(_myCarsBloc.kFromCountryCode)
-                        .updateValue(co.code == LocationsData.worldwideCode ? null : co.code);
+                        .updateValue(co.code == LocationsData.worldwideCode
+                            ? null
+                            : co.code);
                     _myCarsBloc.descriptionSectionForm
                         .control(_myCarsBloc.kFromRegionOrCity)
                         .updateValue(null);
@@ -224,20 +242,23 @@ class _EnterCarPriceAndDescriptionPageState
             ),
             // Region/City dropdown (depends on country)
             ReactiveValueListenableBuilder(
-              formControl: _myCarsBloc.descriptionSectionForm.control(_myCarsBloc.kFromCountryCode),
+              formControl: _myCarsBloc.descriptionSectionForm
+                  .control(_myCarsBloc.kFromCountryCode),
               builder: (context, control, child) {
                 final selectedCode = control.value as String?;
-                if (selectedCode == null || selectedCode == LocationsData.worldwideCode) {
+                if (selectedCode == null ||
+                    selectedCode == LocationsData.worldwideCode) {
                   return const SizedBox.shrink();
                 }
                 final selectedCountry = LocationsData.findByCode(selectedCode);
-                final regions = selectedCountry?.secondLevel ?? const <String>[];
+                final regions =
+                    selectedCountry?.secondLevel ?? const <String>[];
                 if (regions.isEmpty) return const SizedBox.shrink();
-                
+
                 final selectedRegion = _myCarsBloc.descriptionSectionForm
                     .control(_myCarsBloc.kFromRegionOrCity)
                     .value as String?;
-                
+
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

@@ -45,7 +45,7 @@ class CityDropdown extends StatelessWidget {
     final List<String> items = [];
     for (final co in LocationsData.countries) {
       if (co.code == LocationsData.worldwideCode) {
-        items.add('Worldwide');
+        items.add('Worldwide'.tr());
         continue;
       }
       items.add(co.name);
@@ -57,7 +57,7 @@ class CityDropdown extends StatelessWidget {
     // Determine selected item from prefs
     String selected;
     if (prefs.isWorldwide) {
-      selected = 'Worldwide';
+      selected = 'Worldwide'.tr();
     } else {
       final co = LocationsData.findByCode(prefs.selectedCountryCode);
       final region = prefs.selectedRegionOrCity;
@@ -66,7 +66,7 @@ class CityDropdown extends StatelessWidget {
       } else if (co != null) {
         selected = co.name;
       } else {
-        selected = prefs.selectedCity ?? 'Worldwide';
+        selected = prefs.selectedCity ?? 'Worldwide'.tr();
       }
     }
 
@@ -85,13 +85,13 @@ class CityDropdown extends StatelessWidget {
       itemAsString: (item) => item!,
       selectedItem: selected,
       onChanged: (value) async {
-        final v = value ?? 'Worldwide';
+        final v = value ?? 'Worldwide'.tr();
         final prefs = GetIt.I<PrefsRepository>();
-        if (v == 'Worldwide') {
+        if (v == 'Worldwide'.tr()) {
           await prefs.setWorldwide(true);
           await prefs.setSelectedCountryCode(null);
           await prefs.setSelectedRegionOrCity(null);
-          await prefs.setSelectedCity('Worldwide');
+          await prefs.setSelectedCity('Worldwide'.tr());
         } else {
           final cName = countryNameOf(v);
           final reg = regionOf(v);
@@ -116,8 +116,8 @@ class CityDropdown extends StatelessWidget {
       baseStyle:
           context.textTheme.titleMedium?.s17.b.withColor(AppColors.white),
       dropdownBuilder: (context, item) {
-        final label = item ?? 'Worldwide';
-        if (label == 'Worldwide') {
+        final label = item ?? 'Worldwide'.tr();
+        if (label == 'Worldwide'.tr()) {
           return Row(
             mainAxisSize: MainAxisSize.max,
             children: [
@@ -162,7 +162,7 @@ class CityDropdown extends StatelessWidget {
             6.horizontalSpace,
             Expanded(
               child: Text(
-                label == 'Worldwide' ? 'Worldwide'.tr() : displayText,
+                label == 'Worldwide'.tr() ? 'Worldwide'.tr() : displayText,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: context.textTheme.titleSmall.b.withColor(AppColors.white),
@@ -179,7 +179,7 @@ class CityDropdown extends StatelessWidget {
         ),
         itemBuilder: (context, item, isSelected) {
           final label = item!;
-          final isWw = label == 'Worldwide';
+          final isWw = label == 'Worldwide'.tr();
           final cName = countryNameOf(label);
           final co = LocationsData.findByName(cName);
           final region = regionOf(label);
