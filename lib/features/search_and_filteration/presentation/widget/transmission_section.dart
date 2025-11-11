@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
@@ -20,8 +21,9 @@ class TransmissionSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SectionTitleAndResetFilterWidget(
-            title: 'Transmission',
-            resetFilter: () => searchCubit.resetTransmissionFilter()),
+          title: 'transmission_filter'.tr(),
+          resetFilter: () => searchCubit.resetTransmissionFilter(),
+        ),
         20.verticalSpace,
         SizedBox(
           height: 46.h,

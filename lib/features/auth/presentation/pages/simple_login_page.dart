@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:wolfera/services/supabase_service.dart';
 
@@ -35,8 +36,8 @@ class _SimpleLoginPageState extends State<SimpleLoginPage> {
       if (response.user != null) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('تم تسجيل الدخول بنجاح!'),
+            SnackBar(
+              content: Text('login_success'.tr()),
               backgroundColor: Colors.green,
             ),
           );
@@ -47,7 +48,7 @@ class _SimpleLoginPageState extends State<SimpleLoginPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('خطأ في تسجيل الدخول: $e'),
+            content: Text('login_error'.tr(args: [e.toString()])),
             backgroundColor: Colors.red,
           ),
         );
@@ -68,8 +69,8 @@ class _SimpleLoginPageState extends State<SimpleLoginPage> {
       if (response.user != null) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('تم تسجيل الدخول بـ Google بنجاح!'),
+            SnackBar(
+              content: Text('google_login_success'.tr()),
               backgroundColor: Colors.green,
             ),
           );
@@ -80,7 +81,7 @@ class _SimpleLoginPageState extends State<SimpleLoginPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('خطأ في تسجيل الدخول بـ Google: $e'),
+            content: Text('google_login_error'.tr(args: [e.toString()])),
             backgroundColor: Colors.red,
           ),
         );
@@ -106,8 +107,8 @@ class _SimpleLoginPageState extends State<SimpleLoginPage> {
       if (response.user != null) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('تم إنشاء الحساب بنجاح! تحقق من بريدك الإلكتروني'),
+            SnackBar(
+              content: Text('signup_success'.tr()),
               backgroundColor: Colors.green,
             ),
           );
@@ -117,7 +118,7 @@ class _SimpleLoginPageState extends State<SimpleLoginPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('خطأ في إنشاء الحساب: $e'),
+            content: Text('signup_error'.tr(args: [e.toString()])),
             backgroundColor: Colors.red,
           ),
         );
@@ -133,7 +134,7 @@ class _SimpleLoginPageState extends State<SimpleLoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('تسجيل الدخول - Wolfera'),
+        title: Text('login_page_title'.tr()),
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
       ),
@@ -150,8 +151,8 @@ class _SimpleLoginPageState extends State<SimpleLoginPage> {
                 color: Colors.blue,
               ),
               const SizedBox(height: 32),
-              const Text(
-                'مرحباً بك في Wolfera Cars',
+              Text(
+                'welcome_wolfera'.tr(),
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -162,17 +163,17 @@ class _SimpleLoginPageState extends State<SimpleLoginPage> {
               TextFormField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                  labelText: 'البريد الإلكتروني',
+                decoration: InputDecoration(
+                  labelText: 'email_field'.tr(),
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.email),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'يرجى إدخال البريد الإلكتروني';
+                    return 'please_enter_email'.tr();
                   }
                   if (!value.contains('@')) {
-                    return 'يرجى إدخال بريد إلكتروني صحيح';
+                    return 'please_enter_valid_email'.tr();
                   }
                   return null;
                 },
@@ -181,17 +182,17 @@ class _SimpleLoginPageState extends State<SimpleLoginPage> {
               TextFormField(
                 controller: _passwordController,
                 obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'كلمة المرور',
+                decoration: InputDecoration(
+                  labelText: 'password_field'.tr(),
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.lock),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'يرجى إدخال كلمة المرور';
+                    return 'please_enter_password'.tr();
                   }
                   if (value.length < 6) {
-                    return 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
+                    return 'password_min_length'.tr();
                   }
                   return null;
                 },
@@ -209,8 +210,8 @@ class _SimpleLoginPageState extends State<SimpleLoginPage> {
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                     ),
-                    child: const Text(
-                      'تسجيل الدخول',
+                    child: Text(
+                      'login_button'.tr(),
                       style: TextStyle(fontSize: 16),
                     ),
                   ),
@@ -221,8 +222,8 @@ class _SimpleLoginPageState extends State<SimpleLoginPage> {
                   child: OutlinedButton.icon(
                     onPressed: _signInWithGoogle,
                     icon: const Icon(Icons.login, color: Colors.red),
-                    label: const Text(
-                      'تسجيل الدخول بـ Google',
+                    label: Text(
+                      'login_with_google'.tr(),
                       style: TextStyle(fontSize: 16),
                     ),
                     style: OutlinedButton.styleFrom(
@@ -234,8 +235,8 @@ class _SimpleLoginPageState extends State<SimpleLoginPage> {
                 const SizedBox(height: 16),
                 TextButton(
                   onPressed: _signUp,
-                  child: const Text(
-                    'إنشاء حساب جديد',
+                  child: Text(
+                    'create_new_account'.tr(),
                     style: TextStyle(fontSize: 16),
                   ),
                 ),

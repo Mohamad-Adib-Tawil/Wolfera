@@ -10,6 +10,7 @@ import 'package:wolfera/features/home/presentation/manager/home_cubit/home_cubit
 import 'package:wolfera/features/home/presentation/widgets/cars_list_view_builder.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_loader_widget/app_loader.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_empty_state_widet/app_empty_state.dart';
+import 'package:wolfera/generated/locale_keys.g.dart';
 
 class RecommendedSection extends StatelessWidget {
   const RecommendedSection({
@@ -24,7 +25,7 @@ class RecommendedSection extends StatelessWidget {
         Padding(
           padding: HWEdgeInsetsDirectional.only(start: 24, top: 20, bottom: 20),
           child: AppText(
-            "Recommended",
+       LocaleKeys.recommended     ,
             style: context.textTheme.bodyMedium.s20.sb,
           ),
         ),

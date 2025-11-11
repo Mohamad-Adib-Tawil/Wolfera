@@ -8,7 +8,31 @@ import 'package:wolfera/core/utils/extensions/build_context.dart';
 class StatusSectionWidget extends StatelessWidget {
   const StatusSectionWidget({
     super.key,
+    this.status,
   });
+  
+  final String? status;
+
+  String _getStatusText() {
+    if (status == null || status!.isEmpty) {
+      return 'car_status.under_reviewing'.tr();
+    }
+    
+    final statusKey = status!.toLowerCase();
+    switch (statusKey) {
+      case 'sold':
+        return 'car_status.sold'.tr();
+      case 'rented':
+        return 'car_status.rented'.tr();
+      case 'active':
+        return 'car_status.active'.tr();
+      case 'pending':
+        return 'car_status.pending'.tr();
+      case 'under_reviewing':
+      default:
+        return 'car_status.under_reviewing'.tr();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +46,7 @@ class StatusSectionWidget extends StatelessWidget {
         Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             child: Text(
-              '${'Status'.tr()} : ${'car_status.under_reviewing'.tr()}',
+              '${'status_label'.tr()} : ${_getStatusText()}',
               style: context.textTheme.bodyLarge!.xb.withColor(AppColors.white),
             ))
       ],

@@ -90,7 +90,6 @@ class _NotificationsPageState extends State<NotificationsPage> {
               ),
             );
           }
-
           return DefaultTabController(
             length: 2,
             child: Scaffold(
@@ -99,7 +98,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 backgroundColor: Colors.transparent,
                 centerTitle: true,
                 automaticallyImplyLeading: true,
-                title: AppText('Notifications'.tr()),
+                title: AppText('notifications'.tr()),
                 bottom: TabBar(
                   indicatorColor: AppColors.primary,
                   labelColor: Colors.white,

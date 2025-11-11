@@ -128,7 +128,7 @@ class CarMiniDetailsCardWidget extends StatelessWidget {
                   price: listingType == 'both' ? (salePriceDisplay ?? effectivePrice) : effectivePrice,
                   secondPrice: listingType == 'both' ? rentPriceDisplay : null,
                 ),
-                if (isStatus) const StatusSectionWidget()
+                if (isStatus) StatusSectionWidget(status: status)
               ],
             ),
             // Status/Listing Badges
