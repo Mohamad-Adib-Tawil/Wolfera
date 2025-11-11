@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
@@ -279,7 +280,11 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
                             _searchCubit.changeCarYearFilter(minYear: minYear),
                         onReset: () {
                           _searchCubit.resetYearFilter(resetMinYear: true);
-                          context.pop();
+                          SchedulerBinding.instance.addPostFrameCallback((_) {
+                            if (mounted && Navigator.canPop(context)) {
+                              Navigator.of(context).pop();
+                            }
+                          });
                         },
                       ),
                       barrierDismissible: true,
@@ -305,7 +310,11 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
                         },
                         onReset: () {
                           _searchCubit.resetYearFilter(resetMaxYear: true);
-                          context.pop();
+                          SchedulerBinding.instance.addPostFrameCallback((_) {
+                            if (mounted && Navigator.canPop(context)) {
+                              Navigator.of(context).pop();
+                            }
+                          });
                         },
                       ),
                       barrierDismissible: true,
@@ -337,11 +346,19 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
                         isMin: true,
                         onSelectionConfirmed: (val) {
                           _searchCubit.changeCarKilometersFilter(minKilometers: val);
-                          context.pop();
+                          SchedulerBinding.instance.addPostFrameCallback((_) {
+                            if (mounted && Navigator.canPop(context)) {
+                              Navigator.of(context).pop();
+                            }
+                          });
                         },
                         onReset: () {
                           _searchCubit.resetKilometersFilter(resetMinKilometers: true);
-                          context.pop();
+                          SchedulerBinding.instance.addPostFrameCallback((_) {
+                            if (mounted && Navigator.canPop(context)) {
+                              Navigator.of(context).pop();
+                            }
+                          });
                         },
                       ),
                       barrierDismissible: true,
@@ -360,11 +377,19 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
                         isMin: false,
                         onSelectionConfirmed: (val) {
                           _searchCubit.changeCarKilometersFilter(maxKilometers: val);
-                          context.pop();
+                          SchedulerBinding.instance.addPostFrameCallback((_) {
+                            if (mounted && Navigator.canPop(context)) {
+                              Navigator.of(context).pop();
+                            }
+                          });
                         },
                         onReset: () {
                           _searchCubit.resetKilometersFilter(resetMaxKilometers: true);
-                          context.pop();
+                          SchedulerBinding.instance.addPostFrameCallback((_) {
+                            if (mounted && Navigator.canPop(context)) {
+                              Navigator.of(context).pop();
+                            }
+                          });
                         },
                       ),
                       barrierDismissible: true,

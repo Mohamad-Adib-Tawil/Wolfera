@@ -68,7 +68,7 @@ class _InteriorFeaturesDialogState extends State<InteriorFeaturesDialog> {
         ElevatedButton(
           onPressed: () {
             widget.onItemSelected(_selectedFeatures.toList());
-            context.pop();
+            Navigator.of(context).pop();
           },
           style: ButtonStyle(
               backgroundColor: const WidgetStatePropertyAll(AppColors.primary),
@@ -84,7 +84,7 @@ class _InteriorFeaturesDialogState extends State<InteriorFeaturesDialog> {
         ElevatedButton(
           onPressed: () {
             widget.onItemSelected([]);
-            context.pop();
+            Navigator.of(context).pop();
           },
           style: ButtonStyle(
               backgroundColor: const WidgetStatePropertyAll(AppColors.grey),

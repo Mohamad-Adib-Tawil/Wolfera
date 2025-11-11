@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:wolfera/core/utils/responsive_padding.dart';
 import 'package:wolfera/features/my_car/presentation/widgets/custom_radio_button.dart';
 
@@ -44,7 +43,7 @@ class _CustomDialogListViewState<T> extends State<CustomDialogListView<T>> {
               }
               Future.delayed(
                 const Duration(milliseconds: 200),
-                () => context.pop(),
+                () => Navigator.of(context).pop(),
               );
             },
           ),

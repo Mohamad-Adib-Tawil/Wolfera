@@ -54,7 +54,7 @@ class _KilometersDialogState extends State<KilometersDialog> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
+        AppText(
           widget.isMin ? "Min Kilometers" : "Max Kilometers",
           style: context.textTheme.bodyMedium.s20.b,
         ),
