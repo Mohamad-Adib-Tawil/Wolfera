@@ -6,6 +6,7 @@ import 'package:get_it/get_it.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
 import 'package:wolfera/core/config/theme/typography.dart';
 import 'package:wolfera/core/utils/extensions/build_context.dart';
+import 'package:country_flags/country_flags.dart';
 import 'package:wolfera/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:wolfera/features/auth/presentation/widgets/custom_textfeild.dart';
 
@@ -101,11 +102,17 @@ class _PhoneTextFieldState extends State<PhoneTextField> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     10.horizontalSpace,
-                    AppText(country.flagEmoji,
-                        style: context.textTheme.titleLarge),
+                    CountryFlag.fromCountryCode(
+                      country.countryCode,
+                      theme: const ImageTheme(
+                        width: 24,
+                        height: 16,
+                        shape: RoundedRectangle(3),
+                      ),
+                    ),
                     10.horizontalSpace,
                     AppText(
-                      "${country.phoneCode}+",
+                      "+${country.phoneCode}",
                       style: context.textTheme.titleSmall
                           .withColor(AppColors.blackLight),
                     ),

@@ -3,9 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
 import 'package:wolfera/core/config/theme/typography.dart';
 import 'package:wolfera/core/utils/extensions/build_context.dart';
-import 'package:wolfera/features/app/presentation/widgets/app_svg_picture.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
-import 'package:wolfera/generated/assets.dart';
 import 'package:wolfera/core/utils/money_formatter.dart';
 
 class CarNameAndPriceRowWidget extends StatelessWidget {
@@ -67,12 +65,6 @@ class CarNameAndPriceRowWidget extends StatelessWidget {
             style: context.textTheme.bodyLarge!.s20.r.withColor(AppColors.white),
           ),
         const Spacer(),
-        AppSvgPicture(
-          Assets.svgBell,
-          height: 20.h,
-          width: 18.w,
-        ),
-        10.horizontalSpace,
         AppText(
           displayPrice,
           translation: false,

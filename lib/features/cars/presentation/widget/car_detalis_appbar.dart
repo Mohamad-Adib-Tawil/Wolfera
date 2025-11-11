@@ -234,10 +234,10 @@ class _CarDetalisAppbarState extends State<CarDetalisAppbar> with SingleTickerPr
               GestureDetector(
                 onTap: _adminRemoveCarAction,
                 child: Padding(
-                  padding: EdgeInsets.only(right: 20.w),
+                  padding: EdgeInsets.symmetric(horizontal: 10.w),
                   child: Icon(
                     CupertinoIcons.trash,
-                    size: 26.r,
+                    size: 28.r,
                     color: Colors.redAccent,
                   ),
                 ),
@@ -246,10 +246,10 @@ class _CarDetalisAppbarState extends State<CarDetalisAppbar> with SingleTickerPr
               GestureDetector(
                 onTap: _toggleFeatured,
                 child: Padding(
-                  padding: EdgeInsets.only(right: 20.w),
+                  padding: EdgeInsets.symmetric(horizontal: 10.w),
                   child: Icon(
                     _isFeatured ? CupertinoIcons.star_fill : CupertinoIcons.star,
-                    size: 26.r,
+                    size: 28.r,
                     color: _isFeatured ? AppColors.orange : AppColors.white,
                   ),
                 ),
@@ -262,18 +262,21 @@ class _CarDetalisAppbarState extends State<CarDetalisAppbar> with SingleTickerPr
                 
                 return GestureDetector(
                   onTap: () => _toggleFavorite(context),
-                  child: AnimatedBuilder(
-                    animation: _scaleAnimation,
-                    builder: (context, child) {
-                      return Transform.scale(
-                        scale: _scaleAnimation.value,
-                        child: Icon(
-                          isFavorite ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
-                          size: 30.r,
-                          color: isFavorite ? AppColors.red : AppColors.white,
-                        ),
-                      );
-                    },
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 10.w),
+                    child: AnimatedBuilder(
+                      animation: _scaleAnimation,
+                      builder: (context, child) {
+                        return Transform.scale(
+                          scale: _scaleAnimation.value,
+                          child: Icon(
+                            isFavorite ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
+                            size: 28.r,
+                            color: isFavorite ? AppColors.red : AppColors.white,
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 );
               },

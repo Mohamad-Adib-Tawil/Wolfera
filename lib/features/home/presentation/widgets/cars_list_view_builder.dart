@@ -3,6 +3,7 @@ import 'package:wolfera/core/utils/responsive_padding.dart';
 import 'package:wolfera/features/home/presentation/widgets/car_mini_details_card_widget.dart';
 import 'package:wolfera/generated/assets.dart';
 import 'package:wolfera/core/utils/money_formatter.dart';
+import 'package:wolfera/core/utils/car_value_translator.dart';
 
 class CarsListViewBuilder extends StatelessWidget {
   final Axis scrollDirection;
@@ -50,14 +51,46 @@ class CarsListViewBuilder extends StatelessWidget {
           car['model']?.toString()
         ].where((e) => e != null && e.isNotEmpty).join(' ');
         
-        final spec1 = (car['body_type'] ?? car['engine_capacity'])?.toString();
-        final spec2 = car['transmission']?.toString();
-        final mileageVal = car['mileage']?.toString();
-        final mileage = mileageVal != null && mileageVal.isNotEmpty
-            ? '$mileageVal KM'
+        // Translate spec1 (body_type or engine_capacity)
+        final rawSpec1 = car['body_type']?.toString();
+        final spec1 = rawSpec1 != null
+            ? CarValueTranslator.translateBodyType(rawSpec1)
+            : car['engine_capacity']?.toString();
+        
+        // Translate spec2 (transmission)
+        final rawSpec2 = car['transmission']?.toString();
+        final spec2 = rawSpec2 != null
+            ? CarValueTranslator.translateTransmission(rawSpec2)
             : null;
-        final fuel = car['fuel_type']?.toString();
-        final location = (car['city'] ?? car['location'])?.toString();
+        
+        final mileageVal = car['mileage']?.toString();
+        final mileage = mileageVal;
+        
+        // Translate fuel type
+        final rawFuel = car['fuel_type']?.toString();
+        final fuel = rawFuel != null
+            ? CarValueTranslator.translateFuelType(rawFuel)
+            : null;
+        
+        // Translate location/country: prefer country, include city if present
+        final city = car['city']?.toString();
+        final countryRaw = car['country']?.toString();
+        final locationRaw = car['location']?.toString();
+        String? location;
+        if (city != null && city.isNotEmpty && countryRaw != null && countryRaw.isNotEmpty) {
+          final c = CarValueTranslator.translateCountry(countryRaw);
+          final tCity = CarValueTranslator.translateCity(city, country: countryRaw);
+          location = '${tCity.isNotEmpty ? tCity : city}, ${c != '-' ? c : countryRaw}';
+        } else if (countryRaw != null && countryRaw.isNotEmpty) {
+          final c = CarValueTranslator.translateCountry(countryRaw);
+          location = c != '-' ? c : countryRaw;
+        } else if (city != null && city.isNotEmpty) {
+          final tCity = CarValueTranslator.translateCity(city, country: countryRaw);
+          location = tCity.isNotEmpty ? tCity : city;
+        } else if (locationRaw != null && locationRaw.isNotEmpty) {
+          final c = CarValueTranslator.translateCountry(locationRaw);
+          location = c != '-' ? c : locationRaw;
+        }
         final priceVal = car['price']?.toString();
         final currency = car['currency']?.toString() ?? '\$';
         // Choose displayed price based on listing type

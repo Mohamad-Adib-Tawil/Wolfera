@@ -23,6 +23,7 @@ import 'package:wolfera/features/app/presentation/widgets/animated_dialog.dart';
 import 'package:wolfera/features/app/presentation/widgets/year_picker_dialog.dart';
 import 'package:wolfera/features/search_and_filteration/presentation/widget/kilometers_dialog.dart';
 import 'package:wolfera/features/search_and_filteration/presentation/widget/listing_type_filter.dart';
+import 'package:wolfera/features/home/presentation/manager/home_cubit/home_cubit.dart';
 
 /// A compact, professional filter bar showing categories in a row and the
 /// selected category content right below it. Reuses existing search widgets.
@@ -37,19 +38,19 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
   int _selectedIndex = 0;
 
   final _tabs = const [
-    _FilterTab('Makers', Icons.local_offer_outlined),
-    _FilterTab('Type', Icons.category_outlined),
-    _FilterTab('Location', Icons.place_outlined),
-    _FilterTab('Budget', Icons.attach_money_rounded),
-    _FilterTab('Body type', Icons.directions_car_filled_outlined),
-    _FilterTab('Year', Icons.calendar_month_outlined),
-    _FilterTab('Kilometers', Icons.speed),
-    _FilterTab('Transmission', Icons.swap_horiz),
-    _FilterTab('Fuel', Icons.local_gas_station_outlined),
-    _FilterTab('Cylinders', Icons.blur_circular),
-    _FilterTab('Seats', Icons.airline_seat_recline_normal),
-    _FilterTab('Colors', Icons.color_lens_outlined),
-    _FilterTab('Condition', Icons.check_circle_outline),
+    _FilterTab('car_filters.brand', Icons.local_offer_outlined),
+    _FilterTab('sell_car.listing_type', Icons.category_outlined),
+    _FilterTab('location', Icons.place_outlined),
+    _FilterTab('car_filters.price_range', Icons.attach_money_rounded),
+    _FilterTab('car_filters.body_type', Icons.directions_car_filled_outlined),
+    _FilterTab('car_filters.year', Icons.calendar_month_outlined),
+    _FilterTab('mileage', Icons.speed),
+    _FilterTab('car_filters.transmission', Icons.swap_horiz),
+    _FilterTab('car_filters.fuel_type', Icons.local_gas_station_outlined),
+    _FilterTab('car_filters.cylinders', Icons.blur_circular),
+    _FilterTab('car_filters.seats', Icons.airline_seat_recline_normal),
+    _FilterTab('car_filters.color', Icons.color_lens_outlined),
+    _FilterTab('car_filters.condition', Icons.check_circle_outline),
   ];
 
   SearchCubit get _searchCubit => GetIt.I<SearchCubit>();
@@ -233,7 +234,24 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
       case 2: // Location
         return Align(
           alignment: Alignment.centerLeft,
-          child: CityDropdown(onChanged: (_) => _searchCubit.searchCars()),
+          child: CityDropdown(
+            onChanged: (label) {
+              final v = label ?? 'Worldwide';
+              if (v == 'Worldwide') {
+                _searchCubit.setWorldwide(true);
+                return;
+              }
+              // Parse "Country - Region" or just "Country"
+              final idx = v.indexOf(' - ');
+              final countryName = idx == -1 ? v : v.substring(0, idx);
+              final region = idx == -1 ? null : v.substring(idx + 3);
+              _searchCubit.selectCountryByName(countryName);
+              if (region != null && region.isNotEmpty) {
+                _searchCubit.selectRegionOrCity(region);
+              }
+              try { GetIt.I<HomeCubit>().getHomeData(); } catch (_) {}
+            },
+          ),
         );
       case 3: // Budget
         return const BudgetListView();

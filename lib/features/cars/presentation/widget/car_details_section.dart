@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
 import 'package:wolfera/core/utils/responsive_padding.dart';
+import 'package:wolfera/core/utils/car_value_translator.dart';
 import 'package:wolfera/features/cars/presentation/widget/car_details_item.dart';
 import 'package:wolfera/features/cars/presentation/widget/car_name_and_price_row_widget.dart';
 import 'package:wolfera/features/cars/presentation/widget/car_detailes_grid_view.dart';
@@ -46,7 +47,9 @@ class CarDetailsSection extends StatelessWidget {
     addItem('brand'.tr(), carData['brand']);
     addItem('model'.tr(), carData['model']);
     addItem('year_model'.tr(), carData['year']);
-    addItem('color'.tr(), carData['color']);
+    // Color will be translated later
+    final colorValue = CarValueTranslator.translateColor(carData['color']?.toString());
+    if (colorValue != '-') items.add(CarDetailsItem(title: 'color'.tr(), value: colorValue));
     addItem('trim'.tr(), carData['trim']);
     addItem('paint_parts'.tr(), carData['paint_parts']);
     addItem('plate'.tr(), carData['plate']);
@@ -59,16 +62,24 @@ class CarDetailsSection extends StatelessWidget {
     if (mileage != null) {
       items.add(CarDetailsItem(title: 'mileage'.tr(), value: '$mileage KM'));
     }
-    addItem('fuel_type'.tr(), carData['fuel_type']);
+    // Translate values from server
+    final fuelTypeValue = CarValueTranslator.translateFuelType(carData['fuel_type']?.toString());
+    final transmissionValue = CarValueTranslator.translateTransmission(carData['transmission']?.toString());
+    final bodyTypeValue = CarValueTranslator.translateBodyType(carData['body_type']?.toString());
+    
+    if (fuelTypeValue != '-') items.add(CarDetailsItem(title: 'fuel_type'.tr(), value: fuelTypeValue));
     addItem('doors'.tr(), carData['doors']);
     addItem('seats'.tr(), carData['seats']);
     addItem('cylinders'.tr(), carData['cylinders']);
-    addItem('transmission'.tr(), carData['transmission']);
-    addItem('car_filters.body_type'.tr(), carData['body_type']);
+    if (transmissionValue != '-') items.add(CarDetailsItem(title: 'transmission'.tr(), value: transmissionValue));
+    if (bodyTypeValue != '-') items.add(CarDetailsItem(title: 'car_filters.body_type'.tr(), value: bodyTypeValue));
     addBool('accidents_history'.tr(), carData['accidents_history']);
     addBool('service_history'.tr(), carData['service_history']);
     addBool('warranty'.tr(), carData['warranty']);
-    if (resolvedLocation != null) addItem('location'.tr(), resolvedLocation);
+    if (resolvedLocation != null) {
+      final locText = CarValueTranslator.translateCountry(resolvedLocation);
+      items.add(CarDetailsItem(title: 'location'.tr(), value: locText));
+    }
 
     // Rental prices (show if listing type is rent or both)
     final listingType = carData['listing_type']?.toString();
