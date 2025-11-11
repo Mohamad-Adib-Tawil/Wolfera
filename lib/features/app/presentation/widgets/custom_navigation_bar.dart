@@ -168,7 +168,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
                     onTap: () => _animateCursor(3),
                   ),
                   NavBarItem(
-                    title: "Chat",
+                    title: LocaleKeys.chat,
                     svgAsset: Assets.svgNavChat,
                     isSelected: widget.child.currentIndex == 4,
                     onTap: () {

@@ -1,40 +1,41 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:wolfera/common/enums/safety_features.dart';
 
 extension SafetyFeatureExtension on SafetyFeature {
   String get featureName {
     switch (this) {
       case SafetyFeature.airbags:
-        return 'Airbags';
+        return 'airbags'.tr();
       case SafetyFeature.abs:
-        return 'ABS';
+        return 'abs'.tr();
       case SafetyFeature.tractionControl:
-        return 'Traction Control';
+        return 'traction_control'.tr();
       case SafetyFeature.laneDepartureWarning:
-        return 'Lane Departure Warning';
+        return "lane_departure_warning".tr();
       case SafetyFeature.blindSpotMonitoring:
-        return 'Blind Spot Monitoring';
+        return 'blind_spot_monitoring'.tr();
       case SafetyFeature.adaptiveCruiseControl:
-        return 'Adaptive Cruise Control';
+        return 'adaptive_cruise_control'.tr();
       case SafetyFeature.forwardCollisionWarning:
-        return 'Forward Collision Warning';
+        return 'forward_collision_warning'.tr();
       case SafetyFeature.automaticEmergencyBraking:
-        return 'Automatic Emergency Braking';
+        return 'automatic_emergency_braking'.tr();
       case SafetyFeature.rearCrossTrafficAlert:
-        return 'Rear Cross Traffic Alert';
+        return 'Rear Cross Traffic Alert'.tr();
       case SafetyFeature.tirePressureMonitoringSystem:
-        return 'Tire Pressure Monitoring System';
+        return 'tire_pressure_monitoring'.tr();
       case SafetyFeature.stabilityControl:
-        return 'Stability Control';
+        return 'stability_control'.tr();
       case SafetyFeature.parkingSensors:
-        return 'Parking Sensors';
+        return 'parking_sensors'.tr();
       case SafetyFeature.rearviewCamera:
-        return 'Rearview Camera';
+        return 'Rearview Camera'.tr();
       case SafetyFeature.hillDescentControl:
-        return 'Hill Descent Control';
+        return 'Hill Descent Control'.tr();
       case SafetyFeature.driverDrowsinessMonitoring:
-        return 'Driver Drowsiness Monitoring';
+        return 'Driver Drowsiness Monitoring'.tr();
       case SafetyFeature.pedestrianDetection:
-        return 'Pedestrian Detection';
+        return 'Pedestrian Detection'.tr();
     }
   }
 }

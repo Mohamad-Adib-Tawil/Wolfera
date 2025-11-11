@@ -47,7 +47,7 @@ class _TranmissionDialogState extends State<TranmissionDialog> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         AppText(
-          'Transmission',
+          'transmission',
           style: context.textTheme.titleMedium?.s20.b,
         ),
         IconButton(

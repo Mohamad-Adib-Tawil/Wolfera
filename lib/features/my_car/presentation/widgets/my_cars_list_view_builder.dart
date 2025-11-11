@@ -75,7 +75,7 @@ class MyCarsListViewBuilder extends StatelessWidget {
                       maxLines: 2),
                   18.verticalSpace,
                   AppElevatedButton(
-                    text: 'Sell My Car',
+                    text: 'sell_my_car'.tr(),
                     onPressed: () => GRouter.router
                         .pushNamed(GRouter.config.myCarsRoutes.sellMyCarPage),
                     style: ElevatedButton.styleFrom(
@@ -245,8 +245,8 @@ class MyCarsListViewBuilder extends StatelessWidget {
                               builder: (ctx) {
                                 return AlertDialog(
                                   backgroundColor: const Color(0xFF1E1F24),
-                                  title: const Text('Edit rental prices',
-                                      style: TextStyle(color: Colors.white)),
+                                  title: Text('edit_rental_prices'.tr(),
+                                      style: const TextStyle(color: Colors.white)),
                                   content: SingleChildScrollView(
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
@@ -410,11 +410,11 @@ class MyCarsListViewBuilder extends StatelessWidget {
                             items.add(
                               PopupMenuItem(
                                 value: 'edit_rental_prices',
-                                child: const ListTile(
-                                  leading: Icon(Icons.car_rental,
+                                child: ListTile(
+                                  leading: const Icon(Icons.car_rental,
                                       color: Colors.white70),
-                                  title: Text('Edit rental prices',
-                                      style: TextStyle(color: Colors.white)),
+                                  title: Text('edit_rental_prices'.tr(),
+                                      style: const TextStyle(color: Colors.white)),
                                 ),
                               ),
                             );

@@ -27,7 +27,7 @@ class _EnterCarFeaturesPageState extends State<_EnterCarFeaturesPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               FeatureSection(
-                title: 'Safety',
+                title: 'safety'.tr(),
                 formControlName: _myCarsBloc.kFromCarSafety,
                 onTap: () => AnimatedDialog.show(context,
                     insetPadding: HWEdgeInsets.only(
@@ -43,11 +43,11 @@ class _EnterCarFeaturesPageState extends State<_EnterCarFeaturesPage> {
                 ),
                     alignment: Alignment.center,
                     barrierDismissible: true,
-                    barrierLabel: "SafetyFeaturesDialog"),
+                    barrierLabel: "SafetyFeaturesDialog".tr()),
               ),
               10.verticalSpace,
               FeatureSection(
-                title: 'Interior',
+                title: 'interior'.tr(),
                 formControlName: _myCarsBloc.kFromCarInterior,
                 onTap: () => AnimatedDialog.show(context,
                     insetPadding: HWEdgeInsets.only(
@@ -63,11 +63,11 @@ class _EnterCarFeaturesPageState extends State<_EnterCarFeaturesPage> {
                 ),
                     alignment: Alignment.center,
                     barrierDismissible: true,
-                    barrierLabel: "InteriorFeaturesDialog"),
+                    barrierLabel: "InteriorFeaturesDialog".tr()),
               ),
               10.verticalSpace,
               FeatureSection(
-                title: 'Exterior',
+                title: 'exterior'.tr(),
                 formControlName: _myCarsBloc.kFromCarExterior,
                 onTap: () => AnimatedDialog.show(context,
                     insetPadding: HWEdgeInsets.only(
@@ -83,7 +83,7 @@ class _EnterCarFeaturesPageState extends State<_EnterCarFeaturesPage> {
                 ),
                     alignment: Alignment.center,
                     barrierDismissible: true,
-                    barrierLabel: "InteriorFeaturesDialog"),
+                    barrierLabel: "InteriorFeaturesDialog".tr()),
               ),
             ],
           ),

@@ -41,7 +41,7 @@ class _EnterCarPriceAndDescriptionPageState
             ),
             30.verticalSpace,
             SellCarItem(
-              title: 'Description',
+              title: 'description'.tr(),
               isDescription: true,
               formControlName: _myCarsBloc.kFromCarDescription,
             ),
@@ -66,7 +66,7 @@ class _EnterCarPriceAndDescriptionPageState
                           items: CurrenciesData.list,
                           selectedItem: selected,
                           itemAsString: (c) => c.symbol,
-                          hintText: 'Currency',
+                          hintText: 'currency'.tr(),
                           dropdownBuilder: (context, c) => Text(
                             (c?.symbol ?? r'$'),
                             style: context.textTheme.bodySmall?.m
@@ -137,8 +137,7 @@ class _EnterCarPriceAndDescriptionPageState
             ),
             30.verticalSpace,
             AppText(
-              'Country',
-              translation: false,
+              'country',
               style: context.textTheme.titleMedium?.s13.m
                   .withColor(AppColors.white),
             ),
@@ -154,7 +153,7 @@ class _EnterCarPriceAndDescriptionPageState
                   items: countries,
                   selectedItem: selectedCountry,
                   itemAsString: (co) => co.name,
-                  hintText: 'Country',
+                  hintText: 'country'.tr(),
                   dropdownBuilder: (context, co) {
                     final code = (co?.code ?? 'WW').toUpperCase();
                     final isWw = code == LocationsData.worldwideCode;

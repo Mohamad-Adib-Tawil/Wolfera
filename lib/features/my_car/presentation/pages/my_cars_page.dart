@@ -65,7 +65,7 @@ class _MyCarsPageState extends State<MyCarsPage> {
                   duration: const Duration(milliseconds: 1000),
                   beginOffset: const Offset(0, -0.24),
                   child: CustomAppbar(
-                    text: 'My Cars'.tr(),
+                    text: 'my_cars'.tr(),
                     action: showDeleteAll
                         ? IconButton(
                             tooltip: 'Delete all',
@@ -98,7 +98,7 @@ class _MyCarsPageState extends State<MyCarsPage> {
                   ),
                 )
               : CustomAppbar(
-                  text: 'My Cars'.tr(),
+                  text: 'my_cars'.tr(),
                   action: showDeleteAll
                       ? IconButton(
                           tooltip: 'Delete all',
@@ -195,7 +195,7 @@ class _SellCarCta extends StatelessWidget {
               const Icon(Icons.directions_car_filled, color: Colors.white),
               10.horizontalSpace,
               AppText(
-                'Sell My Car'.tr(),
+                'sell_my_car'.tr(),
                 translation: false,
                 style: context.textTheme.titleMedium?.s18.xb
                     .withColor(Colors.white),

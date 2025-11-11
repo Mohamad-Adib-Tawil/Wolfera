@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -90,7 +91,7 @@ class HomeAppBar extends StatelessWidget {
               ),
               CityDropdown(
                 onChanged: (label) {
-                  final v = label ?? 'Worldwide';
+                  final v = label ?? 'Worldwide'.tr();
                   final searchCubit = GetIt.I<SearchCubit>();
                   final homeCubit = GetIt.I<HomeCubit>();
                   if (v == 'Worldwide') {

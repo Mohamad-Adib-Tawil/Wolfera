@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -48,7 +49,7 @@ class _VehicleTypeDialogState extends State<VehicleTypeDialog> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         AppText(
-          'Vehicle Type',
+          'vehicle_type'.tr(),
           style: context.textTheme.titleMedium?.s20.b,
         ),
         IconButton(

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
@@ -36,7 +37,7 @@ class FeatureSection extends StatelessWidget {
               InkWell(
                 onTap: onTap,
                 child: AppText(
-                  'Add / Edit',
+                  'add_edit'.tr(),
                   style: context.textTheme.bodySmall?.s14.r
                       .withColor(AppColors.grey),
                 ),

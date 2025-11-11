@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
@@ -66,11 +67,11 @@ class MessageItemWidget extends StatelessWidget {
                   final ok = await showDialog<bool>(
                         context: context,
                         builder: (ctx) => AlertDialog(
-                          title: const Text('Delete message?'),
-                          content: const Text('This message will be marked as deleted for both sides.'),
+                          title: Text('delete_message_q'.tr()),
+                          content: Text('delete_message_confirm'.tr()),
                           actions: [
-                            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-                            TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete', style: TextStyle(color: Colors.red))),
+                            TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('cancel'.tr())),
+                            TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text('delete'.tr(), style: const TextStyle(color: Colors.red))),
                           ],
                         ),
                       ) ??
