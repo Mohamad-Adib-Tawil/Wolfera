@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
 import 'package:wolfera/core/utils/money_formatter.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
@@ -166,11 +167,22 @@ class _SearchResultsVerticalListState extends State<SearchResultsVerticalList> {
                 ];
                 final title = titleParts.where((e) => e != null && e.isNotEmpty).join(' ');
 
-                final spec1 = (car['body_type'] ?? car['engine_capacity'])?.toString();
-                final spec2 = car['transmission']?.toString();
+                final rawSpec1 = car['body_type']?.toString();
+                final spec1 = rawSpec1 != null
+                    ? CarValueTranslator.translateBodyType(rawSpec1)
+                    : car['engine_capacity']?.toString();
+                final rawSpec2 = car['transmission']?.toString();
+                final spec2 = rawSpec2 != null
+                    ? CarValueTranslator.translateTransmission(rawSpec2)
+                    : null;
                 final mileageVal = car['mileage']?.toString();
-                final mileage = mileageVal != null && mileageVal.isNotEmpty ? '$mileageVal KM' : null;
-                final fuel = car['fuel_type']?.toString();
+                final mileage = mileageVal != null && mileageVal.isNotEmpty
+                    ? '$mileageVal ${'km'.tr()}'
+                    : null;
+                final rawFuel = car['fuel_type']?.toString();
+                final fuel = rawFuel != null
+                    ? CarValueTranslator.translateFuelType(rawFuel)
+                    : null;
                 // Build translated location: prefer city + translated country, else translated parts
                 final city = car['city']?.toString();
                 final countryRaw = car['country']?.toString();
@@ -187,8 +199,14 @@ class _SearchResultsVerticalListState extends State<SearchResultsVerticalList> {
                   final tCity = CarValueTranslator.translateCity(city, country: countryRaw);
                   location = tCity.isNotEmpty ? tCity : city;
                 } else if (locationRaw != null && locationRaw.isNotEmpty) {
-                  final c = CarValueTranslator.translateCountry(locationRaw);
-                  location = c != '-' ? c : locationRaw;
+                  // Treat generic 'location' as a possible city/region first
+                  final tCity = CarValueTranslator.translateCity(locationRaw, country: countryRaw);
+                  if (countryRaw != null && countryRaw.isNotEmpty) {
+                    final c = CarValueTranslator.translateCountry(countryRaw);
+                    location = '${tCity.isNotEmpty ? tCity : locationRaw}, ${c != '-' ? c : countryRaw}';
+                  } else {
+                    location = tCity.isNotEmpty ? tCity : locationRaw;
+                  }
                 }
                 final priceVal = car['price']?.toString();
                 final currency = car['currency']?.toString() ?? r'$';

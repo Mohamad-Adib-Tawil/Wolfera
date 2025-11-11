@@ -100,13 +100,10 @@ class BottomSectionCarMiniDetailsCard extends StatelessWidget {
                     ),
                   ),
                   AppText(
-                    () {
-                      if (location == null || location!.isEmpty) {
-                        return ' ${'Worldwide'.tr()}';
-                      }
-                      final translated = CarValueTranslator.translateCountry(location);
-                      return ' ${translated != '-' ? translated : location}';
-                    }(),
+                    location == null || location!.isEmpty
+                        ? ' ${'Worldwide'.tr()}'
+                        : ' $location',
+                    translation: false,
                     style: context.textTheme.titleSmall!.sb
                         .withColor(AppColors.white),
                   ),
