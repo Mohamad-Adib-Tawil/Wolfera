@@ -112,15 +112,26 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       
       final email = profileForm.control(kFromEmail).value;
       final displayName = profileForm.control(kFromName).value;
-      final phoneNumber = profileForm.control(kFromPhone).value;
+      var phoneNumber = profileForm.control(kFromPhone).value as String?;
+      final countryCode = profileForm.control(kFromCountryCode).value;
       
-      print('📝 Form data: name=$displayName, email=$email, phone=$phoneNumber');
+      // Remove leading zero if user entered national format (e.g., 0555123456)
+      if (phoneNumber != null && phoneNumber.startsWith('0')) {
+        phoneNumber = phoneNumber.substring(1);
+      }
+      
+      // Combine country code with phone number
+      final fullPhoneNumber = phoneNumber != null && phoneNumber.isNotEmpty
+          ? '+$countryCode$phoneNumber'
+          : null;
+      
+      print('📝 Form data: name=$displayName, email=$email, phone=$fullPhoneNumber');
       print('📷 Has avatar: ${state.selectedFile != null}');
       
       final result = await _updateProfileUsecase(UpdateProfileParams(
         email: email,
         displayName: displayName,
-        phoneNumber: phoneNumber,
+        phoneNumber: fullPhoneNumber,
         avatar: state.selectedFile,
       ));
       result.fold(
