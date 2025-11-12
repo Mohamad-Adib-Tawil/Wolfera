@@ -37,6 +37,7 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
     on<UpdateMyCarStatusEvent>(_onUpdateMyCarStatus);
     on<UpdateMyCarPriceEvent>(_onUpdateMyCarPrice);
     on<UpdateMyCarRentalPricesEvent>(_onUpdateMyCarRentalPrices);
+    on<ToggleTemplateEvent>(_onToggleTemplate);
 
     // Initialize dynamic validators for description form
     try {
@@ -45,6 +46,9 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
     } catch (e) {
       // ignore
     }
+    
+    // تطبيق القالب الافتراضي عند بدء التطبيق
+    _applyTemplate();
   }
 
   // تحديث أسعار الإيجار للسيارة
@@ -795,6 +799,274 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
     } catch (e) {
       print('🔴 Error updating car price: $e');
       EasyLoading.showError('Failed to update price');
+    }
+  }
+
+  // معالج تبديل عرض القالب الافتراضي
+  void _onToggleTemplate(ToggleTemplateEvent event, Emitter<MyCarsState> emit) {
+    emit(state.copyWith(isTemplateVisible: !state.isTemplateVisible));
+    
+    if (state.isTemplateVisible) {
+      _applyTemplate();
+    } else {
+      _clearTemplate();
+    }
+  }
+
+  // تطبيق القالب الافتراضي (سيارة BMW X5 2024)
+  void _applyTemplate() {
+    // بيانات السيارة الافتراضية
+    final templateData = _getTemplateData();
+    
+    // تطبيق البيانات على نموذج تفاصيل السيارة
+    sellMyCarForm.control(kFromCarMaker).value = templateData['maker'];
+    sellMyCarForm.control(kFromCarModel).value = templateData['model'];
+    sellMyCarForm.control(kFromCarEngine).value = templateData['engine'];
+    sellMyCarForm.control(kFromCarYear).value = templateData['year'];
+    sellMyCarForm.control(kFromCarTransmission).value = templateData['transmission'];
+    sellMyCarForm.control(kFromCarFuelType).value = templateData['fuelType'];
+    sellMyCarForm.control(kFromCarVehicleType).value = templateData['bodyType'];
+    sellMyCarForm.control(kFromCarCondition).value = templateData['condition'];
+    sellMyCarForm.control(kFromCarColor).value = templateData['color'];
+    sellMyCarForm.control(kFromCarSeats).value = templateData['seats'];
+    sellMyCarForm.control(kFromCarCylinders).value = templateData['cylinders'];
+    sellMyCarForm.control(kFromCarMileage).value = templateData['mileage'];
+    sellMyCarForm.control(kFromCarTrim).value = templateData['trim'];
+    sellMyCarForm.control(kFromCarPaintParts).value = templateData['paintParts'];
+    sellMyCarForm.control(kFromCarPlate).value = templateData['plate'];
+    sellMyCarForm.control(kFromCarSeatMaterial).value = templateData['seatMaterial'];
+    sellMyCarForm.control(kFromCarWheels).value = templateData['wheels'];
+    sellMyCarForm.control(kFromCarInteriorColor).value = templateData['interiorColor'];
+    sellMyCarForm.control(kFromCarExteriorColor).value = templateData['exteriorColor'];
+    
+    // تطبيق البيانات على نموذج السعر والوصف
+    descriptionSectionForm.control(kFromListingType).value = templateData['listingType'];
+    descriptionSectionForm.control(kFromCarPrice).value = templateData['salePrice'];
+    descriptionSectionForm.control(kFromCarDescription).value = templateData['description'];
+    descriptionSectionForm.control(kFromCountryCode).value = templateData['countryCode'];
+    descriptionSectionForm.control(kFromRegionOrCity).value = templateData['regionOrCity'];
+    descriptionSectionForm.control(kFromCurrencyCode).value = templateData['currencyCode'];
+    
+    // تطبيق أسعار الإيجار
+    descriptionSectionForm.control(kFromRentalPricePerDay).value = templateData['rentalPricePerDay'];
+    descriptionSectionForm.control(kFromRentalPricePerWeek).value = templateData['rentalPricePerWeek'];
+    descriptionSectionForm.control(kFromRentalPricePerMonth).value = templateData['rentalPricePerMonth'];
+    descriptionSectionForm.control(kFromRentalPricePerThreeMonths).value = templateData['rentalPricePerThreeMonths'];
+    descriptionSectionForm.control(kFromRentalPricePerSixMonths).value = templateData['rentalPricePerSixMonths'];
+    descriptionSectionForm.control(kFromRentalPricePerYear).value = templateData['rentalPricePerYear'];
+    
+    // تطبيق المميزات الافتراضية
+    _applyDefaultFeatures();
+    
+    // تحديث validators حسب نوع الإعلان
+    updateValidatorsByListingType(templateData['listingType']);
+  }
+
+  // تطبيق المميزات الافتراضية للسيارة
+  void _applyDefaultFeatures() {
+    // التحقق من اللغة الحالية
+    bool isArabic = false;
+    try {
+      isArabic = EasyLocalization.of(GRouter.router.routerDelegate.navigatorKey.currentContext!)?.locale.languageCode == 'ar';
+    } catch (e) {
+      isArabic = false;
+    }
+    
+    if (isArabic) {
+      // مميزات السلامة بالعربية
+      sellMyCarForm.control(kFromCarSafety).value = [
+        'نظام ABS',
+        'وسائد هوائية',
+        'نظام التحكم بالثبات',
+        'نظام التحكم بالجر',
+        'حساسات ركن',
+        'كاميرا خلفية',
+        'كاميرات 360 درجة',
+        'مراقب النقطة العمياء',
+        'تحذير مغادرة المسار',
+        'تحذير التصادم'
+      ];
+      
+      // المميزات الداخلية بالعربية
+      sellMyCarForm.control(kFromCarInterior).value = [
+        'مقاعد جلدية',
+        'مقاعد مدفأة',
+        'مقاعد مبردة',
+        'مقاعد كهربائية',
+        'مقاعد بذاكرة',
+        'أزرار المقود',
+        'مثبت السرعة',
+        'نظام ملاحة',
+        'نظام صوتي فاخر',
+        'شاحن لاسلكي',
+        'منافذ USB',
+        'بلوتوث',
+        'Apple CarPlay',
+        'Android Auto',
+        'تحكم بالمناخ',
+        'إضاءة محيطية'
+      ];
+      
+      // المميزات الخارجية بالعربية
+      sellMyCarForm.control(kFromCarExterior).value = [
+        'مصابيح LED أمامية',
+        'مصابيح LED خلفية',
+        'مصابيح تكيفية',
+        'مصابيح ضباب',
+        'فتحة سقف',
+        'فتحة سقف بانوراما',
+        'جنوط معدنية',
+        'مرايا كهربائية',
+        'مرايا مدفأة',
+        'حساسات مطر',
+        'دخول بدون مفتاح',
+        'تشغيل بالضغط',
+        'تشغيل عن بعد',
+        'مساعد ركن'
+      ];
+    } else {
+      // مميزات السلامة بالإنجليزية
+      sellMyCarForm.control(kFromCarSafety).value = [
+        'ABS System',
+        'Airbags',
+        'Stability Control',
+        'Traction Control',
+        'Parking Sensors',
+        'Backup Camera',
+        '360 Camera',
+        'Blind Spot Monitor',
+        'Lane Departure Warning',
+        'Collision Warning'
+      ];
+      
+      // المميزات الداخلية بالإنجليزية
+      sellMyCarForm.control(kFromCarInterior).value = [
+        'Leather Seats',
+        'Heated Seats',
+        'Ventilated Seats',
+        'Power Seats',
+        'Memory Seats',
+        'Steering Wheel Controls',
+        'Cruise Control',
+        'Navigation System',
+        'Premium Sound System',
+        'Wireless Charger',
+        'USB Ports',
+        'Bluetooth',
+        'Apple CarPlay',
+        'Android Auto',
+        'Climate Control',
+        'Ambient Lighting'
+      ];
+      
+      // المميزات الخارجية بالإنجليزية
+      sellMyCarForm.control(kFromCarExterior).value = [
+        'LED Headlights',
+        'LED Taillights',
+        'Adaptive Headlights',
+        'Fog Lights',
+        'Sunroof',
+        'Panoramic Sunroof',
+        'Alloy Wheels',
+        'Power Mirrors',
+        'Heated Mirrors',
+        'Rain Sensors',
+        'Keyless Entry',
+        'Push Start',
+        'Remote Start',
+        'Parking Assist'
+      ];
+    }
+  }
+
+  // مسح القالب الافتراضي
+  void _clearTemplate() {
+    // مسح جميع الحقول
+    sellMyCarForm.reset();
+    descriptionSectionForm.reset();
+    imagesSectionForm.reset();
+  }
+
+  // الحصول على بيانات القالب حسب اللغة
+  Map<String, dynamic> _getTemplateData() {
+    // افتراض اللغة الإنجليزية كافتراضي
+    bool isArabic = false;
+    try {
+      // محاولة الحصول على اللغة الحالية
+      isArabic = EasyLocalization.of(GRouter.router.routerDelegate.navigatorKey.currentContext!)?.locale.languageCode == 'ar';
+    } catch (e) {
+      // في حالة الخطأ، استخدم الإنجليزية
+      isArabic = false;
+    }
+    
+    if (isArabic) {
+      return {
+        'maker': 'BMW',
+        'model': 'X5',
+        'engine': '3.0 لتر توربو 6 سلندر',
+        'year': '2024',
+        'transmission': 'أوتوماتيك',
+        'fuelType': 'بنزين',
+        'bodyType': 'SUV',
+        'condition': 'جديد',
+        'color': 'أسود',
+        'seats': '5',
+        'cylinders': '6',
+        'mileage': '15000',
+        'trim': 'xDrive40i M Sport',
+        'paintParts': 'أصلي',
+        'plate': 'دبي',
+        'seatMaterial': 'جلد',
+        'wheels': '21 بوصة',
+        'interiorColor': 'أسود',
+        'exteriorColor': 'أسود معدني',
+        'listingType': 'both',
+        'salePrice': '485000',
+        'rentalPricePerDay': '850',
+        'rentalPricePerWeek': '5500',
+        'rentalPricePerMonth': '18000',
+        'rentalPricePerThreeMonths': '50000',
+        'rentalPricePerSixMonths': '95000',
+        'rentalPricePerYear': '180000',
+        'countryCode': 'AE',
+        'regionOrCity': 'دبي',
+        'currencyCode': 'AED',
+        'description': 'BMW X5 xDrive40i M Sport 2024 في حالة ممتازة، محرك 3.0 لتر توربو 6 سلندر بقوة 375 حصان، ناقل حركة أوتوماتيك 8 سرعات، نظام دفع رباعي xDrive الذكي، مقاعد جلدية فاخرة مع تدفئة وتبريد، نظام ملاحة BMW Live Cockpit Professional، شاشة 12.3 بوصة، كاميرات 360 درجة، نظام صوتي هارمان كاردون بـ16 مكبر صوت، إضاءة LED تكيفية، فتحة سقف بانوراما، مقاعد كهربائية مع ذاكرة، نظام مساعد القيادة BMW Driving Assistant، نظام ركن تلقائي، شاحن لاسلكي، منافذ USB-C، نظام تحكم بالمناخ 4 مناطق، جنوط M Sport 21 بوصة، فرامل M Sport، نظام عادم رياضي، حماية كاملة وتظليل حراري.'
+      };
+    } else {
+      return {
+        'maker': 'BMW',
+        'model': 'X5',
+        'engine': '3.0L Twin-Turbo I6',
+        'year': '2024',
+        'transmission': 'Automatic',
+        'fuelType': 'Gasoline',
+        'bodyType': 'SUV',
+        'condition': 'Excellent',
+        'color': 'Black',
+        'seats': '5',
+        'cylinders': '6',
+        'mileage': '15000',
+        'trim': 'xDrive40i M Sport',
+        'paintParts': 'Original',
+        'plate': 'Dubai',
+        'seatMaterial': 'Leather',
+        'wheels': '21 inch',
+        'interiorColor': 'Black',
+        'exteriorColor': 'Metallic Black',
+        'listingType': 'both',
+        'salePrice': '485000',
+        'rentalPricePerDay': '850',
+        'rentalPricePerWeek': '5500',
+        'rentalPricePerMonth': '18000',
+        'rentalPricePerThreeMonths': '50000',
+        'rentalPricePerSixMonths': '95000',
+        'rentalPricePerYear': '180000',
+        'countryCode': 'AE',
+        'regionOrCity': 'Dubai',
+        'currencyCode': 'AED',
+        'description': 'BMW X5 xDrive40i M Sport 2024 in excellent condition, 3.0L Twin-Turbo I6 engine with 375 HP, 8-speed automatic transmission, intelligent xDrive all-wheel drive system, premium leather seats with heating and ventilation, BMW Live Cockpit Professional navigation system, 12.3-inch display, 360-degree cameras, Harman Kardon sound system with 16 speakers, adaptive LED lighting, panoramic sunroof, electric seats with memory, BMW Driving Assistant, automatic parking system, wireless charger, USB-C ports, 4-zone climate control, M Sport 21-inch wheels, M Sport brakes, sport exhaust system, full protection and heat tinting.'
+      };
     }
   }
 }

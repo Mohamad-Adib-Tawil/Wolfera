@@ -201,6 +201,9 @@ abstract class  LocaleKeys {
   static const city = 'city';
   static const listing_type = 'listing_type';
   static const select_country = 'select_country';
+  static const apply_template = 'apply_template';
+  static const clear_template = 'clear_template';
+  static const continue_btn = 'continue_btn';
   static const select_country_region = 'select_country_region';
   static const browse_by_makers = 'browse_by_makers';
   static const browse_by_budget = 'browse_by_budget';

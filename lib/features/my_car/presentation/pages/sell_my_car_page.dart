@@ -100,9 +100,35 @@ class _SellMyCarPageState extends State<SellMyCarPage> {
             title: AppText(
               "sell_car.title",
               style: context.textTheme.titleSmall.m!
-                  .copyWith(color: AppColors.white, fontSize: 22.sp),
+                  .copyWith(color: AppColors.white, fontSize: 18.sp),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
             centerTitle: true,
+            actions: [
+              BlocSelector<MyCarsBloc, MyCarsState, int>(
+                selector: (state) => state.activeStep,
+                builder: (context, activeStep) {
+                  // إظهار زر القالب فقط في الصفحة الأولى (تفاصيل السيارة)
+                  if (activeStep == 0) {
+                    return BlocSelector<MyCarsBloc, MyCarsState, bool>(
+                      selector: (state) => state.isTemplateVisible,
+                      builder: (context, isTemplateVisible) {
+                        return IconButton(
+                          onPressed: () => GetIt.I<MyCarsBloc>().add(ToggleTemplateEvent()),
+                          icon: Icon(
+                            isTemplateVisible ? Icons.clear : Icons.auto_fix_high,
+                            color: AppColors.white,
+                          ),
+                          tooltip: isTemplateVisible ? 'clear_template'.tr() : 'apply_template'.tr(),
+                        );
+                      },
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+            ],
           ),
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
