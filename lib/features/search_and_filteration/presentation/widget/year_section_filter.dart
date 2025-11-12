@@ -28,7 +28,7 @@ class YearSectionFilter extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SectionTitleAndResetFilterWidget(
-            title: 'Year',
+            title: 'year',
             resetFilter: () => searchCubit.resetYearFilter(
                 resetMaxYear: true, resetMinYear: true)),
         20.verticalSpace,
@@ -38,12 +38,12 @@ class YearSectionFilter extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AppText(
-                'Min year',
+                'min_year',
                 style:
                     context.textTheme.bodyLarge?.s14.withColor(AppColors.white),
               ),
               AppText(
-                'Max year',
+                'max_year',
                 style:
                     context.textTheme.bodyLarge?.s14.withColor(AppColors.white),
               ),

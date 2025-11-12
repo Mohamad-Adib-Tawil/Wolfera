@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get_it/get_it.dart';
@@ -73,12 +72,12 @@ class _FilterPageState extends State<FilterPage> {
                 duration: const Duration(milliseconds: 1000),
                 beginOffset: const Offset(0, -0.24),
                 child: CustomAppbar(
-                  text: 'Filter'.tr(),
+                  text: 'filter',
                   automaticallyImplyLeading: true,
                 ),
               )
             : CustomAppbar(
-                text: 'Filter'.tr(),
+                text: 'filter',
                 automaticallyImplyLeading: true,
               ),
       ),
@@ -104,7 +103,7 @@ class _FilterPageState extends State<FilterPage> {
             label: Padding(
               padding: HWEdgeInsets.symmetric(horizontal: 36),
               child: AppText(
-                "Apply".tr(),
+                "apply",
                 style: context.textTheme.bodyMedium?.s20.b,
               ),
             ),
@@ -115,7 +114,7 @@ class _FilterPageState extends State<FilterPage> {
             label: Padding(
               padding: HWEdgeInsets.symmetric(horizontal: 20),
               child: AppText(
-                "Reset".tr(),
+                "reset",
                 style: context.textTheme.bodyMedium?.s20.b,
               ),
             ),

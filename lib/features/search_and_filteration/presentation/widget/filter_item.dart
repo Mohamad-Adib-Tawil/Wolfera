@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wolfera/core/config/routing/router.dart';
@@ -34,7 +35,7 @@ class FilterItem extends StatelessWidget {
         ),
         child: Row(
           children: [
-            AppText(title,
+            AppText(title.tr(),
                 style: context.textTheme.titleMedium?.s13.m
                     .withColor(isAcitve ? AppColors.primary : AppColors.grey)),
             5.horizontalSpace,

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:wolfera/services/app_settings_service.dart';
 
 class CountryOption {
@@ -12,6 +13,30 @@ class CountryOption {
     this.secondLevelLabel,
     this.secondLevel = const [],
   });
+
+  // Get translated name
+  String get translatedName {
+    if (code == LocationsData.worldwideCode) {
+      return 'worldwide'.tr();
+    }
+    // Use translation key based on country code
+    return 'country_${code.toLowerCase()}'.tr();
+  }
+
+  // Get translated second level label
+  String? get translatedSecondLevelLabel {
+    if (secondLevelLabel == null) return null;
+    switch (secondLevelLabel) {
+      case 'Governorate':
+        return 'governorate'.tr();
+      case 'Emirate':
+        return 'emirate'.tr();
+      case 'City':
+        return 'city'.tr();
+      default:
+        return secondLevelLabel;
+    }
+  }
 }
 
 class LocationsData {

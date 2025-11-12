@@ -17,7 +17,7 @@ class CylindersSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SectionTitleAndResetFilterWidget(
-            title: 'Cylinders',
+            title: 'cylinders',
             resetFilter: () => searchCubit.resetCylindersFilter()),
         20.verticalSpace,
         SizedBox(

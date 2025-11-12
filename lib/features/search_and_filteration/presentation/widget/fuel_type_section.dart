@@ -23,7 +23,7 @@ class FuelTypeSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SectionTitleAndResetFilterWidget(
-            title: 'Fuel Type',
+            title: 'fuel_type',
             resetFilter: () => searchCubit.resetFuelTypeFilter()),
         20.verticalSpace,
         SizedBox(

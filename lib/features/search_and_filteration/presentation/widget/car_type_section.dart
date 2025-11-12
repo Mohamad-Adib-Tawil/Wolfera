@@ -18,7 +18,7 @@ class CarTypeSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SectionTitleAndResetFilterWidget(
-            title: 'Body Type',
+            title: 'body_type',
             resetFilter: () => searchCubit.resetCarBodyTypeFilter()),
         20.verticalSpace,
         SizedBox(

@@ -1,6 +1,6 @@
 {
   "letsgo": "هيا بنا",
-  "home":  "الرئيسية",
+  "home": "الرئيسية",
   "ok": "موافق",
   "confirm": "تأكيد",
   "required": "مطلوب",
@@ -21,7 +21,6 @@
     "email": "البريد الالكتروني",
     "phoneNumber": "رقم الهاتف"
   },
-
   "countries": {
     "uae": "الإمارات العربية المتحدة",
     "saudi_arabia": "المملكة العربية السعودية",
@@ -78,7 +77,6 @@
   "cancel": "الغاء",
   "retry": "إعادة المحاولة",
   "backToHome": "عودة للشاشة الرئيسية",
-
   "logout": "تسجيل الخروج",
   "areYouSureYouWantToLogout": "هل أنت متأكد أنك تريد تسجيل الخروج ؟",
   "noIdoNotWant": "لا ,لا أريد",
@@ -125,7 +123,6 @@
   "cars_found": "سيارة موجودة",
   "upload_photos": "ارفع صور سيارتك",
   "extra_pictures_optional": "صورة اختيارية إضافية",
-
   "reset_password": "إعادة تعيين كلمة المرور",
   "choose_country": "اختر الدولة",
   "go_to_dashboard": "الذهاب للوحة التحكم",
@@ -214,7 +211,37 @@
   "apply_template": "تطبيق قالب",
   "clear_template": "مسح القالب",
   "continue_btn": "استمرار",
+  "region": "المنطقة",
+  "year": "سنة",
+  "newest": "الأحدث",
+  "oldest": "الأقدم",
   "select_country_region": "يرجى اختيار الدولة والمنطقة",
+  "makers": "الماركات",
+  "min_mileage": "أقل مسافة",
+  "max_mileage": "أكثر مسافة",
+  "min_year": "أقل سنة",
+  "max_year": "أكثر سنة",
+  "transmission": "ناقل الحركة",
+  "fuel_type": "نوع الوقود",
+  "body_type": "نوع الهيكل",
+  "cylinders": "عدد الأسطوانات",
+  "seats": "عدد المقاعد",
+  "colors_label": "الألوان",
+  "colors": {
+    "beige": "بيج",
+    "black": "أسود",
+    "blue": "أزرق",
+    "white": "أبيض",
+    "brown": "بني",
+    "gold": "ذهبي",
+    "green": "أخضر",
+    "grey": "رمادي",
+    "orange": "برتقالي",
+    "red": "أحمر",
+    "silver": "فضي"
+  },
+  "condition": "الحالة",
+  "see_full_list": "عرض القائمة كاملة",
   "browse_by_makers": "تصفح حسب الماركة",
   "browse_by_budget": "تصفح حسب الميزانية",
   "recommended": "مُوصى به",
@@ -227,16 +254,31 @@
   "suv": "SUV",
   "sedan": "سيدان",
   "micro": "ميكرو",
+  "country_sy": "سوريا",
+  "country_qa": "قطر",
+  "country_ae": "الإمارات العربية المتحدة",
+  "country_sa": "السعودية",
+  "country_eg": "مصر",
+  "country_jo": "الأردن",
+  "country_lb": "لبنان",
+  "country_iq": "العراق",
+  "country_kw": "الكويت",
+  "country_bh": "البحرين",
+  "country_om": "عمان",
+  "empty_value": "----",
+  "Coupe": "كوبيه",
+  "Sports": "رياضية",
+  "Super": "سوبر",
+  "SUV": "SUV",
+  "Sedan": "سيدان",
+  "Micro": "ميكرو",
   "automatic": "أوتوماتيك",
   "gasoline": "بنزين",
   "safety": "السلامة",
   "exterior": "الخارجية",
   "interior": "الداخلية",
-  "add_edit":"إضافة / تعديل",
-
+  "add_edit": "إضافة / تعديل",
   "seller_label": "البائع",
-  "newest": "الأحدث",
-  "oldest": "الأقدم",
   "sort_price_low_to_high": "السعر: من الأقل إلى الأعلى",
   "sort_price_high_to_low": "السعر: من الأعلى إلى الأقل",
   "sort_year_new_to_old": "السنة: من الأحدث إلى الأقدم",
@@ -266,16 +308,14 @@
   "syria_visibility_updated": "تم تحديث رؤية سوريا",
   "restart_required": "إعادة التشغيل مطلوبة",
   "restart_app_message": "يرجى إعادة تشغيل التطبيق لتطبيق التغييرات.",
-  
   "rental_periods": {
     "per_day": "يومياً",
-    "per_week": "أسبوعياً", 
+    "per_week": "أسبوعياً",
     "per_month": "شهرياً",
     "per_3months": "كل 3 أشهر",
     "per_6months": "كل 6 أشهر",
     "per_year": "سنوياً"
   },
-  
   "rental_labels": {
     "rent_per_day": "إيجار يومي",
     "rent_per_week": "إيجار أسبوعي",
@@ -284,11 +324,10 @@
     "rent_per_6months": "إيجار كل 6 أشهر",
     "rent_per_year": "إيجار سنوي"
   },
-  
   "car_filters": {
     "condition": "الحالة",
     "seats": "المقاعد",
-    "cylinders": "سلندر", 
+    "cylinders": "سلندر",
     "fuel_type": "نوع الوقود",
     "transmission": "ناقل الحركة",
     "body_type": "نوع الهيكل",
@@ -298,31 +337,27 @@
     "year": "السنة",
     "price_range": "نطاق السعر"
   },
-  
   "car_conditions": {
     "new": "جديدة",
     "used": "مستعملة",
-    "excellent": "ممتازة", 
+    "excellent": "ممتازة",
     "very_good": "جيدة جداً",
     "good": "جيدة",
     "fair": "مقبولة",
     "poor": "ضعيفة"
   },
-  
   "fuel_types": {
     "gasoline": "بنزين",
-    "diesel": "ديزل", 
+    "diesel": "ديزل",
     "petrol": "بترول",
     "electric": "كهربائي",
     "hybrid": "هجين"
   },
-  
   "transmission_types": {
     "automatic": "أوتوماتيك",
     "manual": "يدوي",
     "semi_automatic": "نصف أوتوماتيك"
   },
-  
   "body_types": {
     "sedan": "سيدان",
     "suv": "دفع رباعي",
@@ -334,37 +369,21 @@
     "van": "فان",
     "truck": "شاحنة"
   },
-  
-  "colors": {
-    "beige": "بيج",
-    "black": "أسود",
-    "blue": "أزرق",
-    "white": "أبيض",
-    "brown": "بني",
-    "gold": "ذهبي",
-    "green": "أخضر",
-    "grey": "رمادي",
-    "orange": "برتقالي",
-    "red": "أحمر",
-    "silver": "فضي"
-  },
-  
   "seats_count": {
     "2_seats": "مقعدان",
     "3_seats": "3 مقاعد",
-    "4_seats": "4 مقاعد", 
+    "4_seats": "4 مقاعد",
     "5_seats": "5 مقاعد",
     "6_seats": "6 مقاعد",
     "7_seats": "7 مقاعد",
     "8_seats": "8 مقاعد",
     "9_plus_seats": "9+ مقاعد"
   },
-  
   "cylinders_count": {
     "2_cylinders": "2 سلندر",
     "3_cylinders": "3 سلندر",
     "4_cylinders": "4 سلندر",
-    "5_cylinders": "5 سلندر", 
+    "5_cylinders": "5 سلندر",
     "6_cylinders": "6 سلندر",
     "8_cylinders": "8 سلندر",
     "10_cylinders": "10 سلندر",
@@ -372,11 +391,10 @@
     "12_cylinders": "12 سلندر",
     "16_cylinders": "16 سلندر"
   },
-  
   "sell_car": {
     "title": "بيع سيارتي",
     "step_1": "تفاصيل السيارة",
-    "step_2": "المميزات", 
+    "step_2": "المميزات",
     "step_3": "السعر والوصف",
     "step_4": "الصور",
     "next": "التالي",
@@ -399,7 +417,7 @@
     "enter_mileage": "أدخل المسافة المقطوعة",
     "listing_type": "نوع الإعلان",
     "for_sale": "للبيع",
-    "for_rent": "للإيجار", 
+    "for_rent": "للإيجار",
     "both": "كلاهما (بيع وإيجار)",
     "sale_price": "سعر البيع",
     "rental_prices": "أسعار الإيجار",
@@ -413,7 +431,7 @@
     "currency": "العملة",
     "features": "المميزات",
     "interior_features": "المميزات الداخلية",
-    "exterior_features": "المميزات الخارجية", 
+    "exterior_features": "المميزات الخارجية",
     "safety_features": "مميزات الأمان",
     "add_images": "إضافة صور",
     "main_image": "الصورة الرئيسية",
@@ -422,21 +440,18 @@
     "image_required": "مطلوب صورة واحدة على الأقل",
     "car_added_success": "تم إضافة السيارة بنجاح!"
   },
-  
   "chat_section": {
     "empty_title": "لا توجد رسائل بعد",
     "empty_subtitle": "ابدأ محادثة للحصول على المساعدة أو طرح الأسئلة",
     "type_message": "اكتب رسالة...",
     "send": "إرسال"
   },
-  
   "listing_types": {
     "all": "الكل",
     "for_sale": "للبيع",
     "for_rent": "للإيجار",
     "both": "كلاهما"
   },
-  
   "my_cars": "سياراتي",
   "status_label": "الحالة",
   "edit_rental_prices": "تعديل أسعار الإيجار",
@@ -448,11 +463,9 @@
     "rented": "مؤجرة",
     "pending": "معلقة"
   },
-  
   "car_parts": {
     "engine": "المحرك",
     "optional_image": "صورة اختيارية",
-
     "variant": "الفئة",
     "model": "الموديل",
     "full_front": "أمامية كاملة",
@@ -464,7 +477,6 @@
     "front_seats": "المقاعد الأمامية",
     "back_seats": "المقاعد الخلفية"
   },
-  
   "interior_features_list": {
     "leather_seats": "مقاعد جلدية",
     "heated_seats": "مقاعد مدفأة",
@@ -490,7 +502,6 @@
     "apple_carplay": "آبل كار بلاي",
     "android_auto": "أندرويد أوتو"
   },
-  
   "exterior_features_list": {
     "alloy_wheels": "جنوط معدنية",
     "led_headlights": "مصابيح LED",
@@ -511,7 +522,6 @@
     "panoramic_roof": "سقف بانورامي",
     "dual_exhaust": "عادم مزدوج"
   },
-  
   "safety_features_list": {
     "abs": "نظام منع انغلاق المكابح",
     "airbags": "وسائد هوائية",
@@ -530,7 +540,6 @@
     "driver_drowsiness_monitoring": "مراقبة نعاس السائق",
     "pedestrian_detection": "اكتشاف المشاة"
   },
-  
   "brand": "الماركة",
   "model": "الموديل",
   "year_model": "سنة الصنع",
@@ -540,11 +549,7 @@
   "wheels": "العجلات",
   "seat_number": "عدد المقاعد",
   "mileage": "المسافة المقطوعة",
-  "fuel_type": "نوع الوقود",
   "doors": "الأبواب",
-  "seats": "المقاعد",
-  "cylinders": "سلندر",
-  "transmission": "ناقل الحركة",
   "accidents_history": "تاريخ الحوادث",
   "service_history": "تاريخ الصيانة",
   "warranty": "الضمان",
@@ -564,7 +569,6 @@
   "chat_button": "محادثة",
   "yes": "نعم",
   "no": "لا",
-  
   "mycars_empty_title": "لا توجد لديك سيارات بعد",
   "mycars_empty_subtitle": "ابدأ بإضافة سيارتك الأولى لبيعها على وولفيرا.",
   "edit_price": "تعديل السعر",
@@ -585,17 +589,6 @@
   "today": "اليوم",
   "yesterday": "أمس",
   "no_cars_found": "لا توجد سيارات",
-  "makers": "الماركات",
-  "location_filter": "الموقع",
-  "budget_filter": "الميزانية",
-  "body_type": "نوع الهيكل",
-  "kilometers": "الكيلومترات",
-  "transmission_filter": "نقل الحركة",
-  "fuel_filter": "الوقود",
-  "cylinders_filter": "الأسطوانات",
-  "seats_filter": "المقاعد",
-  "colors_filter": "الألوان",
-  "condition_filter": "الحالة",
   "clear_conversation_q": "مسح المحادثة؟",
   "clear_conversation_body": "سيتم حذف جميع الرسائل وإرسال إشعار نظام للطرف الآخر.",
   "conversation_cleared": "تم مسح المحادثة",
@@ -670,41 +663,40 @@
     "tripoli_ly": "طرابلس",
     "tunis": "تونس",
     "algiers": "الجزائر",
-  "rabat": "الرباط",
-  "casablanca": "الدار البيضاء",
-  "sanaa": "صنعاء",
-  "quneitra": "القنيطرة",
-  "sharjah": "الشارقة",
-  "ajman": "عجمان",
-  "umm_al_quwain": "أم القيوين",
-  "ras_al_khaimah": "رأس الخيمة",
-  "fujairah": "الفجيرة",
-  "al_rayyan": "الريان",
-  "al_wakrah": "الوكرة",
-  "al_khor": "الخور",
-  "umm_salal": "أم صلال",
-  "al_daayen": "الظعاين",
-  "madinat_ash_shamal": "مدينة الشمال",
-  "al_shahaniya": "الشحانية",
-  "makkah": "مكة",
-  "madinah": "المدينة",
-  "eastern_province": "المنطقة الشرقية",
-  "asir": "عسير",
-  "tabuk": "تبوك",
-  "qassim": "القصيم",
-  "hail": "حائل",
-  "jazan": "جازان",
-  "najran": "نجران",
-  "al_bahah": "الباحة",
-  "northern_borders": "الحدود الشمالية",
-  "al_jawf": "الجوف"
+    "rabat": "الرباط",
+    "casablanca": "الدار البيضاء",
+    "sanaa": "صنعاء",
+    "quneitra": "القنيطرة",
+    "sharjah": "الشارقة",
+    "ajman": "عجمان",
+    "umm_al_quwain": "أم القيوين",
+    "ras_al_khaimah": "رأس الخيمة",
+    "fujairah": "الفجيرة",
+    "al_rayyan": "الريان",
+    "al_wakrah": "الوكرة",
+    "al_khor": "الخور",
+    "umm_salal": "أم صلال",
+    "al_daayen": "الظعاين",
+    "madinat_ash_shamal": "مدينة الشمال",
+    "al_shahaniya": "الشحانية",
+    "makkah": "مكة",
+    "madinah": "المدينة",
+    "eastern_province": "المنطقة الشرقية",
+    "asir": "عسير",
+    "tabuk": "تبوك",
+    "qassim": "القصيم",
+    "hail": "حائل",
+    "jazan": "جازان",
+    "najran": "نجران",
+    "al_bahah": "الباحة",
+    "northern_borders": "الحدود الشمالية",
+    "al_jawf": "الجوف"
   },
   "choose_country_label": "اختر الدولة",
   "recommended_label": "موصى به",
   "day": "يوم",
   "week": "أسبوع",
   "month": "شهر",
-  "year": "سنة",
   "period_3_months": "3 أشهر",
   "period_6_months": "6 أشهر",
   "km": "كم",
@@ -745,9 +737,9 @@
   "interior_color": "اللون الداخلي",
   "exterior_color": "اللون الخارجي",
   "budget_10k": "10,000 USD",
-  "budget_10k_to_15k": "10K \u0625\u0644\u0649 15K USD",
-  "budget_15k_to_20k": "15K \u0625\u0644\u0649 20K USD",
-  "budget_20k_to_30k": "20K \u0625\u0644\u0649 30K USD",
+  "budget_10k_to_15k": "10K إلى 15K USD",
+  "budget_15k_to_20k": "15K إلى 20K USD",
+  "budget_20k_to_30k": "20K إلى 30K USD",
   "budget_30k": "30,000 USD",
   "reset_label": "إعادة تعيين",
   "confirm_label": "تأكيد",
@@ -772,14 +764,11 @@
   "km_180000": "180,000",
   "km_190000": "190,000",
   "km_200000_plus": "200,000+",
-  
   "delete_all_cars_q": "حذف جميع السيارات؟",
   "delete_all_cars_confirm": "هل أنت متأكد أنك تريد حذف جميع سياراتك؟ لا يمكن التراجع عن هذا الإجراء.",
   "delete_message_q": "حذف الرسالة؟",
   "delete_message_confirm": "سيتم وضع علامة محذوف على هذه الرسالة لكلا الطرفين.",
   "currency": "العملة",
-  "region": "المنطقة",
-  
   "login_success": "تم تسجيل الدخول بنجاح!",
   "login_error": "خطأ في تسجيل الدخول: {}",
   "google_login_success": "تم تسجيل الدخول بـ Google بنجاح!",

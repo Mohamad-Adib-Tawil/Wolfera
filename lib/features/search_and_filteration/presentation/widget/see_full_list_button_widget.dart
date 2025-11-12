@@ -25,7 +25,7 @@ class SeeFullListButtonWidget extends StatelessWidget {
             color: AppColors.grey.withValues(alpha: .2),
           ),
           child: AppText(
-            'See full list',
+            'see_full_list',
             style: context.textTheme.bodyLarge?.s15.withColor(AppColors.white),
           )),
     );

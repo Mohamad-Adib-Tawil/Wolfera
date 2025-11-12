@@ -22,7 +22,6 @@
     "email": "Email",
     "phoneNumber": "Phone Number"
   },
-
   "countries": {
     "uae": "United Arab Emirates",
     "saudi_arabia": "Saudi Arabia",
@@ -79,12 +78,10 @@
   "cancel": "Cancel",
   "retry": "Retry",
   "backToHome": "Back to home",
-
   "logout": "Logout",
   "areYouSureYouWantToLogout": "Are you sure you want to log out?",
   "noIdoNotWant": "No, I don't want",
   "yesAmSure": "Yes, I'm sure",
-
   "all": "All",
   "read": "Read",
   "unRead": "UnRead",
@@ -173,7 +170,6 @@
     "YourPerfectRideisJustATapAway": "your perfect ride is just a tap away!",
     "skip": "Skip"
   },
-
   "dataHasBeenModifiedSuccessfully": "Data has been modified successfully",
   "alert": "Alert",
   "pleaseLoginToContinue": "Please Login to continue",
@@ -212,7 +208,37 @@
   "apply_template": "Apply Template",
   "clear_template": "Clear Template",
   "continue_btn": "Continue",
+  "region": "Region",
+  "year": "year",
+  "newest": "Newest",
+  "oldest": "Oldest",
   "select_country_region": "Please select country and region",
+  "makers": "Makers",
+  "min_mileage": "Min Mileage",
+  "max_mileage": "Max Mileage",
+  "min_year": "Min Year",
+  "max_year": "Max Year",
+  "transmission": "Transmission",
+  "fuel_type": "Fuel Type",
+  "body_type": "Body type",
+  "cylinders": "Cylinders",
+  "seats": "Seats",
+  "colors_label": "Colors",
+  "colors": {
+    "beige": "Beige",
+    "black": "Black",
+    "blue": "Blue",
+    "white": "White",
+    "brown": "Brown",
+    "gold": "Gold",
+    "green": "Green",
+    "grey": "Grey",
+    "orange": "Orange",
+    "red": "Red",
+    "silver": "Silver"
+  },
+  "condition": "Condition",
+  "see_full_list": "See full list",
   "browse_by_makers": "Browse by Makers",
   "browse_by_budget": "Browse by Budget",
   "recommended": "Recommended",
@@ -225,15 +251,31 @@
   "suv": "SUV",
   "sedan": "Sedan",
   "micro": "Micro",
+  "country_sy": "Syria",
+  "country_qa": "Qatar",
+  "country_ae": "United Arab Emirates",
+  "country_sa": "Saudi Arabia",
+  "country_eg": "Egypt",
+  "country_jo": "Jordan",
+  "country_lb": "Lebanon",
+  "country_iq": "Iraq",
+  "country_kw": "Kuwait",
+  "country_bh": "Bahrain",
+  "country_om": "Oman",
+  "empty_value": "----",
+  "Coupe": "Coupe",
+  "Sports": "Sports",
+  "Super": "Super",
+  "SUV": "SUV",
+  "Sedan": "Sedan",
+  "Micro": "Micro",
   "automatic": "Automatic",
   "gasoline": "Gasoline",
   "safety": "Safety",
   "exterior": "Exterior",
   "interior": "Interior",
   "seller_label": "Seller",
-  "add_edit":"Add / Edit",
-  "newest": "Newest",
-  "oldest": "Oldest",
+  "add_edit": "Add / Edit",
   "sort_price_low_to_high": "Price: Low to High",
   "sort_price_high_to_low": "Price: High to Low",
   "sort_year_new_to_old": "Year: New to Old",
@@ -262,16 +304,14 @@
   "syria_visibility_updated": "Syria visibility updated",
   "restart_required": "Restart Required",
   "restart_app_message": "Please restart the app to apply changes.",
-  
   "rental_periods": {
     "per_day": "Per Day",
-    "per_week": "Per Week", 
+    "per_week": "Per Week",
     "per_month": "Per Month",
     "per_3months": "Per 3 Months",
     "per_6months": "Per 6 Months",
     "per_year": "Per Year"
   },
-  
   "rental_labels": {
     "rent_per_day": "Rent per Day",
     "rent_per_week": "Rent per Week",
@@ -280,11 +320,10 @@
     "rent_per_6months": "Rent per 6 Months",
     "rent_per_year": "Rent per Year"
   },
-  
   "car_filters": {
     "condition": "Condition",
     "seats": "Seats",
-    "cylinders": "Cylinders", 
+    "cylinders": "Cylinders",
     "fuel_type": "Fuel Type",
     "transmission": "Transmission",
     "body_type": "Body Type",
@@ -294,31 +333,27 @@
     "year": "Year",
     "price_range": "Price Range"
   },
-  
   "car_conditions": {
     "new": "New",
     "used": "Used",
-    "excellent": "Excellent", 
+    "excellent": "Excellent",
     "very_good": "Very Good",
     "good": "Good",
     "fair": "Fair",
     "poor": "Poor"
   },
-  
   "fuel_types": {
     "gasoline": "Gasoline",
-    "diesel": "Diesel", 
+    "diesel": "Diesel",
     "petrol": "Petrol",
     "electric": "Electric",
     "hybrid": "Hybrid"
   },
-  
   "transmission_types": {
     "automatic": "Automatic",
     "manual": "Manual",
     "semi_automatic": "Semi-Automatic"
   },
-  
   "body_types": {
     "sedan": "Sedan",
     "suv": "SUV",
@@ -330,37 +365,21 @@
     "van": "Van",
     "truck": "Truck"
   },
-  
-  "colors": {
-    "beige": "Beige",
-    "black": "Black",
-    "blue": "Blue",
-    "white": "White",
-    "brown": "Brown",
-    "gold": "Gold",
-    "green": "Green",
-    "grey": "Grey",
-    "orange": "Orange",
-    "red": "Red",
-    "silver": "Silver"
-  },
-  
   "seats_count": {
     "2_seats": "2 Seats",
     "3_seats": "3 Seats",
-    "4_seats": "4 Seats", 
+    "4_seats": "4 Seats",
     "5_seats": "5 Seats",
     "6_seats": "6 Seats",
     "7_seats": "7 Seats",
     "8_seats": "8 Seats",
     "9_plus_seats": "9+ Seats"
   },
-  
   "cylinders_count": {
     "2_cylinders": "2 Cylinders",
     "3_cylinders": "3 Cylinders",
     "4_cylinders": "4 Cylinders",
-    "5_cylinders": "5 Cylinders", 
+    "5_cylinders": "5 Cylinders",
     "6_cylinders": "6 Cylinders",
     "8_cylinders": "8 Cylinders",
     "10_cylinders": "10 Cylinders",
@@ -368,11 +387,10 @@
     "12_cylinders": "12 Cylinders",
     "16_cylinders": "16 Cylinders"
   },
-  
   "sell_car": {
     "title": "Sell My Car",
     "step_1": "Car Details",
-    "step_2": "Features", 
+    "step_2": "Features",
     "step_3": "Price & Description",
     "step_4": "Images",
     "next": "Next",
@@ -395,7 +413,7 @@
     "enter_mileage": "Enter mileage",
     "listing_type": "Listing Type",
     "for_sale": "For Sale",
-    "for_rent": "For Rent", 
+    "for_rent": "For Rent",
     "both": "Both (Sale & Rent)",
     "sale_price": "Sale Price",
     "rental_prices": "Rental Prices",
@@ -409,7 +427,7 @@
     "currency": "Currency",
     "features": "Features",
     "interior_features": "Interior Features",
-    "exterior_features": "Exterior Features", 
+    "exterior_features": "Exterior Features",
     "safety_features": "Safety Features",
     "add_images": "Add Images",
     "main_image": "Main Image",
@@ -418,21 +436,18 @@
     "image_required": "At least one image is required",
     "car_added_success": "Car added successfully!"
   },
-  
   "chat_section": {
     "empty_title": "No messages yet",
     "empty_subtitle": "Start a conversation to get help or ask questions",
     "type_message": "Type a message...",
     "send": "Send"
   },
-  
   "listing_types": {
     "all": "All",
     "for_sale": "For Sale",
     "for_rent": "For Rent",
     "both": "Both"
   },
-  
   "my_cars": "My Cars",
   "status_label": "Status",
   "edit_rental_prices": "Edit rental prices",
@@ -444,7 +459,6 @@
     "rented": "Rented",
     "pending": "Pending"
   },
-  
   "car_parts": {
     "engine": "Engine",
     "variant": "Variant",
@@ -459,7 +473,6 @@
     "optional_image": "Optional Image",
     "back_seats": "Back Seats"
   },
-  
   "interior_features_list": {
     "leather_seats": "Leather Seats",
     "heated_seats": "Heated Seats",
@@ -485,7 +498,6 @@
     "apple_carplay": "Apple CarPlay",
     "android_auto": "Android Auto"
   },
-  
   "exterior_features_list": {
     "alloy_wheels": "Alloy Wheels",
     "led_headlights": "LED Headlights",
@@ -506,7 +518,6 @@
     "panoramic_roof": "Panoramic Roof",
     "dual_exhaust": "Dual Exhaust"
   },
-  
   "safety_features_list": {
     "abs": "ABS",
     "airbags": "Airbags",
@@ -525,7 +536,6 @@
     "driver_drowsiness_monitoring": "Driver Drowsiness Monitoring",
     "pedestrian_detection": "Pedestrian Detection"
   },
-  
   "brand": "Brand",
   "model": "Model",
   "year_model": "Year Model",
@@ -535,11 +545,7 @@
   "wheels": "Wheels",
   "seat_number": "Seat Number",
   "mileage": "Mileage",
-  "fuel_type": "Fuel Type",
   "doors": "Doors",
-  "seats": "Seats",
-  "cylinders": "Cylinders",
-  "transmission": "Transmission",
   "accidents_history": "Accidents History",
   "service_history": "Service History",
   "warranty": "Warranty",
@@ -559,7 +565,6 @@
   "chat_button": "Chat",
   "yes": "Yes",
   "no": "No",
-  
   "address": "Address",
   "car_owner": "Car Owner",
   "mycars_empty_title": "You have no cars yet",
@@ -582,10 +587,8 @@
   "today": "Today",
   "yesterday": "Yesterday",
   "no_cars_found": "No cars found",
-  "makers": "Makers",
   "location_filter": "Location",
   "budget_filter": "Budget",
-  "body_type": "Body type",
   "kilometers": "Kilometers",
   "transmission_filter": "Transmission",
   "fuel_filter": "Fuel",
@@ -602,8 +605,8 @@
   "hide_conversation_body": "This will hide the conversation from your list. You can still receive messages.",
   "conversation_hidden": "Conversation hidden",
   "hide": "Hide",
-  "error": "Error: {}"
-  ,"failed_to_load_seller_cars": "Failed to load seller cars",
+  "error": "Error: {}",
+  "failed_to_load_seller_cars": "Failed to load seller cars",
   "no_cars_for_sale": "No cars for sale",
   "google_signin_misconfigured": "Google Sign-In is misconfigured. Check SHA-1 fingerprints, package name, and Web Client ID.",
   "google_signin_canceled": "Sign-in was canceled by the user.",
@@ -703,7 +706,6 @@
   "day": "day",
   "week": "week",
   "month": "month",
-  "year": "year",
   "period_3_months": "3 months",
   "period_6_months": "6 months",
   "km": "KM",
@@ -771,14 +773,11 @@
   "km_180000": "180,000",
   "km_190000": "190,000",
   "km_200000_plus": "200,000+",
-  
   "delete_all_cars_q": "Delete all cars?",
   "delete_all_cars_confirm": "Are you sure you want to delete all your cars? This action cannot be undone.",
   "delete_message_q": "Delete message?",
   "delete_message_confirm": "This message will be marked as deleted for both sides.",
   "currency": "Currency",
-  "region": "Region",
-  
   "login_success": "Logged in successfully!",
   "login_error": "Login error: {}",
   "google_login_success": "Logged in with Google successfully!",

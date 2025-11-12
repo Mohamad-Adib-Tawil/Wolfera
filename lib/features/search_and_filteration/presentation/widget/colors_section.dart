@@ -23,7 +23,7 @@ class ColorsSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SectionTitleAndResetFilterWidget(
-            title: 'Colors', resetFilter: () => searchCubit.resetColorFilter()),
+            title: 'colors_label', resetFilter: () => searchCubit.resetColorFilter()),
         20.verticalSpace,
         SizedBox(
           height: 82.h,

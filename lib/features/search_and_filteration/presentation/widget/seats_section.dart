@@ -17,7 +17,7 @@ class SeatsSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SectionTitleAndResetFilterWidget(
-            title: 'Seats', resetFilter: () => searchCubit.resetSeatsFilter()),
+            title: 'seats', resetFilter: () => searchCubit.resetSeatsFilter()),
         20.verticalSpace,
         SizedBox(
           height: 46.h,
