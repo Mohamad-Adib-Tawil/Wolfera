@@ -585,6 +585,15 @@ abstract class  LocaleKeys {
   static const hide = 'hide';
   static const error = 'error';
   static const your_message = 'your_message';
+  static const add_phone_number = 'add_phone_number';
+  static const add_phone_description = 'add_phone_description';
+  static const phone_required = 'phone_required';
+  static const phone_too_short = 'phone_too_short';
+  static const phone_too_long = 'phone_too_long';
+  static const error_saving_phone = 'error_saving_phone';
+  static const phone_saved_successfully = 'phone_saved_successfully';
+  static const enter_phone_hint = 'enter_phone_hint';
+  static const skip = 'skip';
   static const failed_to_load_seller_cars = 'failed_to_load_seller_cars';
   static const no_cars_for_sale = 'no_cars_for_sale';
   static const google_signin_misconfigured = 'google_signin_misconfigured';

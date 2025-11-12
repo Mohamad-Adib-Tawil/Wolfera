@@ -1,5 +1,11 @@
 part of 'auth_bloc.dart';
 
+class UpdateUserPhoneEvent extends AuthEvent {
+  final String phoneNumber;
+
+  UpdateUserPhoneEvent({required this.phoneNumber});
+}
+
 abstract class AuthEvent extends Equatable {
   const AuthEvent();
 
@@ -48,15 +54,13 @@ class ResetPasswordEvent extends AuthEvent {
 }
 
 class ChangeCountryEvent extends AuthEvent {
-  final Country country;
+  final dynamic country;
 
   const ChangeCountryEvent({required this.country});
 }
 
 class GoogleLoginEvent extends AuthEvent {
-  const GoogleLoginEvent({
-    required this.onSuccess,
-  });
+  final Function(User, {bool needsPhoneNumber}) onSuccess;
 
-  final ValueChanged<User> onSuccess;
+  const GoogleLoginEvent({required this.onSuccess});
 }

@@ -79,13 +79,27 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     this._prefsRepository,
     this._authDatasource,
   ) : super(AuthState()) {
-    on<RegisterEvent>(_onRegisterEvent);
     on<LoginEvent>(_onLoginEvent);
     on<GoogleLoginEvent>(_onGoogleLoginEvent);
     on<LogoutEvent>(_onLogoutEvent);
     on<ResetPasswordEvent>(_onResetPasswordEvent);
     on<VerificationEvent>(_onVerificationEvent);
+    on<UpdateUserPhoneEvent>(_onUpdateUserPhoneEvent);
     on<ChangeCountryEvent>(_onChangeCountryEvent);
+  }
+
+  FutureOr<void> _onUpdateUserPhoneEvent(
+      UpdateUserPhoneEvent event, Emitter<AuthState> emit) async {
+    try {
+      // Get current user
+      final user = Supabase.instance.client.auth.currentUser;
+      if (user != null) {
+        // Update phone number in preferences
+        await _prefsRepository.setUser(user, event.phoneNumber);
+      }
+    } catch (e) {
+      print('❌ Error updating phone number: $e');
+    }
   }
 
   final LoginUsecase _loginUsecase;
@@ -352,6 +366,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
         print('🔐 Google login successful - User metadata: ${value.userMetadata}');
         print('🔐 User from DB: fullName=$fullName, avatarUrl=$avatarUrl');
+        print('🔐 Phone number: $phoneNumber');
         
         // If display_name is not in metadata, update it from database
         if (fullName != null && value.userMetadata?['display_name'] == null) {
@@ -382,7 +397,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         
         _appManagerCubit.checkUser();
 
-        event.onSuccess(value);
+        // Check if user has phone number
+        if (phoneNumber == null || phoneNumber.isEmpty) {
+          // Navigate to add phone number page
+          print('📱 User has no phone number, navigating to add phone page');
+          event.onSuccess(value, needsPhoneNumber: true);
+        } else {
+          // Navigate to home page
+          print('✅ User has phone number, proceeding to home page');
+          event.onSuccess(value, needsPhoneNumber: false);
+        }
       },
     );
   }

@@ -14,6 +14,8 @@ import 'package:wolfera/features/app/presentation/widgets/app_elvated_button.dar
 import 'package:wolfera/features/app/presentation/widgets/app_svg_picture.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
 import 'package:wolfera/features/app/presentation/widgets/custom_button_with_icon.dart';
+import 'package:wolfera/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:wolfera/features/auth/presentation/pages/add_phone_page.dart';
 import 'package:wolfera/features/auth/presentation/widgets/custom_textfeild.dart';
 import 'package:wolfera/generated/assets.dart';
 import 'package:wolfera/generated/locale_keys.g.dart';
@@ -274,9 +276,17 @@ class _LoginPageState extends State<LoginPage> {
   void _onGoogleLogin() {
     FocusScope.of(context).unfocus();
     _authBloc.add(GoogleLoginEvent(
-      onSuccess: (user) async {
+      onSuccess: (user, {bool needsPhoneNumber = false}) async {
         final bool isUserVerified = user.emailConfirmedAt != null;
-        if (isUserVerified) {
+        
+        if (needsPhoneNumber) {
+          // Navigate to add phone number page
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => AddPhoneNumberPage(user: user),
+            ),
+          );
+        } else if (isUserVerified) {
           GRouter.router.goNamed(GRouter.config.authRoutes.selectCountryPage);
         } else {
           EasyLoading.showToast(
