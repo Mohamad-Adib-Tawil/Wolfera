@@ -151,39 +151,54 @@ class SupabaseService {
     // التحقق من تغيير أي سعر وإرسال الإشعارات
     final carTitle = currentCar['title']?.toString() ?? 'Unknown Car';
     
-    // التحقق من تغيير سعر البيع
-    final oldSalePrice = currentCar['price']?.toString();
-    final newSalePrice = carData['price']?.toString();
-    
-    // التحقق من تغيير أسعار الإيجار المختلفة
+    // التحقق من تغيير سعر البيع (قارن فقط إذا كان الحقل موجوداً في التحديث)
     final rentalFields = [
       'rental_price_per_day',
-      'rental_price_per_week', 
+      'rental_price_per_week',
       'rental_price_per_month',
       'rental_price_per_3months',
       'rental_price_per_6months',
-      'rental_price_per_year'
+      'rental_price_per_year',
     ];
-    
+
     bool priceChanged = false;
     String? oldPriceDisplay, newPriceDisplay;
-    
-    // فحص سعر البيع
-    if (oldSalePrice != null && newSalePrice != null && oldSalePrice != newSalePrice) {
-      priceChanged = true;
-      oldPriceDisplay = oldSalePrice;
-      newPriceDisplay = newSalePrice;
+    String? changedField;
+
+    bool _changed(dynamic oldVal, dynamic newVal) {
+      final hasOld = oldVal != null;
+      final hasNew = newVal != null;
+      if (hasOld != hasNew) return true; // null <-> non-null
+      if (!hasOld && !hasNew) return false; // both null
+      // Try numeric comparison
+      num? o = oldVal is num ? oldVal : num.tryParse(oldVal.toString());
+      num? n = newVal is num ? newVal : num.tryParse(newVal.toString());
+      if (o != null && n != null) return o != n;
+      return oldVal.toString() != newVal.toString();
     }
-    
-    // فحص أسعار الإيجار
+
+    if (carData.containsKey('price')) {
+      final oldSale = currentCar['price'];
+      final newSale = carData['price'];
+      if (_changed(oldSale, newSale)) {
+        priceChanged = true;
+        changedField = 'price';
+        oldPriceDisplay = oldSale?.toString();
+        newPriceDisplay = newSale?.toString();
+      }
+    }
+
+    // التحقق من تغيير أسعار الإيجار (قارن فقط الحقول الموجودة في التحديث)
     if (!priceChanged) {
       for (final field in rentalFields) {
-        final oldValue = currentCar[field]?.toString();
-        final newValue = carData[field]?.toString();
-        if (oldValue != null && newValue != null && oldValue != newValue) {
+        if (!carData.containsKey(field)) continue; // لم يتم تحديث هذا الحقل
+        final oldValue = currentCar[field];
+        final newValue = carData[field];
+        if (_changed(oldValue, newValue)) {
           priceChanged = true;
-          oldPriceDisplay = oldValue;
-          newPriceDisplay = newValue;
+          changedField = field;
+          oldPriceDisplay = oldValue?.toString();
+          newPriceDisplay = newValue?.toString();
           break;
         }
       }
@@ -192,8 +207,11 @@ class SupabaseService {
     if (priceChanged && oldPriceDisplay != null && newPriceDisplay != null) {
       print('💰 Price change detected for car: $id');
       print('   Title: $carTitle');
-      print('   Old Price: $oldPriceDisplay');
-      print('   New Price: $newPriceDisplay');
+      if (changedField != null) {
+        print('   Changed field: $changedField');
+      }
+      print('   Old Price: ${oldPriceDisplay ?? '—'}');
+      print('   New Price: ${newPriceDisplay ?? '—'}');
       
       // إرسال إشعار تغيير السعر للمستخدمين الذين أضافوا السيارة للمفضلة
       await NotificationService.sendPriceChangeNotification(
