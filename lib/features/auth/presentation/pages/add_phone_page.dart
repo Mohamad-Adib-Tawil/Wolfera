@@ -136,7 +136,7 @@ class _AddPhoneNumberPageState extends State<AddPhoneNumberPage> {
         mainAxisSize: MainAxisSize.min,
         children: [
           AppElevatedButton(
-            text: 'save'.tr(),
+            text: 'save',
             isLoading: _isLoading,
             onPressed: _savePhoneNumber,
             textStyle: context.textTheme.labelMedium?.s18?.b
@@ -178,14 +178,33 @@ class _AddPhoneNumberPageState extends State<AddPhoneNumberPage> {
       final phoneNumber = _form.control('phone').value as String;
       final fullPhoneNumber = '$countryCode$phoneNumber';
       
-      // Update user in database
-      await Supabase.instance.client
+      // Attempt update; request returning row to detect success and surface RLS errors
+      print('Saving phone for user ${widget.user.id}: $fullPhoneNumber');
+      List<dynamic> updated;
+      try {
+        updated = await Supabase.instance.client
           .from('users')
           .update({
             'phone_number': fullPhoneNumber,
+            'updated_at': DateTime.now().toIso8601String(),
           })
-          .eq('id', widget.user.id);
-      
+          .eq('id', widget.user.id)
+          .select('id');
+      } catch (e) {
+        // Log and fallback to upsert (handles missing row or certain RLS setups)
+        print('Update failed, trying upsert. Error: $e');
+        updated = await Supabase.instance.client
+          .from('users')
+          .upsert({
+            'id': widget.user.id,
+            'phone_number': fullPhoneNumber,
+            'updated_at': DateTime.now().toIso8601String(),
+          }, onConflict: 'id')
+          .select('id');
+      }
+      final ok = updated.isNotEmpty;
+      print('Phone save ${ok ? 'succeeded' : 'returned no rows'}');
+
       // Update phone in local storage
       final authBloc = context.read<AuthBloc>();
       authBloc.add(UpdateUserPhoneEvent(phoneNumber: fullPhoneNumber));
@@ -200,6 +219,7 @@ class _AddPhoneNumberPageState extends State<AddPhoneNumberPage> {
         context.go('/');
       }
     } catch (e) {
+      print('Error saving phone number: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('error_saving_phone'.tr())),

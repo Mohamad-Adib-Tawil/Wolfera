@@ -1,6 +1,5 @@
 import 'package:country_flags/country_flags.dart';
 import 'package:country_picker/country_picker.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
@@ -32,58 +31,67 @@ class _AddPhoneTextFieldState extends State<AddPhoneTextField> {
     _selectedCountry = ValueNotifier(CountryParser.parsePhoneCode('971'));
     widget.onCountrySelect(_selectedCountry.value);
   }
-
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<Country>(
       valueListenable: _selectedCountry,
       builder: (context, country, _) {
-        return CustomTextField(
-          hint: 'enter_phone_hint'.tr(),
-          formControlName: widget.controlName,
-          textInputType: TextInputType.phone,
-          textInputAction: TextInputAction.done,
-          prefixIcon: InkWell(
-            onTap: () async {
-              FocusScope.of(context).unfocus();
-              await showCustomCountryPicker(
-                context: context,
-                onSelect: (value) {
-                  _selectedCountry.value = value;
-                  widget.onCountrySelect(value);
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: CustomTextField(
+            hint: 'enter_phone_hint',
+            formControlName: widget.controlName,
+            textInputType: TextInputType.phone,
+            textInputAction: TextInputAction.done,
+            textAlign: TextAlign.left,
+            textDirection: TextDirection.ltr,
+            suffixIcon: Padding(
+              padding: EdgeInsets.only(left: 15, right: 26),
+              child: InkWell(
+                onTap: () async {
+                  FocusScope.of(context).unfocus();
+                  await showCustomCountryPicker(
+                    context: context,
+                    onSelect: (value) {
+                      _selectedCountry.value = value;
+                      widget.onCountrySelect(value);
+                    },
+                  );
+                  WidgetsBinding.instance.addPostFrameCallback(
+                    (_) => FocusScope.of(context).unfocus(),
+                  );
                 },
-              );
-              WidgetsBinding.instance.addPostFrameCallback(
-                (_) => FocusScope.of(context).unfocus(),
-              );
-            },
-            child: IntrinsicHeight(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CountryFlag.fromCountryCode(
-                    country.countryCode,
-                    theme: const ImageTheme(
-                      width: 24,
-                      height: 16,
-                      shape: RoundedRectangle(3),
-                    ),
+                child: IntrinsicHeight(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    textDirection: TextDirection.ltr,
+                    children: [
+                      // Unified Arabic order for both locales: Flag, Code, Divider (near input)
+                      CountryFlag.fromCountryCode(
+                        country.countryCode,
+                        theme: const ImageTheme(
+                          width: 24,
+                          height: 16,
+                          shape: RoundedRectangle(3),
+                        ),
+                      ),
+                      10.horizontalSpace,
+                      Text(
+                        "+${country.phoneCode}",
+                        style: context.textTheme.titleSmall
+                            ?.copyWith(color: AppColors.blackLight),
+                      ),
+                      4.horizontalSpace,
+                      VerticalDivider(
+                        indent: 10.r,
+                        endIndent: 10.r,
+                        color: AppColors.blackLight,
+                        width: 10.w,
+                        thickness: 0.7,
+                      ),
+                    ],
                   ),
-                  10.horizontalSpace,
-                  Text(
-                    "+${country.phoneCode}",
-                    style: context.textTheme.titleSmall
-                        ?.copyWith(color: AppColors.blackLight),
-                  ),
-                  4.horizontalSpace,
-                  VerticalDivider(
-                    indent: 10.r,
-                    endIndent: 10.r,
-                    color: AppColors.blackLight,
-                    width: 10.w,
-                    thickness: 0.7,
-                  ),
-                ],
+                ),
               ),
             ),
           ),

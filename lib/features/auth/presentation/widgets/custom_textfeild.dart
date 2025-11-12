@@ -23,6 +23,9 @@ class CustomTextField extends StatefulWidget {
   final TextInputAction? textInputAction;
   final ReactiveFormFieldCallback? onSubmitted;
   final Widget? prefixIcon;
+  final Widget? suffixIcon;
+  final TextAlign? textAlign;
+  final TextDirection? textDirection;
   const CustomTextField({
     super.key,
     required this.hint,
@@ -37,6 +40,9 @@ class CustomTextField extends StatefulWidget {
     this.textInputType,
     this.onSubmitted,
     this.prefixIcon,
+    this.suffixIcon,
+    this.textAlign,
+    this.textDirection,
   });
 
   @override
@@ -65,10 +71,11 @@ class _CustomTextFieldState extends State<CustomTextField> {
             child: ReactiveTextField(
               controller: widget.controller,
               formControlName: widget.formControlName,
-              textAlign: TextAlign.start,
+              textAlign: widget.textAlign ?? TextAlign.start,
               textInputAction: widget.textInputAction ?? TextInputAction.next,
               textAlignVertical: TextAlignVertical.center,
               keyboardType: widget.textInputType,
+              textDirection: widget.textDirection,
               onSubmitted: widget.onSubmitted,
               validationMessages: {
                 ValidationMessage.required: (error) => tr(LocaleKeys.required),
@@ -121,7 +128,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                               : context.colorScheme.primary,
                         ),
                       )
-                    : null,
+                    : widget.suffixIcon,
                 hintText: widget.hint.tr(),
                 fillColor: const Color(0xffFFFFFF),
                 contentPadding: EdgeInsets.only(
