@@ -110,7 +110,8 @@
   "or_label": "OR",
   "sign_up_with_google": "Sign up with Google",
   "sign_in_with_google": "Sign in with Google",
-  "sign_in_google_ar": "Sign in with Google",
+  "sign_in_google": "Sign in with Google",
+
   "flag_uae": "🇦🇪",
   "phone_971": "+971",
   "auth_error_ar": "Authentication error. Check Supabase settings",

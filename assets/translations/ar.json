@@ -108,7 +108,7 @@
   "dont_have_account": "ليس لديك حساب؟",
   "or_label": "أو",
   "sign_up_with_google": "إنشاء حساب بـ Google",
-  "sign_in_google_ar": "تسجيل الدخول بـ Google",
+  "sign_in_google": "تسجيل الدخول بـ Google",
   "flag_uae": "🇦🇪",
   "phone_971": "+971",
   "auth_error_ar": "خطأ في المصادقة. تحقق من إعدادات Supabase",

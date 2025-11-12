@@ -193,7 +193,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             15.verticalSpace,
             CustomButtonWithIcon(
-              text: "تسجيل الدخول بـ Google".tr(),
+              text: "sign_in_google",
               icon: Assets.svgGoogle,
               onTap: _onGoogleLogin,
             ),
@@ -278,7 +278,7 @@ class _LoginPageState extends State<LoginPage> {
     _authBloc.add(GoogleLoginEvent(
       onSuccess: (user, {bool needsPhoneNumber = false}) async {
         final bool isUserVerified = user.emailConfirmedAt != null;
-        
+
         if (needsPhoneNumber) {
           // Navigate to add phone number page
           Navigator.of(context).push(
