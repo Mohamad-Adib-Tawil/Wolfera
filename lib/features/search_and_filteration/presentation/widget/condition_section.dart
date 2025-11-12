@@ -22,7 +22,7 @@ class ConditionSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SectionTitleAndResetFilterWidget(
-            title: 'Condition',
+            title: 'condition',
             resetFilter: () => searchCubit.resetConditionFilter()),
         20.verticalSpace,
         SizedBox(

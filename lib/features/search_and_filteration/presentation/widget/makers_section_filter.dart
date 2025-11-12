@@ -20,7 +20,7 @@ class MakersSectionFilter extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SectionTitleAndResetFilterWidget(
-            title: 'Makers',
+            title: 'makers',
             resetFilter: () => searchCubit.resetMakerSelectionFilter()),
         20.verticalSpace,
         SizedBox(height: 70.h, child: const MakersListViewFilter()),

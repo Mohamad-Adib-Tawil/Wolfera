@@ -21,7 +21,7 @@ class PriceSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SectionTitleAndResetFilterWidget(
-            title: 'Price', resetFilter: () => searchCubit.resetPriceFilter()),
+            title: 'price', resetFilter: () => searchCubit.resetPriceFilter()),
         20.verticalSpace,
         Container(
           width: 1.sw,

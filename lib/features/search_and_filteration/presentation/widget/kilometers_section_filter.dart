@@ -28,7 +28,7 @@ class KilometersSectionFilter extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SectionTitleAndResetFilterWidget(
-            title: 'Kilometers',
+            title: 'mileage_label',
             resetFilter: () => searchCubit.resetKilometersFilter(
                 resetMinKilometers: true, resetMaxKilometers: true)),
         20.verticalSpace,
@@ -38,12 +38,12 @@ class KilometersSectionFilter extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               AppText(
-                'Min Kilometers',
+                'min_mileage',
                 style:
                     context.textTheme.bodyLarge?.s14.withColor(AppColors.white),
               ),
               AppText(
-                'Max Kilometers',
+                'max_mileage',
                 style:
                     context.textTheme.bodyLarge?.s14.withColor(AppColors.white),
               ),

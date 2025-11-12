@@ -132,8 +132,8 @@ class _SearcgPageState extends State<SearchPage> {
                               children: [
                                 AppText(
                                   resultsCount > 0
-                                      ? '$resultsCount ${'Cars found'.tr()}'
-                                      : LocaleKeys.searchForCars.tr(),
+                                      ? '$resultsCount ${'cars_found'.tr()}'
+                                      : 'search_or_filters'.tr(),
                                   translation: false,
                                   style: context.textTheme.titleMedium?.s13.m
                                       .withColor(AppColors.white),
@@ -165,7 +165,7 @@ class _SearcgPageState extends State<SearchPage> {
                                             ),
                                             6.horizontalSpace,
                                             AppText(
-                                              'Clear all filters'.tr(),
+                                              'clear_all_filters',
                                               style: context
                                                   .textTheme.titleMedium?.s13.m
                                                   .withColor(AppColors.primary),
@@ -189,7 +189,7 @@ class _SearcgPageState extends State<SearchPage> {
                                             ),
                                             6.horizontalSpace,
                                             AppText(
-                                              "Sort by".tr(),
+                                              "sort_by",
                                               style: context.textTheme.titleMedium?.s13.m
                                                   .withColor(AppColors.white),
                                             ),
@@ -223,8 +223,8 @@ class _SearcgPageState extends State<SearchPage> {
                             children: [
                               AppText(
                                 resultsCount > 0
-                                    ? '$resultsCount ${'Cars found'.tr()}'
-                                    : LocaleKeys.searchForCars.tr(),
+                                    ? '$resultsCount ${'cars_found'.tr()}'
+                                    : 'search_or_filters'.tr(),
                                 translation: false,
                                 style: context.textTheme.titleMedium?.s13.m
                                     .withColor(AppColors.white),
@@ -256,7 +256,7 @@ class _SearcgPageState extends State<SearchPage> {
                                           ),
                                           6.horizontalSpace,
                                           AppText(
-                                            'Clear all filters'.tr(),
+                                            'clear_all_filters',
                                             style: context
                                                 .textTheme.titleMedium?.s13.m
                                                 .withColor(AppColors.primary),
@@ -280,7 +280,7 @@ class _SearcgPageState extends State<SearchPage> {
                                           ),
                                           6.horizontalSpace,
                                           AppText(
-                                            "Sort by".tr(),
+                                            "sort_by",
                                             style: context.textTheme.titleMedium?.s13.m
                                                 .withColor(AppColors.white),
                                           ),
@@ -365,7 +365,7 @@ class _SearcgPageState extends State<SearchPage> {
                             ),
                             20.verticalSpace,
                             AppText(
-                              'Search for cars or apply filters'.tr(),
+                              'search_or_filters',
                               style: context.textTheme.bodyLarge?.withColor(
                                   AppColors.white.withValues(alpha: 0.6)),
                             ),
@@ -448,7 +448,7 @@ class _SearcgPageState extends State<SearchPage> {
                                   ),
                                   20.verticalSpace,
                                   AppText(
-                                    'Search for cars or apply filters'.tr(),
+                                    'search_or_filters',
                                     style: context.textTheme.bodyLarge?.withColor(
                                         AppColors.white.withValues(alpha: 0.6)),
                                   ),
@@ -495,8 +495,8 @@ class _SearcgPageState extends State<SearchPage> {
     final st = _searchCubit.state;
     final groupValue = '${st.sortBy}|${st.sortAsc}';
     final options = [
-      {'title': 'Newest', 'by': 'created_at', 'asc': false},
-      {'title': 'Oldest', 'by': 'created_at', 'asc': true},
+      {'title': 'newest', 'by': 'created_at', 'asc': false},
+      {'title': 'oldest', 'by': 'created_at', 'asc': true},
       {'title': 'sort_price_low_to_high', 'by': 'price', 'asc': true},
       {'title': 'sort_price_high_to_low', 'by': 'price', 'asc': false},
       {'title': 'sort_year_new_to_old', 'by': 'year', 'asc': false},
@@ -532,7 +532,7 @@ class _SearcgPageState extends State<SearchPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       AppText(
-                        'Sort by'.tr(),
+                        'sort_by',
                         style: context.textTheme.titleMedium?.s13.m
                             .withColor(AppColors.white),
                       ),
@@ -558,7 +558,7 @@ class _SearcgPageState extends State<SearchPage> {
                           },
                           activeColor: AppColors.primary,
                           title: AppText(
-                            (o['title'] as String).tr(),
+                            o['title'] as String,
                             style: context.textTheme.titleSmall?.s13.m
                                 .withColor(AppColors.white),
                           ),

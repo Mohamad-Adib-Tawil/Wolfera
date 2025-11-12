@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -54,8 +55,8 @@ class SearchFiltersSection extends StatelessWidget {
                         child: AppDropdownSearch<CountryOption>(
                           items: countries,
                           selectedItem: selectedCountry,
-                          itemAsString: (co) => co.name,
-                          hintText: 'Worldwide',
+                          itemAsString: (co) => co.translatedName,
+                          hintText: 'worldwide'.tr(),
                           baseStyle: context.textTheme.titleSmall.b
                               .withColor(AppColors.white),
                           dropdownBuilder: (context, co) {
@@ -78,7 +79,7 @@ class SearchFiltersSection extends StatelessWidget {
                                 4.horizontalSpace,
                                 Flexible(
                                   child: Text(
-                                    co?.name ?? 'Worldwide',
+                                    co?.translatedName ?? 'worldwide'.tr(),
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: context.textTheme.titleSmall.b
@@ -108,7 +109,7 @@ class SearchFiltersSection extends StatelessWidget {
                                         ),
                                       ),
                                     10.horizontalSpace,
-                                    Expanded(child: Text(co.name)),
+                                    Expanded(child: Text(co.translatedName)),
                                   ],
                                 ),
                               );
@@ -129,11 +130,11 @@ class SearchFiltersSection extends StatelessWidget {
                           child: AppDropdownSearch<String>(
                             items: regions,
                             selectedItem: state.selectedRegionOrCity,
-                            hintText: selectedCountry.secondLevelLabel ?? 'Region',
+                            hintText: selectedCountry.translatedSecondLevelLabel ?? 'region'.tr(),
                             baseStyle: context.textTheme.titleSmall.b
                                 .withColor(AppColors.white),
                             dropdownBuilder: (context, val) {
-                              final text = val ?? (selectedCountry.secondLevelLabel ?? 'Region');
+                              final text = val ?? (selectedCountry.translatedSecondLevelLabel ?? 'region'.tr());
                               return Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -158,18 +159,18 @@ class SearchFiltersSection extends StatelessWidget {
                         10.horizontalSpace,
                       ],
 
-                      const FilterItem(title: "Make"),
+                      const FilterItem(title: "make"),
                       10.horizontalSpace,
-                      const FilterItem(title: "Price"),
+                      const FilterItem(title: "price"),
                       10.horizontalSpace,
-                      const FilterItem(title: "Year"),
+                      const FilterItem(title: "year"),
                       10.horizontalSpace,
-                      const FilterItem(title: "Mileage"),
+                      const FilterItem(title: "mileage_label"),
                       10.horizontalSpace,
                       TextButton(
                         onPressed: () => bloc.resetAllFilters(),
                         child: AppText(
-                          "Reset",
+                          "reset",
                           style: context.textTheme.titleMedium?.s13.m
                               .withColor(AppColors.primary),
                         ),
