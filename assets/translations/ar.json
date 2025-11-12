@@ -608,6 +608,7 @@
   "conversation_hidden": "تم إخفاء المحادثة",
   "hide": "إخفاء",
   "error": "خطأ: {}",
+  "your_message": "رسالتك...",
   "google_signin_misconfigured": "إعداد Google Sign-In غير صحيح. تحقق من بصمات SHA-1 واسم الحزمة ومعرّف عميل الويب.",
   "google_signin_canceled": "تم إلغاء تسجيل الدخول من قِبل المستخدم.",
   "google_signin_network_error": "خطأ في الشبكة. يرجى التحقق من اتصال الإنترنت.",

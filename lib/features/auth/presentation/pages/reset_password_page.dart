@@ -116,7 +116,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             CustomTextField(
-                              hint: "Enter email",
+                              hint: "enter_email",
                               formControlName: _authBloc.kFromEmail,
                               textInputAction: TextInputAction.next,
                               prefixIcon: const AppSvgPicture(
@@ -165,7 +165,7 @@ class _ResetPasswordState extends State<ResetPassword> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           CustomTextField(
-                            hint: "Enter email",
+                            hint: "enter_email",
                             formControlName: _authBloc.kFromEmail,
                             textInputAction: TextInputAction.next,
                             prefixIcon: const AppSvgPicture(

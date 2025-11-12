@@ -50,8 +50,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     final content = SingleChildScrollView(
       child: Padding(
-        padding:
-            HWEdgeInsets.only(top: 20, right: 40, left: 40, bottom: 30),
+        padding: HWEdgeInsets.only(top: 20, right: 40, left: 40, bottom: 30),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             120.verticalSpace,
             CustomTextField(
-              hint: "Enter email",
+              hint: "enter_email",
               formControlName: _authBloc.kFromEmail,
               textInputAction: TextInputAction.next,
               prefixIcon: const AppSvgPicture(
@@ -114,8 +113,8 @@ class _LoginPageState extends State<LoginPage> {
                               horizontal: -4.0, vertical: -4.0),
                           splashRadius: 0,
                           checkColor: AppColors.white,
-                          fillColor: const WidgetStatePropertyAll(
-                              AppColors.primary),
+                          fillColor:
+                              const WidgetStatePropertyAll(AppColors.primary),
                           side: BorderSide.none,
                           shape: RoundedRectangleBorder(
                               side: BorderSide.none,
@@ -134,8 +133,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 TextButton(
                   style: const ButtonStyle(
-                      overlayColor:
-                          WidgetStatePropertyAll(Colors.transparent),
+                      overlayColor: WidgetStatePropertyAll(Colors.transparent),
                       padding: WidgetStatePropertyAll(EdgeInsets.zero)),
                   onPressed: () => GoRouter.of(context)
                       .push(GRouter.config.authRoutes.resetPasswordPage),
@@ -199,8 +197,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             45.verticalSpace,
             InkWell(
-              overlayColor:
-                  const WidgetStatePropertyAll(Colors.transparent),
+              overlayColor: const WidgetStatePropertyAll(Colors.transparent),
               onTap: () => GRouter.router
                   .pushReplacement(GRouter.config.authRoutes.signupPage),
               child: Row(
@@ -208,13 +205,13 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   AppText(
-                    "Don't have an account?",
+                    "dont_have_account",
                     style: context.textTheme.titleMedium!.b
                         .withColor(AppColors.whiteLess),
                   ),
                   8.horizontalSpace,
                   AppText(
-                    "Sign Up",
+                    "sign_up",
                     style: context.textTheme.titleMedium!.b
                         .withColor(AppColors.orange),
                   ),

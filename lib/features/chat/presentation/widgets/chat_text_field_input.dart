@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
-import 'package:wolfera/core/config/theme/typography.dart';
+import 'package:wolfera/core/utils/extensions/build_context.dart';
 import 'package:wolfera/core/utils/responsive_padding.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_svg_picture.dart';
 import 'package:wolfera/generated/assets.dart';
-import 'package:wolfera/core/utils/extensions/build_context.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ChatTextFieldInput extends StatelessWidget {
   final TextEditingController controller;
@@ -58,9 +58,9 @@ class ChatTextFieldInput extends StatelessWidget {
         ),
         contentPadding:
             HWEdgeInsets.only(right: 8, left: 15, top: 12, bottom: 12),
-        hintText: 'Your message...',
+        hintText: 'your_message'.tr(),
         hintStyle:
-            context.textTheme.titleMedium?.m.withColor(const Color(0xff6E7079)),
+            context.textTheme.titleMedium?.copyWith(color: const Color(0xff6E7079)),
         hoverColor: AppColors.white,
       ),
     );
