@@ -28,6 +28,9 @@ class DeleteMyCarEvent extends MyCarsEvent {
 // حدث حذف جميع سيارات المستخدم
 class DeleteAllMyCarsEvent extends MyCarsEvent {}
 
+// حدث تبديل عرض القالب الافتراضي
+class ToggleTemplateEvent extends MyCarsEvent {}
+
 // تحديث حالة السيارة (active, sold, pending, inactive)
 class UpdateMyCarStatusEvent extends MyCarsEvent {
   final String carId;
