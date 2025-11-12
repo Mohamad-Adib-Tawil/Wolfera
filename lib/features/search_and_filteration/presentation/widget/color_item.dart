@@ -42,13 +42,16 @@ class ColorItem extends StatelessWidget {
               ),
               child: CircleAvatar(
                 backgroundColor: colorItem.colorValue,
-                radius: isSelected ? 23.5.r : 25.r,
+                radius: isSelected ? 18.r : 19.r,
               ),
             ),
-            10.verticalSpace,
+            2.verticalSpace,
             AppText(
               colorItem.displayName,
-              style: context.textTheme.bodyLarge?.s14.l
+              translation: false,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: context.textTheme.bodyLarge?.s10.l
                   .withColor(isSelected ? AppColors.orange : AppColors.white),
             ),
           ],

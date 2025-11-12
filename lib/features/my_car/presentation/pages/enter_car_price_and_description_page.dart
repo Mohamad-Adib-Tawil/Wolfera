@@ -42,7 +42,7 @@ class _EnterCarPriceAndDescriptionPageState
             ),
             30.verticalSpace,
             SellCarItem(
-              title: 'description'.tr(),
+              title: 'description',
               isDescription: true,
               formControlName: _myCarsBloc.kFromCarDescription,
             ),
@@ -62,7 +62,7 @@ class _EnterCarPriceAndDescriptionPageState
                     final selected = CurrenciesData.findByCode(code) ??
                         CurrenciesData.defaultCurrency();
                     return SellCarItem(
-                      title: 'Price'.tr(),
+                      title: 'price',
                       formControlName: _myCarsBloc.kFromCarPrice,
                       prefix: SizedBox(
                         width: 104,
@@ -149,7 +149,7 @@ class _EnterCarPriceAndDescriptionPageState
             ),
             30.verticalSpace,
             AppText(
-              'country',
+              'select_country',
               style: context.textTheme.titleMedium?.s13.m
                   .withColor(AppColors.white),
             ),
@@ -168,7 +168,7 @@ class _EnterCarPriceAndDescriptionPageState
                   items: countries,
                   selectedItem: selectedCountry,
                   itemAsString: (co) => co.name,
-                  hintText: 'country'.tr(),
+                  hintText: 'choose_country'.tr(),
                   dropdownBuilder: (context, co) {
                     final code = (co?.code ?? 'WW').toUpperCase();
                     final isWw = code == LocationsData.worldwideCode;
@@ -186,7 +186,7 @@ class _EnterCarPriceAndDescriptionPageState
                             ),
                           ),
                         8.horizontalSpace,
-                        Text(co?.name ?? 'Worldwide'.tr(),
+                        Text(co?.name ?? 'worldwide'.tr(),
                             style: context.textTheme.titleSmall.b
                                 .withColor(AppColors.blackLight)),
                       ],
@@ -263,17 +263,45 @@ class _EnterCarPriceAndDescriptionPageState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     10.verticalSpace,
-                    AppText(
-                      selectedCountry?.secondLevelLabel ?? 'Region',
-                      translation: false,
-                      style: context.textTheme.titleMedium?.s13.m
-                          .withColor(AppColors.white),
-                    ),
+                    Builder(builder: (context) {
+                      final sl = selectedCountry?.secondLevelLabel;
+                      final labelKey = () {
+                        switch (sl) {
+                          case 'Governorate':
+                            return 'governorate';
+                          case 'Emirate':
+                            return 'emirate';
+                          case 'City':
+                            return 'city';
+                          case 'Region':
+                          default:
+                            return 'region';
+                        }
+                      }();
+                      return AppText(
+                        labelKey,
+                        style: context.textTheme.titleMedium?.s13.m
+                            .withColor(AppColors.white),
+                      );
+                    }),
                     10.verticalSpace,
                     AppDropdownSearch<String>(
                       items: regions,
                       selectedItem: selectedRegion,
-                      hintText: selectedCountry?.secondLevelLabel ?? 'Region',
+                      hintText: (() {
+                        final sl = selectedCountry?.secondLevelLabel;
+                        switch (sl) {
+                          case 'Governorate':
+                            return 'governorate'.tr();
+                          case 'Emirate':
+                            return 'emirate'.tr();
+                          case 'City':
+                            return 'city'.tr();
+                          case 'Region':
+                          default:
+                            return 'region'.tr();
+                        }
+                      })(),
                       baseStyle: context.textTheme.titleSmall.b
                           .withColor(AppColors.white),
                       onChanged: (val) {

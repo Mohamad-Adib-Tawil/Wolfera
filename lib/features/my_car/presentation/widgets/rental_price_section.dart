@@ -26,15 +26,13 @@ class RentalPriceSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AppText(
-            'Rental Prices',
+            'rental_prices',
             style: context.textTheme.titleMedium?.b.withColor(AppColors.white),
-            translation: false,
           ),
           10.verticalSpace,
           AppText(
-            'Set your rental prices for different periods',
+            'set_rental_prices_desc',
             style: context.textTheme.bodySmall?.withColor(AppColors.grey),
-            translation: false,
           ),
           20.verticalSpace,
           _buildPriceField(
@@ -93,7 +91,6 @@ class RentalPriceSection extends StatelessWidget {
             child: AppText(
               title,
               style: context.textTheme.bodyMedium?.m.withColor(AppColors.white),
-              translation: false,
             ),
           ),
           10.horizontalSpace,

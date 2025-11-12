@@ -195,8 +195,7 @@ class _SellCarCta extends StatelessWidget {
               const Icon(Icons.directions_car_filled, color: Colors.white),
               10.horizontalSpace,
               AppText(
-                'sell_my_car'.tr(),
-                translation: false,
+                'sell_my_car',
                 style: context.textTheme.titleMedium?.s18.xb
                     .withColor(Colors.white),
               ),

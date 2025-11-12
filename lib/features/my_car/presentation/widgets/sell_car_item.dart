@@ -95,6 +95,7 @@ class SellCarItem extends StatelessWidget {
                           control.touched && control.invalid
                               ? LocaleKeys.required
                               : control.value ?? "",
+                          translation: control.touched && control.invalid,
                           style: control.touched && control.invalid
                               ? context.textTheme.bodySmall?.m.withColor(
                                   AppColors.red.withValues(alpha: 0.8))

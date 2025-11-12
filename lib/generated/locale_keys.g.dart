@@ -123,6 +123,7 @@ abstract class  LocaleKeys {
   static const sort_by = 'sort_by';
   static const cars_found = 'cars_found';
   static const upload_photos = 'upload_photos';
+  static const extra_pictures_optional = 'extra_pictures_optional';
   static const reset_password = 'reset_password';
   static const choose_country = 'choose_country';
   static const go_to_dashboard = 'go_to_dashboard';
@@ -184,6 +185,9 @@ abstract class  LocaleKeys {
   static const emptyStates_noFavorite = 'emptyStates.noFavorite';
   static const emptyStates_noCars = 'emptyStates.noCars';
   static const emptyStates_noReviews = 'emptyStates.noReviews';
+  static const emptyStates_noOrders = 'emptyStates.noOrders';
+  static const emptyStates_noBooking = 'emptyStates.noBooking';
+  static const emptyStates_noRestaurants = 'emptyStates.noRestaurants';
   static const emptyStates = 'emptyStates';
   static const youHaveNotLikedAnyCarYet = 'youHaveNotLikedAnyCarYet';
   static const youHavenNotReceivedAnyNotificationsYet = 'youHavenNotReceivedAnyNotificationsYet';
@@ -194,6 +198,9 @@ abstract class  LocaleKeys {
   static const worldwide = 'worldwide';
   static const governorate = 'governorate';
   static const emirate = 'emirate';
+  static const city = 'city';
+  static const listing_type = 'listing_type';
+  static const select_country = 'select_country';
   static const select_country_region = 'select_country_region';
   static const browse_by_makers = 'browse_by_makers';
   static const browse_by_budget = 'browse_by_budget';
@@ -213,6 +220,7 @@ abstract class  LocaleKeys {
   static const exterior = 'exterior';
   static const interior = 'interior';
   static const seller_label = 'seller_label';
+  static const add_edit = 'add_edit';
   static const newest = 'newest';
   static const oldest = 'oldest';
   static const sort_price_low_to_high = 'sort_price_low_to_high';
@@ -358,6 +366,7 @@ abstract class  LocaleKeys {
   static const sell_car_both = 'sell_car.both';
   static const sell_car_sale_price = 'sell_car.sale_price';
   static const sell_car_rental_prices = 'sell_car.rental_prices';
+  static const sell_car_set_rental_prices_desc = 'sell_car.set_rental_prices_desc';
   static const sell_car_enter_price = 'sell_car.enter_price';
   static const sell_car_description = 'sell_car.description';
   static const sell_car_enter_description = 'sell_car.enter_description';
@@ -386,6 +395,7 @@ abstract class  LocaleKeys {
   static const listing_types_for_rent = 'listing_types.for_rent';
   static const listing_types_both = 'listing_types.both';
   static const listing_types = 'listing_types';
+  static const my_cars = 'my_cars';
   static const status_label = 'status_label';
   static const edit_rental_prices = 'edit_rental_prices';
   static const sell_my_car = 'sell_my_car';
@@ -405,6 +415,7 @@ abstract class  LocaleKeys {
   static const car_parts_interior = 'car_parts.interior';
   static const car_parts_dashboard = 'car_parts.dashboard';
   static const car_parts_front_seats = 'car_parts.front_seats';
+  static const car_parts_optional_image = 'car_parts.optional_image';
   static const car_parts_back_seats = 'car_parts.back_seats';
   static const car_parts = 'car_parts';
   static const interior_features_list_leather_seats = 'interior_features_list.leather_seats';
@@ -434,13 +445,21 @@ abstract class  LocaleKeys {
   static const exterior_features_list_alloy_wheels = 'exterior_features_list.alloy_wheels';
   static const exterior_features_list_led_headlights = 'exterior_features_list.led_headlights';
   static const exterior_features_list_fog_lights = 'exterior_features_list.fog_lights';
+  static const exterior_features_list_sunroof = 'exterior_features_list.sunroof';
+  static const exterior_features_list_roof_rails = 'exterior_features_list.roof_rails';
+  static const exterior_features_list_tow_package = 'exterior_features_list.tow_package';
+  static const exterior_features_list_power_liftgate = 'exterior_features_list.power_liftgate';
+  static const exterior_features_list_running_boards = 'exterior_features_list.running_boards';
+  static const exterior_features_list_rear_spoiler = 'exterior_features_list.rear_spoiler';
   static const exterior_features_list_roof_rack = 'exterior_features_list.roof_rack';
   static const exterior_features_list_spoiler = 'exterior_features_list.spoiler';
   static const exterior_features_list_tinted_windows = 'exterior_features_list.tinted_windows';
+  static const exterior_features_list_heated_side_mirrors = 'exterior_features_list.heated_side_mirrors';
   static const exterior_features_list_power_mirrors = 'exterior_features_list.power_mirrors';
   static const exterior_features_list_heated_mirrors = 'exterior_features_list.heated_mirrors';
   static const exterior_features_list_rain_sensing_wipers = 'exterior_features_list.rain_sensing_wipers';
   static const exterior_features_list_panoramic_roof = 'exterior_features_list.panoramic_roof';
+  static const exterior_features_list_dual_exhaust = 'exterior_features_list.dual_exhaust';
   static const exterior_features_list = 'exterior_features_list';
   static const safety_features_list_abs = 'safety_features_list.abs';
   static const safety_features_list_airbags = 'safety_features_list.airbags';
@@ -452,6 +471,12 @@ abstract class  LocaleKeys {
   static const safety_features_list_adaptive_cruise_control = 'safety_features_list.adaptive_cruise_control';
   static const safety_features_list_automatic_emergency_braking = 'safety_features_list.automatic_emergency_braking';
   static const safety_features_list_tire_pressure_monitoring = 'safety_features_list.tire_pressure_monitoring';
+  static const safety_features_list_rear_cross_traffic_alert = 'safety_features_list.rear_cross_traffic_alert';
+  static const safety_features_list_parking_sensors = 'safety_features_list.parking_sensors';
+  static const safety_features_list_rearview_camera = 'safety_features_list.rearview_camera';
+  static const safety_features_list_hill_descent_control = 'safety_features_list.hill_descent_control';
+  static const safety_features_list_driver_drowsiness_monitoring = 'safety_features_list.driver_drowsiness_monitoring';
+  static const safety_features_list_pedestrian_detection = 'safety_features_list.pedestrian_detection';
   static const safety_features_list = 'safety_features_list';
   static const brand = 'brand';
   static const model = 'model';

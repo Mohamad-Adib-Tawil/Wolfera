@@ -110,7 +110,7 @@ class _SelectCountyPageState extends State<SelectCountyPage> {
                     offset: const Offset(0, 4),
                     sigma: 4,
                     child: AppText(
-                      "Choose Country".tr(),
+                      'choose_country',
                       textAlign: TextAlign.center,
                       style: context.textTheme.headlineMedium?.b.withColor(
                         AppColors.white,
@@ -146,7 +146,7 @@ class _SelectCountyPageState extends State<SelectCountyPage> {
                             },
                           ),
                           8.horizontalSpace,
-                          AppText('Worldwide'.tr(),
+                          AppText('worldwide',
                               style: context.textTheme.bodyMedium?.m.withColor(AppColors.white)),
                         ],
                       ),

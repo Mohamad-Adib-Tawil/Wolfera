@@ -35,16 +35,16 @@ class ChatsEmptyStateWidget extends StatelessWidget {
             style: context.textTheme.bodyMedium?.s20.sb,
           ),
         ),
-        Positioned(
-          bottom: 0.h,
-          left: 0,
-          right: 0,
-          child: AppText(
-            "chat.empty_subtitle",
-            textAlign: TextAlign.center,
-            style: context.textTheme.bodyMedium.s18.r.withColor(AppColors.grey),
-          ),
-        ),
+        // Positioned(
+        //   bottom: 0.h,
+        //   left: 0,
+        //   right: 0,
+        //   child: AppText(
+        //     "chat.empty_subtitle",
+        //     textAlign: TextAlign.center,
+        //     style: context.textTheme.bodyMedium.s18.r.withColor(AppColors.grey),
+        //   ),
+        // ),
       ]),
     );
   }
