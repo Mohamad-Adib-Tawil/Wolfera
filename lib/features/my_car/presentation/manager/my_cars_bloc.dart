@@ -92,10 +92,8 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
         return;
       }
 
-      await SupabaseService.client
-          .from('cars')
-          .update(update)
-          .eq('id', event.carId);
+      // استخدام updateCar بدلاً من التحديث المباشر لضمان إرسال الإشعارات
+      await SupabaseService.updateCar(event.carId, update);
 
       // إعادة تحميل القائمة بعد التحديث
       add(LoadMyCarsEvent());
@@ -778,13 +776,11 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
   ) async {
     try {
       EasyLoading.show(status: 'Updating price...');
-      await SupabaseService.client
-          .from('cars')
-          .update({
-            'price': event.newPrice,
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', event.carId);
+      // استخدام updateCar بدلاً من التحديث المباشر لضمان إرسال الإشعارات
+      await SupabaseService.updateCar(event.carId, {
+        'price': event.newPrice,
+        'updated_at': DateTime.now().toIso8601String(),
+      });
 
       // إعادة تحميل القائمة بعد التحديث
       add(LoadMyCarsEvent());

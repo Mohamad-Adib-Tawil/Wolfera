@@ -305,4 +305,91 @@ class NotificationService {
       },
     );
   }
+
+  // إرسال إشعار تغيير سعر السيارة للمستخدمين الذين أضافوها للمفضلة
+  static Future<void> sendPriceChangeNotification({
+    required String carId,
+    required String carTitle,
+    required String oldPrice,
+    required String newPrice,
+  }) async {
+    try {
+      if (kDebugMode) {
+        print('🔔 Starting price change notification for car: $carId');
+        print('   Title: $carTitle');
+        print('   Price: $oldPrice → $newPrice');
+      }
+
+      // الحصول على قائمة المستخدمين الذين أضافوا هذه السيارة للمفضلة
+    final favoriteUsers = await _client.rpc(
+  'get_favorited_user_ids',
+  params: {'p_car_id': carId},
+);
+      if (kDebugMode) {
+        print('📋 Found ${favoriteUsers.length} users who favorited this car');
+        for (final favorite in favoriteUsers) {
+          print('   - User ID: ${favorite['user_id']}');
+        }
+      }
+
+      if (favoriteUsers.isEmpty) {
+        if (kDebugMode) {
+          print('⚠️ No users have favorited this car, skipping notifications');
+        }
+        return;
+      }
+
+      // إرسال إشعار لكل مستخدم
+      for (final favorite in favoriteUsers) {
+        final userId = favorite['user_id'] as String;
+        
+        if (kDebugMode) {
+          print('📤 Sending notification to user: $userId');
+        }
+        
+        final lang = await _getUserPreferredLanguage(userId);
+        
+        final title = _isArabic(lang)
+            ? 'تغيير سعر السيارة - $carTitle'
+            : 'Price changed - $carTitle';
+        
+        final body = _isArabic(lang)
+            ? 'تم تغيير السعر من $oldPrice إلى $newPrice'
+            : 'Price changed from $oldPrice to $newPrice';
+        
+        if (kDebugMode) {
+          print('   Language: $lang');
+          print('   Title: $title');
+          print('   Body: $body');
+        }
+        
+        final success = await sendNotificationToUser(
+          userId: userId,
+          title: title,
+          body: body,
+          type: 'price_change',
+          data: {
+            'car_id': carId,
+            'car_title': carTitle,
+            'old_price': oldPrice,
+            'new_price': newPrice,
+            'action': 'view_car',
+          },
+        );
+        
+        if (kDebugMode) {
+          print('   Result: ${success ? "✅ Success" : "❌ Failed"}');
+        }
+      }
+      
+      if (kDebugMode) {
+        print('🎉 Price change notifications completed');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('❌ Error sending price change notifications: $e');
+        print('Stack trace: ${StackTrace.current}');
+      }
+    }
+  }
 }

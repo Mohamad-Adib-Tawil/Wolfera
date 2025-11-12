@@ -87,14 +87,18 @@ class FavoriteRepository {
   /// إضافة سيارة للمفضلة في Supabase
   Future<bool> addToSupabase(String userId, String carId) async {
     try {
+      print('📤 Adding to Supabase favorites: user=$userId, car=$carId');
+      
       await _client.from('favorites').insert({
         'user_id': userId,
         'car_id': carId,
         'created_at': DateTime.now().toIso8601String(),
       });
+      
+      print('✅ Successfully added to Supabase favorites');
       return true;
     } catch (e) {
-      // Error adding to Supabase: $e
+      print('❌ Error adding to Supabase favorites: $e');
       return false;
     }
   }
@@ -155,24 +159,33 @@ class FavoriteRepository {
     await saveFavoritesToCache(userId, cars);
     
     // مزامنة مع Supabase في الخلفية (لا ننتظر)
-    _syncToSupabase(userId, cars).catchError((_) {
-      // Silent fail - Cache موجود على الأقل
+    _syncToSupabase(userId, cars).catchError((e) {
+      print('⚠️ Favorites sync failed: $e');
     });
   }
 
   /// مزامنة Cache مع Supabase
   Future<void> _syncToSupabase(String userId, List<Map<String, dynamic>> cars) async {
     try {
+      print('🔄 Syncing favorites to Supabase for user: $userId');
+      print('   Cache has ${cars.length} cars');
+      
       // جلب المفضلات الحالية من Supabase
       final supabaseFavorites = await loadFavoritesFromSupabase(userId);
       final supabaseIds = supabaseFavorites.map((c) => c['id']?.toString()).toSet();
       final cacheIds = cars.map((c) => c['id']?.toString()).toSet();
+      
+      print('   Supabase has ${supabaseFavorites.length} cars');
+      print('   Supabase IDs: $supabaseIds');
+      print('   Cache IDs: $cacheIds');
 
       // إضافة السيارات الجديدة
       for (final car in cars) {
         final carId = car['id']?.toString();
         if (carId != null && !supabaseIds.contains(carId)) {
-          await addToSupabase(userId, carId);
+          print('   ➕ Adding car to Supabase: $carId');
+          final success = await addToSupabase(userId, carId);
+          print('   Result: ${success ? "✅ Success" : "❌ Failed"}');
         }
       }
 
@@ -180,11 +193,16 @@ class FavoriteRepository {
       for (final favorite in supabaseFavorites) {
         final carId = favorite['id']?.toString();
         if (carId != null && !cacheIds.contains(carId)) {
-          await removeFromSupabase(userId, carId);
+          print('   ➖ Removing car from Supabase: $carId');
+          final success = await removeFromSupabase(userId, carId);
+          print('   Result: ${success ? "✅ Success" : "❌ Failed"}');
         }
       }
+      
+      print('✅ Favorites sync completed successfully');
     } catch (e) {
-      // Sync failed, will retry next time
+      print('❌ Favorites sync failed: $e');
+      print('Stack trace: ${StackTrace.current}');
     }
   }
 }
