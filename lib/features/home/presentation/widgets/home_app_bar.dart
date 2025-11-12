@@ -91,10 +91,10 @@ class HomeAppBar extends StatelessWidget {
               ),
               CityDropdown(
                 onChanged: (label) {
-                  final v = label ?? 'Worldwide'.tr();
+                  final v = label ?? 'worldwide'.tr();
                   final searchCubit = GetIt.I<SearchCubit>();
                   final homeCubit = GetIt.I<HomeCubit>();
-                  if (v == 'Worldwide') {
+                  if (v == 'worldwide'.tr()) {
                     searchCubit.setWorldwide(true);
                     homeCubit.getHomeData();
                     return;

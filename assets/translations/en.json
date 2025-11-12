@@ -126,6 +126,7 @@
   "sort_by": "Sort by",
   "cars_found": "Cars found",
   "upload_photos": "Upload photos of your car",
+  "extra_pictures_optional": "Extra Pictures Optional",
   "reset_password": "Reset Password",
   "choose_country": "Choose Country",
   "go_to_dashboard": "Go to dashboard",
@@ -205,6 +206,9 @@
   "worldwide": "Worldwide",
   "governorate": "Governorate",
   "emirate": "Emirate",
+  "city": "City",
+  "listing_type": "Listing Type",
+  "select_country": "Select Country",
   "select_country_region": "Please select country and region",
   "browse_by_makers": "Browse by Makers",
   "browse_by_budget": "Browse by Budget",
@@ -392,6 +396,7 @@
     "both": "Both (Sale & Rent)",
     "sale_price": "Sale Price",
     "rental_prices": "Rental Prices",
+    "set_rental_prices_desc": "Set your rental prices for different periods",
     "enter_price": "Enter price",
     "description": "Description",
     "enter_description": "Enter car description",
@@ -448,6 +453,7 @@
     "interior": "Interior",
     "dashboard": "Dashboard",
     "front_seats": "Front Seats",
+    "optional_image": "Optional Image",
     "back_seats": "Back Seats"
   },
   

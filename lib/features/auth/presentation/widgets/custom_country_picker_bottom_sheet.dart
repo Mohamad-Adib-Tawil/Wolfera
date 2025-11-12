@@ -94,7 +94,7 @@ Future<void> showCustomCountryPicker({
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Choose Country'.tr(),
+                          'choose_country'.tr(),
                           style: theme.textTheme.titleMedium?.s17.b
                               .withColor(AppColors.blackLight),
                         ),

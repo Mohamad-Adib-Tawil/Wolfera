@@ -48,7 +48,7 @@ class CarAddImageItemEmptyOptional extends StatelessWidget {
             ),
             10.verticalSpace,
             AppText(
-              'Extra Pictures Optional',
+              'extra_pictures_optional',
               style: context.textTheme.bodyMedium?.m.s14
                   .withColor(AppColors.white),
               textAlign: TextAlign.center,

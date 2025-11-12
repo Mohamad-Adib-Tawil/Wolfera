@@ -38,6 +38,7 @@ class TextWithBorderItemWidget extends StatelessWidget {
         ),
         child: AppText(
           title,
+          translation: false,
           style: context.textTheme.bodyLarge?.s14.withColor(AppColors.white),
         ),
       ),

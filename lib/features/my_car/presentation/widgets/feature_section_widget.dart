@@ -37,7 +37,7 @@ class FeatureSection extends StatelessWidget {
               InkWell(
                 onTap: onTap,
                 child: AppText(
-                  'add_edit'.tr(),
+                  'add_edit',
                   style: context.textTheme.bodySmall?.s14.r
                       .withColor(AppColors.grey),
                 ),

@@ -169,7 +169,7 @@ class _SingUpPageState extends State<SingUpPage> {
             ),
             15.verticalSpace,
             CustomButtonWithIcon(
-              text: "Sign up with Google".tr(),
+              text: "sign_up_with_google".tr(),
               icon: Assets.svgGoogle,
               onTap: _onGoogleSignUp,
             ),

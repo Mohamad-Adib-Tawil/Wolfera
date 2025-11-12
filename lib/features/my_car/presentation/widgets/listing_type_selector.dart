@@ -23,10 +23,11 @@ class ListingTypeSelector extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AppText(
-          'Listing Type',
-          style: context.textTheme.titleMedium?.s13.m.withColor(AppColors.white),
-          translation: false,
+          'listing_type',
+          style:
+              context.textTheme.titleMedium?.s13.m.withColor(AppColors.white),
         ),
+        10.verticalSpace,
         Row(
           children: [
             _buildOption(
@@ -72,7 +73,7 @@ class ListingTypeSelector extends StatelessWidget {
           duration: const Duration(milliseconds: 200),
           padding: HWEdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: isSelected 
+            color: isSelected
                 ? AppColors.primary.withOpacity(0.15)
                 : AppColors.greyStroke.withOpacity(0.1),
             borderRadius: BorderRadius.circular(12.r),

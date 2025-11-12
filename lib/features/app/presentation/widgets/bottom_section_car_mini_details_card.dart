@@ -65,6 +65,7 @@ class BottomSectionCarMiniDetailsCard extends StatelessWidget {
                     spec2 != null
                         ? CarValueTranslator.translateTransmission(spec2)
                         : 'transmission_types.manual'.tr(),
+                    translation: false,
                     style: context.textTheme.titleSmall!.s13.sb
                         .withColor(AppColors.white),
                   ),
@@ -77,6 +78,7 @@ class BottomSectionCarMiniDetailsCard extends StatelessWidget {
                     mileage != null
                         ? '${mileage} ${'km'.tr()}'
                         : '99,488 ${'km'.tr()}',
+                    translation: false,
                     style: context.textTheme.titleSmall!.s13.sb
                         .withColor(AppColors.white),
                   ),
@@ -86,6 +88,7 @@ class BottomSectionCarMiniDetailsCard extends StatelessWidget {
                     fuel != null
                         ? CarValueTranslator.translateFuelType(fuel)
                         : 'fuel_types.petrol'.tr(),
+                    translation: false,
                     style: context.textTheme.titleSmall!.s13.sb
                         .withColor(AppColors.white),
                   ),
@@ -101,7 +104,7 @@ class BottomSectionCarMiniDetailsCard extends StatelessWidget {
                   ),
                   AppText(
                     location == null || location!.isEmpty
-                        ? ' ${'Worldwide'.tr()}'
+                        ? ' ${'worldwide'.tr()}'
                         : ' $location',
                     translation: false,
                     style: context.textTheme.titleSmall!.sb

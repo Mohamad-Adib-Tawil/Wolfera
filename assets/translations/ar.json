@@ -124,6 +124,8 @@
   "sort_by": "ترتيب حسب",
   "cars_found": "سيارة موجودة",
   "upload_photos": "ارفع صور سيارتك",
+  "extra_pictures_optional": "صورة اختيارية إضافية",
+
   "reset_password": "إعادة تعيين كلمة المرور",
   "choose_country": "اختر الدولة",
   "go_to_dashboard": "الذهاب للوحة التحكم",
@@ -206,6 +208,9 @@
   "worldwide": "حول العالم",
   "governorate": "المحافظة",
   "emirate": "الإمارة",
+  "city": "المدينة",
+  "listing_type": "نوع الإعلان",
+  "select_country": "اختر البلد",
   "select_country_region": "يرجى اختيار الدولة والمنطقة",
   "browse_by_makers": "تصفح حسب الماركة",
   "browse_by_budget": "تصفح حسب الميزانية",
@@ -395,6 +400,7 @@
     "both": "كلاهما (بيع وإيجار)",
     "sale_price": "سعر البيع",
     "rental_prices": "أسعار الإيجار",
+    "set_rental_prices_desc": "حدد أسعار الإيجار لفترات مختلفة",
     "enter_price": "أدخل السعر",
     "description": "الوصف",
     "enter_description": "أدخل وصف السيارة",
@@ -442,6 +448,8 @@
   
   "car_parts": {
     "engine": "المحرك",
+    "optional_image": "صورة اختيارية",
+
     "variant": "الفئة",
     "model": "الموديل",
     "full_front": "أمامية كاملة",

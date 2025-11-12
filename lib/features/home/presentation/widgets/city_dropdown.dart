@@ -45,7 +45,7 @@ class CityDropdown extends StatelessWidget {
     final List<String> items = [];
     for (final co in LocationsData.countries) {
       if (co.code == LocationsData.worldwideCode) {
-        items.add('Worldwide'.tr());
+        items.add('worldwide'.tr());
         continue;
       }
       items.add(co.name);
@@ -57,7 +57,7 @@ class CityDropdown extends StatelessWidget {
     // Determine selected item from prefs
     String selected;
     if (prefs.isWorldwide) {
-      selected = 'Worldwide'.tr();
+      selected = 'worldwide'.tr();
     } else {
       final co = LocationsData.findByCode(prefs.selectedCountryCode);
       final region = prefs.selectedRegionOrCity;
@@ -66,7 +66,7 @@ class CityDropdown extends StatelessWidget {
       } else if (co != null) {
         selected = co.name;
       } else {
-        selected = prefs.selectedCity ?? 'Worldwide'.tr();
+        selected = prefs.selectedCity ?? 'worldwide'.tr();
       }
     }
 
@@ -87,11 +87,11 @@ class CityDropdown extends StatelessWidget {
       onChanged: (value) async {
         final v = value ?? 'Worldwide'.tr();
         final prefs = GetIt.I<PrefsRepository>();
-        if (v == 'Worldwide'.tr()) {
+        if (v == 'worldwide'.tr()) {
           await prefs.setWorldwide(true);
           await prefs.setSelectedCountryCode(null);
           await prefs.setSelectedRegionOrCity(null);
-          await prefs.setSelectedCity('Worldwide'.tr());
+          await prefs.setSelectedCity('worldwide'.tr());
         } else {
           final cName = countryNameOf(v);
           final reg = regionOf(v);
@@ -116,8 +116,8 @@ class CityDropdown extends StatelessWidget {
       baseStyle:
           context.textTheme.titleMedium?.s17.b.withColor(AppColors.white),
       dropdownBuilder: (context, item) {
-        final label = item ?? 'Worldwide'.tr();
-        if (label == 'Worldwide'.tr()) {
+        final label = item ?? 'worldwide'.tr();
+        if (label == 'worldwide'.tr()) {
           return Row(
             mainAxisSize: MainAxisSize.max,
             children: [
@@ -125,7 +125,7 @@ class CityDropdown extends StatelessWidget {
               6.horizontalSpace,
               Expanded(
                 child: Text(
-                  'Worldwide'.tr(),
+                  'worldwide'.tr(),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: context.textTheme.titleSmall.b.withColor(AppColors.white),
@@ -162,7 +162,7 @@ class CityDropdown extends StatelessWidget {
             6.horizontalSpace,
             Expanded(
               child: Text(
-                label == 'Worldwide'.tr() ? 'Worldwide'.tr() : displayText,
+                label == 'worldwide'.tr() ? 'worldwide'.tr() : displayText,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: context.textTheme.titleSmall.b.withColor(AppColors.white),
@@ -173,13 +173,12 @@ class CityDropdown extends StatelessWidget {
       },
       popupProps: PopupProps.menu(
         showSearchBox: true,
-        fit: FlexFit.loose,
         menuProps: MenuProps(
           borderRadius: BorderRadius.circular(15.r),
         ),
         itemBuilder: (context, item, isSelected) {
           final label = item!;
-          final isWw = label == 'Worldwide'.tr();
+          final isWw = label == 'worldwide'.tr();
           final cName = countryNameOf(label);
           final co = LocationsData.findByName(cName);
           final region = regionOf(label);
@@ -189,7 +188,7 @@ class CityDropdown extends StatelessWidget {
               ? null
               : CarValueTranslator.translateCity(region, country: cName);
           final displayText = isWw
-              ? 'Worldwide'.tr()
+              ? 'worldwide'.tr()
               : (region == null ? localizedCountry : '$localizedCountry - ${translatedRegion ?? region}');
           return Padding(
             padding: HWEdgeInsets.symmetric(horizontal: 16.0, vertical: 12),
@@ -232,7 +231,7 @@ class CityDropdown extends StatelessWidget {
                   context.textTheme.titleSmall.m.withColor(AppColors.grey)),
         ),
       ),
-      hintText: 'Choose Country'.tr(),
+      hintText: 'choose_country'.tr(),
       filled: false,
       borderColor: Colors.transparent,
       validator: (value) => value == null ? LocaleKeys.required : null,

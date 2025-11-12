@@ -24,7 +24,7 @@ class _EnterCarDetailsPageState extends State<_EnterCarDetailsPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SellCarItem(
-              title: 'label_make'.tr(),
+              title: 'label_make',
               form: _myCarsBloc.sellMyCarForm,
               formControlName: _myCarsBloc.kFromCarMaker,
               dialogWidget: CarsMakersDialog(
@@ -44,15 +44,15 @@ class _EnterCarDetailsPageState extends State<_EnterCarDetailsPage> {
               isDialog: true,
             ),
             SellCarItem(
-              title: 'label_model'.tr(),
+              title: 'label_model',
               formControlName: _myCarsBloc.kFromCarModel,
             ),
             SellCarItem(
-              title: 'engine_variant'.tr(),
+              title: 'engine_variant',
               formControlName: _myCarsBloc.kFromCarEngine,
             ),
             SellCarItem(
-              title: 'label_year'.tr(),
+              title: 'label_year',
               formControlName: _myCarsBloc.kFromCarYear,
               form: _myCarsBloc.sellMyCarForm,
               dialogWidget: YearPickerDialog(
@@ -65,7 +65,7 @@ class _EnterCarDetailsPageState extends State<_EnterCarDetailsPage> {
               isDialog: true,
             ),
             SellCarItem(
-              title: 'label_transmission'.tr(),
+              title: 'label_transmission',
               formControlName: _myCarsBloc.kFromCarTransmission,
               form: _myCarsBloc.sellMyCarForm,
               dialogWidget: TranmissionDialog(
@@ -76,13 +76,13 @@ class _EnterCarDetailsPageState extends State<_EnterCarDetailsPage> {
               isDialog: true,
             ),
             SellCarItem(
-              title: 'label_mileage'.tr(),
+              title: 'label_mileage',
               formControlName: _myCarsBloc.kFromCarMileage,
               textInputType: const TextInputType.numberWithOptions(
                   signed: false, decimal: true),
             ),
             SellCarItem(
-              title: 'fuel_type_label'.tr(),
+              title: 'fuel_type_label',
               formControlName: _myCarsBloc.kFromCarFuelType,
               form: _myCarsBloc.sellMyCarForm,
               dialogWidget: FuelTypeDialog(
@@ -93,12 +93,12 @@ class _EnterCarDetailsPageState extends State<_EnterCarDetailsPage> {
               isDialog: true,
             ),
             SellCarItem(
-              title: 'label_trim'.tr(),
+              title: 'label_trim',
               formControlName: _myCarsBloc.kFromCarTrim,
               form: _myCarsBloc.sellMyCarForm,
             ),
             SellCarItem(
-              title: 'label_cylinders'.tr(),
+              title: 'label_cylinders',
               form: _myCarsBloc.sellMyCarForm,
               formControlName: _myCarsBloc.kFromCarCylinders,
               dialogWidget: CylindersDialog(
@@ -109,7 +109,7 @@ class _EnterCarDetailsPageState extends State<_EnterCarDetailsPage> {
               isDialog: true,
             ),
             SellCarItem(
-              title: 'seats_number'.tr(),
+              title: 'seats_number',
               form: _myCarsBloc.sellMyCarForm,
               formControlName: _myCarsBloc.kFromCarSeats,
               dialogWidget: SeatsNumberDialog(
@@ -120,11 +120,11 @@ class _EnterCarDetailsPageState extends State<_EnterCarDetailsPage> {
               isDialog: true,
             ),
             SellCarItem(
-              title: 'paint_parts'.tr(),
+              title: 'paint_parts',
               formControlName: _myCarsBloc.kFromCarPaintParts,
             ),
             SellCarItem(
-              title: 'label_condition'.tr(),
+              title: 'label_condition',
               form: _myCarsBloc.sellMyCarForm,
               formControlName: _myCarsBloc.kFromCarCondition,
               dialogWidget: ConditionDialog(
@@ -135,11 +135,11 @@ class _EnterCarDetailsPageState extends State<_EnterCarDetailsPage> {
               isDialog: true,
             ),
             SellCarItem(
-              title: 'label_plate'.tr(),
+              title: 'label_plate',
               formControlName: _myCarsBloc.kFromCarPlate,
             ),
             SellCarItem(
-              title: 'label_color'.tr(),
+              title: 'label_color',
               formControlName: _myCarsBloc.kFromCarColor,
               form: _myCarsBloc.sellMyCarForm,
               dialogWidget: ColorsDialog(
@@ -150,17 +150,17 @@ class _EnterCarDetailsPageState extends State<_EnterCarDetailsPage> {
               isDialog: true,
             ),
             SellCarItem(
-              title: 'seat_material'.tr(),
+              title: 'seat_material',
               formControlName: _myCarsBloc.kFromCarSeatMaterial,
             ),
             SellCarItem(
-              title: 'label_wheels'.tr(),
+              title: 'label_wheels',
               formControlName: _myCarsBloc.kFromCarWheels,
               textInputType: const TextInputType.numberWithOptions(
                   signed: false, decimal: false),
             ),
             SellCarItem(
-              title: 'vehicle_type'.tr(),
+              title: 'vehicle_type',
               formControlName: _myCarsBloc.kFromCarVehicleType,
               form: _myCarsBloc.sellMyCarForm,
               dialogWidget: VehicleTypeDialog(
@@ -171,7 +171,7 @@ class _EnterCarDetailsPageState extends State<_EnterCarDetailsPage> {
               isDialog: true,
             ),
             SellCarItem(
-              title: 'interior_color'.tr(),
+              title: 'interior_color',
               formControlName: _myCarsBloc.kFromCarInteriorColor,
               form: _myCarsBloc.sellMyCarForm,
               dialogWidget: ColorsDialog(
@@ -182,7 +182,7 @@ class _EnterCarDetailsPageState extends State<_EnterCarDetailsPage> {
               isDialog: true,
             ),
             SellCarItem(
-              title: 'exterior_color'.tr(),
+              title: 'exterior_color',
               formControlName: _myCarsBloc.kFromCarExteriorColor,
               form: _myCarsBloc.sellMyCarForm,
               dialogWidget: ColorsDialog(

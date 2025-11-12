@@ -39,7 +39,6 @@ class CustomCheckBoxButton extends StatelessWidget {
           ),
         ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             if (leading != null) ...[leading!, 12.horizontalSpace],
@@ -47,6 +46,7 @@ class CustomCheckBoxButton extends StatelessWidget {
               constraints: BoxConstraints(minWidth: 0, maxWidth: 200.w),
               child: AppText(
                 title,
+                translation: false,
                 style: context.textTheme.bodyMedium?.s20.r,
               ),
             ),
@@ -54,7 +54,6 @@ class CustomCheckBoxButton extends StatelessWidget {
             Container(
               width: 20.w,
               height: 20.h,
-              padding: HWEdgeInsets.all(1),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(4.r),
                 border: Border.all(

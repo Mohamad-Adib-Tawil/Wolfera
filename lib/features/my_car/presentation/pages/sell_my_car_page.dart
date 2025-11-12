@@ -84,6 +84,26 @@ class _SellMyCarPageState extends State<SellMyCarPage> {
       child: SafeArea(
         top: false,
         child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            leading: IconButton(
+              onPressed: () => GetIt.I<MyCarsBloc>().add(BackPageEvent()),
+              icon: Transform.rotate(
+                angle: context.locale.languageCode != 'ar' ? 3.14 : 0,
+                child: const Icon(
+                  Icons.arrow_back_ios_rounded,
+                  color: AppColors.white,
+                ),
+              ),
+            ),
+            title: AppText(
+              "sell_car.title",
+              style: context.textTheme.titleSmall.m!
+                  .copyWith(color: AppColors.white, fontSize: 22.sp),
+            ),
+            centerTitle: true,
+          ),
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -113,7 +133,7 @@ class _Header extends StatelessWidget {
 
   final steps = [
     "sell_car.step_1",
-    "sell_car.step_2", 
+    "sell_car.step_2",
     "sell_car.step_3",
     "sell_car.step_4",
   ];
@@ -122,39 +142,11 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     final isRtl = context.locale.languageCode == 'ar';
     return Container(
-      constraints: BoxConstraints(minHeight: 115.h),
-      margin: HWEdgeInsets.only(
-        left: 10,
-        right: 10,
-        top: MediaQuery.of(context).padding.top + 5.h,
-      ),
+      margin: HWEdgeInsets.only(left: 10, right: 10, top: 10.h),
       padding: HWEdgeInsetsDirectional.only(start: 10, end: 20),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              IconButton(
-                onPressed: () => GetIt.I<MyCarsBloc>().add(BackPageEvent()),
-                icon: Transform.rotate(
-                  angle: context.locale.languageCode == 'ar' ? 3.14 : 0,
-                  child: const Icon(
-                    Icons.arrow_back_ios_rounded,
-                    color: AppColors.white,
-                  ),
-                ),
-                padding: EdgeInsets.zero,
-              ),
-              62.horizontalSpace,
-              AppText(
-                "sell_car.title",
-                style: context.textTheme.titleSmall.m!
-                    .copyWith(color: AppColors.white, fontSize: 22.sp),
-              ),
-            ],
-          ),
-          10.verticalSpace,
           BlocSelector<MyCarsBloc, MyCarsState, int>(
             selector: (state) => state.activeStep,
             builder: (context, activeStep) {

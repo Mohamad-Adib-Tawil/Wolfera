@@ -29,7 +29,7 @@ class _AddCarImagesPageState extends State<_AddCarImagesPage> {
                 Padding(
                   padding: HWEdgeInsetsDirectional.only(start: 20, top: 10),
                   child: AppText(
-                    'Upload photos of your car'.tr(),
+                    'upload_photos',
                     style: context.textTheme.bodyMedium?.r.s20
                         .withColor(AppColors.grey),
                   ),
@@ -82,17 +82,17 @@ class _AddCarImagesPageState extends State<_AddCarImagesPage> {
   String _getLabelForControl(String controlName) {
     switch (controlName) {
       case 'carImageFullRight':
-        return 'Full Right';
+        return 'car_parts.full_right';
       case 'carImageFullLeft':
-        return 'Full Left';
+        return 'car_parts.full_left';
       case 'carImageRear':
-        return 'Rear';
+        return 'car_parts.full_back';
       case 'carImageFront':
-        return 'Front';
+        return 'car_parts.front_seats';
       case 'carImageDashboard':
-        return 'Dashboard from back Seat';
+        return 'car_parts.dashboard';
       default:
-        return 'Optional Image';
+        return 'car_parts.optional_image';
     }
   }
 }
