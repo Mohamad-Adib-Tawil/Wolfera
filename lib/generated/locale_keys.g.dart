@@ -584,6 +584,7 @@ abstract class  LocaleKeys {
   static const conversation_hidden = 'conversation_hidden';
   static const hide = 'hide';
   static const error = 'error';
+  static const your_message = 'your_message';
   static const failed_to_load_seller_cars = 'failed_to_load_seller_cars';
   static const no_cars_for_sale = 'no_cars_for_sale';
   static const google_signin_misconfigured = 'google_signin_misconfigured';

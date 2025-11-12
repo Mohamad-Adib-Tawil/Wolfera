@@ -606,6 +606,7 @@
   "conversation_hidden": "Conversation hidden",
   "hide": "Hide",
   "error": "Error: {}",
+  "your_message": "Your message...",
   "failed_to_load_seller_cars": "Failed to load seller cars",
   "no_cars_for_sale": "No cars for sale",
   "google_signin_misconfigured": "Google Sign-In is misconfigured. Check SHA-1 fingerprints, package name, and Web Client ID.",

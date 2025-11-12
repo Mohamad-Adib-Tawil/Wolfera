@@ -81,7 +81,7 @@ class _SingUpPageState extends State<SingUpPage> {
             ),
             24.verticalSpace,
             CustomTextField(
-              hint: "Enter email",
+              hint: "enter_email",
               formControlName: _authBloc.kFromEmail,
               textInputAction: TextInputAction.next,
               prefixIcon: const AppSvgPicture(
