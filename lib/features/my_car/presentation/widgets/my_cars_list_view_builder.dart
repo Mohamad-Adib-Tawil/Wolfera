@@ -122,8 +122,9 @@ class MyCarsListViewBuilder extends StatelessWidget {
               (car['body_type'] ?? car['engine_capacity'])?.toString();
           final spec2 = car['transmission']?.toString();
           final mileageVal = car['mileage']?.toString();
+          // Pass raw mileage only; BottomSectionCarMiniDetailsCard appends the localized unit
           final mileage = (mileageVal != null && mileageVal.isNotEmpty)
-              ? '$mileageVal KM'
+              ? mileageVal
               : null;
           final fuel = car['fuel_type']?.toString();
           final location = (car['city'] ?? car['location'])?.toString();

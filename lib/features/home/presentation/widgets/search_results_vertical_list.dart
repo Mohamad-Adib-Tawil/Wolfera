@@ -176,8 +176,9 @@ class _SearchResultsVerticalListState extends State<SearchResultsVerticalList> {
                     ? CarValueTranslator.translateTransmission(rawSpec2)
                     : null;
                 final mileageVal = car['mileage']?.toString();
-                final mileage = mileageVal != null && mileageVal.isNotEmpty
-                    ? '$mileageVal ${'km'.tr()}'
+                // Pass raw mileage only; BottomSectionCarMiniDetailsCard appends the localized unit
+                final mileage = (mileageVal != null && mileageVal.isNotEmpty)
+                    ? mileageVal
                     : null;
                 final rawFuel = car['fuel_type']?.toString();
                 final fuel = rawFuel != null
