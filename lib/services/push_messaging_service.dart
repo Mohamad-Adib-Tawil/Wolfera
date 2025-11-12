@@ -221,15 +221,42 @@ class PushMessagingService {
       final platform = Platform.isAndroid ? 'android' : (Platform.isIOS ? 'ios' : 'other');
 
       // جدول مقترح: user_devices(user_id text, token text pk/unique, platform text, updated_at timestamptz)
-      await _client.from('user_devices').upsert({
-        'user_id': user.id,
-        'token': token,
-        'platform': platform,
-        'updated_at': DateTime.now().toIso8601String(),
-      }, onConflict: 'token');
+      try {
+        await _client.from('user_devices').upsert({
+          'user_id': user.id,
+          'token': token,
+          'platform': platform,
+          'updated_at': DateTime.now().toIso8601String(),
+        }, onConflict: 'token');
+        
+        if (kDebugMode) {
+          print('✅ FCM token saved successfully');
+        }
+      } catch (deviceError) {
+        if (kDebugMode) {
+          print('⚠️ Failed to save to user_devices: $deviceError');
+          print('🔄 Trying to update users table instead...');
+        }
+        
+        // Fallback: حفظ FCM token في جدول users
+        try {
+          await _client.from('users').update({
+            'fcm_token': token,
+            'updated_at': DateTime.now().toIso8601String(),
+          }).eq('id', user.id);
+          
+          if (kDebugMode) {
+            print('✅ FCM token saved to users table as fallback');
+          }
+        } catch (usersError) {
+          if (kDebugMode) {
+            print('❌ Failed to save FCM token anywhere: $usersError');
+          }
+        }
+      }
     } catch (e) {
       if (kDebugMode) {
-        print('⚠️ Failed to persist FCM token: $e');
+        print('⚠️ General error in FCM token handling: $e');
       }
     }
   }
@@ -434,6 +461,7 @@ class PushMessagingService {
       final carTypes = {
         'view_car',
         'price_drop',
+        'price_change',
         'car_price_changed',
         'car_status_changed',
         'car_state_changed',

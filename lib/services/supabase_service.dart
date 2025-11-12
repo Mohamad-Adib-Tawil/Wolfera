@@ -138,7 +138,76 @@ class SupabaseService {
   }
 
   static Future<void> updateCar(String id, Map<String, dynamic> carData) async {
+    // جلب بيانات السيارة الحالية للمقارنة
+    final currentCar = await client
+        .from('cars')
+        .select('price, title, rental_price_per_day, rental_price_per_week, rental_price_per_month, rental_price_per_3months, rental_price_per_6months, rental_price_per_year')
+        .eq('id', id)
+        .single();
+    
+    // تحديث السيارة
     await client.from('cars').update(carData).eq('id', id);
+    
+    // التحقق من تغيير أي سعر وإرسال الإشعارات
+    final carTitle = currentCar['title']?.toString() ?? 'Unknown Car';
+    
+    // التحقق من تغيير سعر البيع
+    final oldSalePrice = currentCar['price']?.toString();
+    final newSalePrice = carData['price']?.toString();
+    
+    // التحقق من تغيير أسعار الإيجار المختلفة
+    final rentalFields = [
+      'rental_price_per_day',
+      'rental_price_per_week', 
+      'rental_price_per_month',
+      'rental_price_per_3months',
+      'rental_price_per_6months',
+      'rental_price_per_year'
+    ];
+    
+    bool priceChanged = false;
+    String? oldPriceDisplay, newPriceDisplay;
+    
+    // فحص سعر البيع
+    if (oldSalePrice != null && newSalePrice != null && oldSalePrice != newSalePrice) {
+      priceChanged = true;
+      oldPriceDisplay = oldSalePrice;
+      newPriceDisplay = newSalePrice;
+    }
+    
+    // فحص أسعار الإيجار
+    if (!priceChanged) {
+      for (final field in rentalFields) {
+        final oldValue = currentCar[field]?.toString();
+        final newValue = carData[field]?.toString();
+        if (oldValue != null && newValue != null && oldValue != newValue) {
+          priceChanged = true;
+          oldPriceDisplay = oldValue;
+          newPriceDisplay = newValue;
+          break;
+        }
+      }
+    }
+    
+    if (priceChanged && oldPriceDisplay != null && newPriceDisplay != null) {
+      print('💰 Price change detected for car: $id');
+      print('   Title: $carTitle');
+      print('   Old Price: $oldPriceDisplay');
+      print('   New Price: $newPriceDisplay');
+      
+      // إرسال إشعار تغيير السعر للمستخدمين الذين أضافوا السيارة للمفضلة
+      await NotificationService.sendPriceChangeNotification(
+        carId: id,
+        carTitle: carTitle,
+        oldPrice: oldPriceDisplay,
+        newPrice: newPriceDisplay,
+      );
+    } else {
+      print('ℹ️ No price change detected for car: $id');
+      print('   priceChanged: $priceChanged');
+      print('   oldPriceDisplay: $oldPriceDisplay');
+      print('   newPriceDisplay: $newPriceDisplay');
+    }
   }
 
   static Future<void> deleteCar(String id) async {

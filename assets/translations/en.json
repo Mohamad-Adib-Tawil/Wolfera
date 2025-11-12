@@ -235,6 +235,8 @@
   "Region": "Region",
   "Faviorate": "Favorites",
   "1": "1",
+  "price_change_notification_title": "Price Changed",
+  "price_change_notification_body": "Rental price has been updated",
   "region": "Region",
   "year": "year",
   "newest": "Newest",
