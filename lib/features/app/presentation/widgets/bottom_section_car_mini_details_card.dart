@@ -41,33 +41,43 @@ class BottomSectionCarMiniDetailsCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Column(
+          Expanded(child: Column(
             // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AppText(
                 title ?? '2021 KIA SELTOS',
                 translation: false,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style:
                     context.textTheme.titleSmall!.xb.withColor(AppColors.white),
               ),
               10.verticalSpace,
               Row(
                 children: [
-                  AppText(
-                    spec1 ?? 'GTX 1.4 GDI PETROL',
-                    translation: false,
-                    style: context.textTheme.titleSmall!.s13.b
-                        .withColor(AppColors.white),
+                  Flexible(
+                    child: AppText(
+                      spec1 ?? 'GTX 1.4 GDI PETROL',
+                      translation: false,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.textTheme.titleSmall!.s13.b
+                          .withColor(AppColors.white),
+                    ),
                   ),
                   const SpaceTextWidget(),
-                  AppText(
-                    spec2 != null
-                        ? CarValueTranslator.translateTransmission(spec2)
-                        : 'transmission_types.manual'.tr(),
-                    translation: false,
-                    style: context.textTheme.titleSmall!.s13.sb
-                        .withColor(AppColors.white),
+                  Flexible(
+                    child: AppText(
+                      spec2 != null
+                          ? CarValueTranslator.translateTransmission(spec2)
+                          : 'transmission_types.manual'.tr(),
+                      translation: false,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.textTheme.titleSmall!.s13.sb
+                          .withColor(AppColors.white),
+                    ),
                   ),
                 ],
               ),
@@ -102,19 +112,22 @@ class BottomSectionCarMiniDetailsCard extends StatelessWidget {
                       width: 12.w,
                     ),
                   ),
-                  AppText(
-                    location == null || location!.isEmpty
-                        ? ' ${'worldwide'.tr()}'
-                        : ' $location',
-                    translation: false,
-                    style: context.textTheme.titleSmall!.sb
-                        .withColor(AppColors.white),
+                  Expanded(
+                    child: AppText(
+                      location == null || location!.isEmpty
+                          ? ' ${'worldwide'.tr()}'
+                          : ' $location',
+                      translation: false,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.textTheme.titleSmall!.sb
+                          .withColor(AppColors.white),
+                    ),
                   ),
                 ],
               ),
             ],
-          ),
-          const Spacer(),
+          )),
           if (secondPrice != null) ...[
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
