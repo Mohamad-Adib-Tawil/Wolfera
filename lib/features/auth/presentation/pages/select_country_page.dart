@@ -157,7 +157,7 @@ class _SelectCountyPageState extends State<SelectCountyPage> {
                         child: AppDropdownSearch<CountryOption>(
                           items: LocationsData.countries,
                           selectedItem: _selectedCountry ?? LocationsData.countries.first,
-                          itemAsString: (co) => co.name,
+                          itemAsString: (co) => co.translatedName,
                           hintText: 'Country'.tr(),
                           baseStyle: context.textTheme.titleSmall.b.withColor(AppColors.blackLight),
                           dropdownBuilder: (context, co) {
@@ -177,7 +177,7 @@ class _SelectCountyPageState extends State<SelectCountyPage> {
                                     ),
                                   ),
                                 10.horizontalSpace,
-                                Text(isWw ? 'Worldwide'.tr() : (co?.name ?? 'Worldwide'.tr()),
+                                Text(co?.translatedName ?? 'Worldwide'.tr(),
                                     style: context.textTheme.titleSmall.b.withColor(AppColors.blackLight)),
                               ],
                             );
@@ -202,7 +202,7 @@ class _SelectCountyPageState extends State<SelectCountyPage> {
                                         ),
                                       ),
                                     10.horizontalSpace,
-                                    Expanded(child: Text(co.name)),
+                                    Expanded(child: Text(co.translatedName)),
                                   ],
                                 ),
                               );
@@ -226,7 +226,7 @@ class _SelectCountyPageState extends State<SelectCountyPage> {
                         AppDropdownSearch<String>(
                           items: _selectedCountry!.secondLevel,
                           selectedItem: _selectedRegion,
-                          hintText: _selectedCountry!.secondLevelLabel ?? 'Region'.tr(),
+                          hintText: _selectedCountry!.translatedSecondLevelLabel ?? 'Region'.tr(),
                           onChanged: (val) => setState(() => _selectedRegion = val),
                           filled: true,
                           fillColor: const Color(0xffeff1f9),

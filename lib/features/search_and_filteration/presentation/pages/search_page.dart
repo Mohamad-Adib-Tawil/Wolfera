@@ -123,88 +123,90 @@ class _SearcgPageState extends State<SearchPage> {
                       child: BlocBuilder<SearchCubit, SearchState>(
                         builder: (context, state) {
                           final resultsCount = state.searchResults.length;
-                          final hasActiveFilters = state.activeFilterCount() > 0;
+                          final hasActiveFilters =
+                              state.activeFilterCount() > 0;
 
                           return Padding(
                             padding: HWEdgeInsets.symmetric(horizontal: 23),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                AppText(
-                                  resultsCount > 0
-                                      ? '$resultsCount ${'cars_found'.tr()}'
-                                      : 'search_or_filters'.tr(),
-                                  translation: false,
-                                  style: context.textTheme.titleMedium?.s13.m
-                                      .withColor(AppColors.white),
+                                Expanded(
+                                  child: AppText(
+                                    resultsCount > 0
+                                        ? '$resultsCount ${'cars_found'.tr()}'
+                                        : 'search_or_filters'.tr(),
+                                    translation: false,
+                                    style: context.textTheme.titleMedium?.s13.m
+                                        .withColor(AppColors.white),
+                                  ),
                                 ),
-                                Row(
-                                  children: [
-                                    if (hasActiveFilters) ...[
-                                      AppElevatedButton(
-                                        onPressed: () => _searchCubit.resetAllFilters(),
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.transparent,
-                                          elevation: 0,
-                                          shadowColor: Colors.transparent,
-                                          side: const BorderSide(
-                                              color: AppColors.primary, width: 0.7),
-                                          padding: HWEdgeInsets.symmetric(
-                                              horizontal: 12, vertical: 6),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(20).r,
+                                Flexible(
+                                  child: SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        if (hasActiveFilters) ...[
+                                          InkWell(
+                                            onTap: () =>
+                                                _searchCubit.resetAllFilters(),
+                                            borderRadius:
+                                                BorderRadius.circular(20).r,
+                                            child: Container(
+                                              padding: HWEdgeInsets.all(8),
+                                              decoration: BoxDecoration(
+                                                border: Border.all(
+                                                    color: AppColors.primary,
+                                                    width: 0.7),
+                                                borderRadius:
+                                                    BorderRadius.circular(20).r,
+                                              ),
+                                              child: Icon(
+                                                Icons.filter_alt_off_rounded,
+                                                size: 16.r,
+                                                color: AppColors.primary,
+                                              ),
+                                            ),
+                                          ),
+                                          12.horizontalSpace,
+                                        ],
+                                        InkWell(
+                                          borderRadius:
+                                              BorderRadius.circular(18).r,
+                                          onTap: () => _showSortSheet(context),
+                                          child: Padding(
+                                            padding: HWEdgeInsets.symmetric(
+                                                horizontal: 8, vertical: 6),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Icon(
+                                                  Icons.sort_outlined,
+                                                  size: 14.r,
+                                                ),
+                                                6.horizontalSpace,
+                                                AppText(
+                                                  "sort_by",
+                                                  style: context.textTheme
+                                                      .titleMedium?.s13.m
+                                                      .withColor(
+                                                          AppColors.white),
+                                                ),
+                                                2.horizontalSpace,
+                                                Icon(
+                                                  Icons.expand_more,
+                                                  size: 14.r,
+                                                  color: AppColors.white,
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(
-                                              Icons.filter_alt_off_rounded,
-                                              size: 14.r,
-                                              color: AppColors.primary,
-                                            ),
-                                            6.horizontalSpace,
-                                            AppText(
-                                              'clear_all_filters',
-                                              style: context
-                                                  .textTheme.titleMedium?.s13.m
-                                                  .withColor(AppColors.primary),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      12.horizontalSpace,
-                                    ],
-                                    InkWell(
-                                      borderRadius: BorderRadius.circular(18).r,
-                                      onTap: () => _showSortSheet(context),
-                                      child: Padding(
-                                        padding: HWEdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(
-                                              Icons.sort_outlined,
-                                              size: 14.r,
-                                            ),
-                                            6.horizontalSpace,
-                                            AppText(
-                                              "sort_by",
-                                              style: context.textTheme.titleMedium?.s13.m
-                                                  .withColor(AppColors.white),
-                                            ),
-                                            2.horizontalSpace,
-                                            Icon(
-                                              Icons.expand_more,
-                                              size: 14.r,
-                                              color: AppColors.white,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
+                                      ],
                                     ),
-                                  ],
-                                )
+                                  ),
+                                ),
                               ],
                             ),
                           );
@@ -233,17 +235,20 @@ class _SearcgPageState extends State<SearchPage> {
                                 children: [
                                   if (hasActiveFilters) ...[
                                     AppElevatedButton(
-                                      onPressed: () => _searchCubit.resetAllFilters(),
+                                      onPressed: () =>
+                                          _searchCubit.resetAllFilters(),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.transparent,
                                         elevation: 0,
                                         shadowColor: Colors.transparent,
                                         side: const BorderSide(
-                                            color: AppColors.primary, width: 0.7),
+                                            color: AppColors.primary,
+                                            width: 0.7),
                                         padding: HWEdgeInsets.symmetric(
                                             horizontal: 12, vertical: 6),
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(20).r,
+                                          borderRadius:
+                                              BorderRadius.circular(20).r,
                                         ),
                                       ),
                                       child: Row(
@@ -254,13 +259,6 @@ class _SearcgPageState extends State<SearchPage> {
                                             size: 14.r,
                                             color: AppColors.primary,
                                           ),
-                                          6.horizontalSpace,
-                                          AppText(
-                                            'clear_all_filters',
-                                            style: context
-                                                .textTheme.titleMedium?.s13.m
-                                                .withColor(AppColors.primary),
-                                          ),
                                         ],
                                       ),
                                     ),
@@ -270,7 +268,8 @@ class _SearcgPageState extends State<SearchPage> {
                                     borderRadius: BorderRadius.circular(18).r,
                                     onTap: () => _showSortSheet(context),
                                     child: Padding(
-                                      padding: HWEdgeInsets.symmetric(horizontal: 8, vertical: 6),
+                                      padding: HWEdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 6),
                                       child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
@@ -281,7 +280,8 @@ class _SearcgPageState extends State<SearchPage> {
                                           6.horizontalSpace,
                                           AppText(
                                             "sort_by",
-                                            style: context.textTheme.titleMedium?.s13.m
+                                            style: context
+                                                .textTheme.titleMedium?.s13.m
                                                 .withColor(AppColors.white),
                                           ),
                                           2.horizontalSpace,
@@ -320,84 +320,91 @@ class _SearcgPageState extends State<SearchPage> {
                         beginOffset: const Offset(-0.24, 0),
                         child: BlocBuilder<SearchCubit, SearchState>(
                           builder: (context, state) {
-                    // حالة الخطأ
-                    if (state.searchError != null) {
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            AppText(
-                              'error'.tr(args: [state.searchError ?? '']),
-                              style: context.textTheme.bodyMedium
-                                  ?.withColor(AppColors.white),
-                              translation: false,
-                            ),
-                            20.verticalSpace,
-                            ElevatedButton(
-                              onPressed: () {
-                                _searchCubit.searchCars();
-                              },
-                              style: ElevatedButton.styleFrom(
-                                minimumSize: const Size(0, 0),
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            // حالة الخطأ
+                            if (state.searchError != null) {
+                              return Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    AppText(
+                                      'error'
+                                          .tr(args: [state.searchError ?? '']),
+                                      style: context.textTheme.bodyMedium
+                                          ?.withColor(AppColors.white),
+                                      translation: false,
+                                    ),
+                                    20.verticalSpace,
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        _searchCubit.searchCars();
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        minimumSize: const Size(0, 0),
+                                        tapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                      ),
+                                      child: AppText('Retry'.tr()),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+
+                            // التحقق من وجود فلاتر نشطة
+                            final hasActiveFilters =
+                                state.activeFilterCount() > 0;
+                            final hasSearchQuery = state.searchQuery.isNotEmpty;
+
+                            // حالة عدم وجود نص بحث ولا فلاتر، لكن لا تظهر العنصر الفارغ إذا كانت هناك نتائج
+                            if (!hasSearchQuery &&
+                                !hasActiveFilters &&
+                                state.searchResults.isEmpty) {
+                              return Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.search,
+                                      size: 80.r,
+                                      color: AppColors.white
+                                          .withValues(alpha: 0.3),
+                                    ),
+                                    20.verticalSpace,
+                                    AppText(
+                                      'search_or_filters',
+                                      style: context.textTheme.bodyLarge
+                                          ?.withColor(AppColors.white
+                                              .withValues(alpha: 0.6)),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+
+                            // حالة عدم وجود نتائج
+                            if (state.searchResults.isEmpty) {
+                              return SingleChildScrollView(
+                                child: Center(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      AppEmptyState.foodsEmpty(),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }
+
+                            // عرض النتائج
+                            return CarsListViewBuilder(
+                              scrollDirection: Axis.vertical,
+                              padding: HWEdgeInsetsDirectional.only(
+                                start: 8,
+                                end: 8,
+                                top: 12,
                               ),
-                              child: AppText('Retry'.tr()),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-
-                    // التحقق من وجود فلاتر نشطة
-                    final hasActiveFilters = state.activeFilterCount() > 0;
-                    final hasSearchQuery = state.searchQuery.isNotEmpty;
-
-                    // حالة عدم وجود نص بحث ولا فلاتر، لكن لا تظهر العنصر الفارغ إذا كانت هناك نتائج
-                    if (!hasSearchQuery && !hasActiveFilters && state.searchResults.isEmpty) {
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.search,
-                              size: 80.r,
-                              color: AppColors.white.withValues(alpha: 0.3),
-                            ),
-                            20.verticalSpace,
-                            AppText(
-                              'search_or_filters',
-                              style: context.textTheme.bodyLarge?.withColor(
-                                  AppColors.white.withValues(alpha: 0.6)),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-
-                    // حالة عدم وجود نتائج
-                    if (state.searchResults.isEmpty) {
-                      return SingleChildScrollView(
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              AppEmptyState.foodsEmpty(),
-                            ],
-                          ),
-                        ),
-                      );
-                    }
-
-                    // عرض النتائج
-                    return CarsListViewBuilder(
-                      scrollDirection: Axis.vertical,
-                      padding: HWEdgeInsetsDirectional.only(
-                        start: 8,
-                        end: 8,
-                        top: 12,
-                      ),
-                      cars: state.searchResults,
-                    );
+                              cars: state.searchResults,
+                            );
                           },
                         ),
                       )
@@ -422,7 +429,8 @@ class _SearcgPageState extends State<SearchPage> {
                                     },
                                     style: ElevatedButton.styleFrom(
                                       minimumSize: const Size(0, 0),
-                                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                      tapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
                                     ),
                                     child: AppText('Retry'.tr()),
                                   ),
@@ -432,11 +440,14 @@ class _SearcgPageState extends State<SearchPage> {
                           }
 
                           // التحقق من وجود فلاتر نشطة
-                          final hasActiveFilters = state.activeFilterCount() > 0;
+                          final hasActiveFilters =
+                              state.activeFilterCount() > 0;
                           final hasSearchQuery = state.searchQuery.isNotEmpty;
 
                           // حالة عدم وجود نص بحث ولا فلاتر، لكن لا تظهر العنصر الفارغ إذا كانت هناك نتائج
-                          if (!hasSearchQuery && !hasActiveFilters && state.searchResults.isEmpty) {
+                          if (!hasSearchQuery &&
+                              !hasActiveFilters &&
+                              state.searchResults.isEmpty) {
                             return Center(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -444,13 +455,15 @@ class _SearcgPageState extends State<SearchPage> {
                                   Icon(
                                     Icons.search,
                                     size: 80.r,
-                                    color: AppColors.white.withValues(alpha: 0.3),
+                                    color:
+                                        AppColors.white.withValues(alpha: 0.3),
                                   ),
                                   20.verticalSpace,
                                   AppText(
                                     'search_or_filters',
-                                    style: context.textTheme.bodyLarge?.withColor(
-                                        AppColors.white.withValues(alpha: 0.6)),
+                                    style: context.textTheme.bodyLarge
+                                        ?.withColor(AppColors.white
+                                            .withValues(alpha: 0.6)),
                                   ),
                                 ],
                               ),
@@ -553,7 +566,8 @@ class _SearcgPageState extends State<SearchPage> {
                           value: id,
                           groupValue: groupValue,
                           onChanged: (val) {
-                            _searchCubit.setSort(o['by'] as String, o['asc'] as bool);
+                            _searchCubit.setSort(
+                                o['by'] as String, o['asc'] as bool);
                             Navigator.pop(ctx);
                           },
                           activeColor: AppColors.primary,

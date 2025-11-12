@@ -152,8 +152,10 @@ class CustomLogoutDialog extends StatelessWidget {
                           ),
                           child: AppText(
                             LocaleKeys.yesAmSure,
-                            style: context.textTheme.bodyMedium.m
-                                .withColor(AppColors.blackLight),
+                            style: context.textTheme.bodyMedium.m.withColor(
+                              AppColors.blackLight,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
                         );
                       },

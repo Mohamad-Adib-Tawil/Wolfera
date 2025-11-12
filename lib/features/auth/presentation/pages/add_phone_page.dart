@@ -15,6 +15,8 @@ import 'package:wolfera/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:wolfera/features/auth/presentation/widgets/add_phone_text_field.dart';
 import 'package:go_router/go_router.dart';
 import 'package:wolfera/features/app/presentation/widgets/animations/delayed_fade_slide.dart';
+import 'package:get_it/get_it.dart';
+import 'package:wolfera/features/profile/domain/use_cases/update_profile.dart';
 
 class AddPhoneNumberPage extends StatefulWidget {
   final User user;
@@ -174,52 +176,43 @@ class _AddPhoneNumberPageState extends State<AddPhoneNumberPage> {
     setState(() => _isLoading = true);
 
     try {
-      final countryCode = _form.control('country_code').value as String;
-      final phoneNumber = _form.control('phone').value as String;
-      final fullPhoneNumber = '$countryCode$phoneNumber';
-      
-      // Attempt update; request returning row to detect success and surface RLS errors
-      print('Saving phone for user ${widget.user.id}: $fullPhoneNumber');
-      List<dynamic> updated;
-      try {
-        updated = await Supabase.instance.client
-          .from('users')
-          .update({
-            'phone_number': fullPhoneNumber,
-            'updated_at': DateTime.now().toIso8601String(),
-          })
-          .eq('id', widget.user.id)
-          .select('id');
-      } catch (e) {
-        // Log and fallback to upsert (handles missing row or certain RLS setups)
-        print('Update failed, trying upsert. Error: $e');
-        updated = await Supabase.instance.client
-          .from('users')
-          .upsert({
-            'id': widget.user.id,
-            'phone_number': fullPhoneNumber,
-            'updated_at': DateTime.now().toIso8601String(),
-          }, onConflict: 'id')
-          .select('id');
+      // Build phone like profile screen: +<countryCode><number> and drop leading 0
+      final rawCode = (_form.control('country_code').value as String?)?.trim() ?? '';
+      final numericCode = rawCode.replaceAll('+', '').trim();
+      var phoneLocal = (_form.control('phone').value as String).trim();
+      if (phoneLocal.startsWith('0')) {
+        phoneLocal = phoneLocal.substring(1);
       }
-      final ok = updated.isNotEmpty;
-      print('Phone save ${ok ? 'succeeded' : 'returned no rows'}');
+      final fullPhoneNumber = '+$numericCode$phoneLocal';
 
-      // Update phone in local storage
-      final authBloc = context.read<AuthBloc>();
-      authBloc.add(UpdateUserPhoneEvent(phoneNumber: fullPhoneNumber));
-      
-      if (mounted) {
-        // Show success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('phone_saved_successfully'.tr())),
-        );
-        
-        // Navigate to home page
-        context.go('/');
-      }
+      // Use same flow as profile screen via UpdateProfileUsecase
+      final updateProfileUsecase = GetIt.I<UpdateProfileUsecase>();
+      final res = await updateProfileUsecase(
+        UpdateProfileParams(phoneNumber: fullPhoneNumber),
+      );
+
+      await res.fold(
+        (exception, message) async {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(message ?? 'error_saving_phone'.tr())),
+            );
+          }
+        },
+        (user) async {
+          // Update phone in local storage (prefs) through AuthBloc
+          final authBloc = context.read<AuthBloc>();
+          authBloc.add(UpdateUserPhoneEvent(phoneNumber: fullPhoneNumber));
+
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('phone_saved_successfully'.tr())),
+            );
+            context.go('/');
+          }
+        },
+      );
     } catch (e) {
-      print('Error saving phone number: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('error_saving_phone'.tr())),

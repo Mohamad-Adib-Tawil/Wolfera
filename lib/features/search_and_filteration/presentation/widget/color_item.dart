@@ -27,32 +27,37 @@ class ColorItem extends StatelessWidget {
       child: Padding(
         padding: HWEdgeInsets.only(left: 20),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 400),
-              decoration: BoxDecoration(
-                border: isSelected
-                    ? Border.all(
-                        color: colorItem.colorValue == Colors.orange
-                            ? Colors.white
-                            : AppColors.orange,
-                        width: 2.r)
-                    : null,
-                shape: BoxShape.circle,
-              ),
-              child: CircleAvatar(
-                backgroundColor: colorItem.colorValue,
-                radius: isSelected ? 18.r : 19.r,
+            Flexible(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 400),
+                decoration: BoxDecoration(
+                  border: isSelected
+                      ? Border.all(
+                          color: colorItem.colorValue == Colors.orange
+                              ? Colors.white
+                              : AppColors.orange,
+                          width: 2.r)
+                      : null,
+                  shape: BoxShape.circle,
+                ),
+                child: CircleAvatar(
+                  backgroundColor: colorItem.colorValue,
+                  radius: isSelected ? 18.r : 19.r,
+                ),
               ),
             ),
             2.verticalSpace,
-            AppText(
-              colorItem.displayName,
-              translation: false,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: context.textTheme.bodyLarge?.s10.l
-                  .withColor(isSelected ? AppColors.orange : AppColors.white),
+            Flexible(
+              child: AppText(
+                colorItem.displayName,
+                translation: false,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: context.textTheme.bodyLarge?.s10.l
+                    .withColor(isSelected ? AppColors.orange : AppColors.white),
+              ),
             ),
           ],
         ),
