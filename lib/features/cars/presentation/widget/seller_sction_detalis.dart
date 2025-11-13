@@ -210,15 +210,17 @@ class SellerSctionDetalis extends StatelessWidget {
                     : const SizedBox.shrink(),
           ),
           18.verticalSpace,
-          GestureDetector(
-            onTap: isSelf ? null : () => _openInAppChat(context),
-            child: ContectButton(
-              textWidth: 260.w,
-              svg: Assets.svgMessageSquare,
-              title: 'Send Message to $sellerName',
-              disabled: isSelf,
+          // إخفاء زر الدردشة إذا كان المالك هو نفس المستخدم
+          if (!isSelf)
+            GestureDetector(
+              onTap: () => _openInAppChat(context),
+              child: ContectButton(
+                textWidth: 260.w,
+                svg: Assets.svgMessageSquare,
+                title: 'Send Message to $sellerName',
+                disabled: false,
+              ),
             ),
-          ),
           15.verticalSpace,
           CustomDivider(color: AppColors.grey, thickness: 1.r),
           10.verticalSpace,
