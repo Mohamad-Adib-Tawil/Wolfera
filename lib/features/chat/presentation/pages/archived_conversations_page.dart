@@ -17,7 +17,8 @@ class ArchivedConversationsPage extends StatefulWidget {
   const ArchivedConversationsPage({super.key});
 
   @override
-  State<ArchivedConversationsPage> createState() => _ArchivedConversationsPageState();
+  State<ArchivedConversationsPage> createState() =>
+      _ArchivedConversationsPageState();
 }
 
 class _ArchivedConversationsPageState extends State<ArchivedConversationsPage> {
@@ -43,10 +44,11 @@ class _ArchivedConversationsPageState extends State<ArchivedConversationsPage> {
 
     try {
       setState(() => _isLoading = true);
-      
+
       final list = await _chatService.getArchivedConversations(user.id);
-      final filtered = list.where((c) => c['buyer_id'] != c['seller_id']).toList();
-      
+      final filtered =
+          list.where((c) => c['buyer_id'] != c['seller_id']).toList();
+
       if (mounted) {
         setState(() {
           _archivedConversations = filtered;
@@ -72,32 +74,33 @@ class _ArchivedConversationsPageState extends State<ArchivedConversationsPage> {
 
   Future<void> _confirmRestore(Map<String, dynamic> conv) async {
     final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF1E1F24),
-        title: Text(
-          'restore_conversation_q'.tr(),
-          style: const TextStyle(color: Colors.white),
-        ),
-        content: Text(
-          'restore_conversation_body'.tr(),
-          style: const TextStyle(color: Colors.white70),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text('cancel'.tr()),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text(
-              'restore'.tr(),
-              style: const TextStyle(color: AppColors.primary),
+          context: context,
+          builder: (ctx) => AlertDialog(
+            backgroundColor: const Color(0xFF1E1F24),
+            title: Text(
+              'restore_conversation_q'.tr(),
+              style: const TextStyle(color: Colors.white),
             ),
+            content: Text(
+              'restore_conversation_body'.tr(),
+              style: const TextStyle(color: Colors.white70),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: Text('cancel'.tr()),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                child: Text(
+                  'restore'.tr(),
+                  style: const TextStyle(color: AppColors.primary),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-    ) ?? false;
+        ) ??
+        false;
 
     if (!confirmed) return;
 
@@ -125,32 +128,33 @@ class _ArchivedConversationsPageState extends State<ArchivedConversationsPage> {
 
   Future<void> _confirmDelete(Map<String, dynamic> conv) async {
     final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: const Color(0xFF1E1F24),
-        title: Text(
-          'delete_conversation_permanently_q'.tr(),
-          style: const TextStyle(color: Colors.white),
-        ),
-        content: Text(
-          'delete_conversation_permanently_body'.tr(),
-          style: const TextStyle(color: Colors.white70),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text('cancel'.tr()),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text(
-              'delete_permanently'.tr(),
-              style: const TextStyle(color: Colors.red),
+          context: context,
+          builder: (ctx) => AlertDialog(
+            backgroundColor: const Color(0xFF1E1F24),
+            title: Text(
+              'delete_conversation_permanently_q'.tr(),
+              style: const TextStyle(color: Colors.white),
             ),
+            content: Text(
+              'delete_conversation_permanently_body'.tr(),
+              style: const TextStyle(color: Colors.white70),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: Text('cancel'.tr()),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                child: Text(
+                  'delete_permanently'.tr(),
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-    ) ?? false;
+        ) ??
+        false;
 
     if (!confirmed) return;
 
@@ -220,7 +224,8 @@ class _ArchivedConversationsPageState extends State<ArchivedConversationsPage> {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.delete_forever, color: Colors.redAccent),
+                leading:
+                    const Icon(Icons.delete_forever, color: Colors.redAccent),
                 title: AppText('delete_permanently'.tr()),
                 onTap: () {
                   Navigator.pop(ctx);
@@ -267,53 +272,57 @@ class _ArchivedConversationsPageState extends State<ArchivedConversationsPage> {
     }
 
     if (_archivedConversations.isEmpty) {
-      return SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        child: Column(
-          children: [
-            169.verticalSpace,
-            Container(
-              padding: HWEdgeInsets.all(24),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16.r),
-                gradient: LinearGradient(
-                  colors: [
-                    AppColors.primary.withOpacity(0.12),
-                    AppColors.primary.withOpacity(0.06),
+      return Center(
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Column(
+            children: [
+              169.verticalSpace,
+              Container(
+                padding: HWEdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(16.r),
+                  gradient: LinearGradient(
+                    colors: [
+                      AppColors.primary.withOpacity(0.12),
+                      AppColors.primary.withOpacity(0.06),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  border: Border.all(
+                    color: AppColors.primary.withOpacity(0.25),
+                    width: 1.2,
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.archive_outlined,
+                      size: 64.sp,
+                      color: AppColors.primary.withOpacity(0.7),
+                    ),
+                    16.verticalSpace,
+                    AppText(
+                      'no_archived_conversations'.tr(),
+                      style: context.textTheme.titleMedium?.s18.xb
+                          .withColor(Colors.white),
+                      textAlign: TextAlign.center,
+                    ),
+                    8.verticalSpace,
+                    AppText(
+                      'no_archived_conversations_subtitle'.tr(),
+                      style: context.textTheme.bodyMedium
+                          ?.withColor(Colors.white70),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                    ),
                   ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                border: Border.all(
-                  color: AppColors.primary.withOpacity(0.25),
-                  width: 1.2,
                 ),
               ),
-              child: Column(
-                children: [
-                  Icon(
-                    Icons.archive_outlined,
-                    size: 64.sp,
-                    color: AppColors.primary.withOpacity(0.7),
-                  ),
-                  16.verticalSpace,
-                  AppText(
-                    'no_archived_conversations'.tr(),
-                    style: context.textTheme.titleMedium?.s18.xb.withColor(Colors.white),
-                    textAlign: TextAlign.center,
-                  ),
-                  8.verticalSpace,
-                  AppText(
-                    'no_archived_conversations_subtitle'.tr(),
-                    style: context.textTheme.bodyMedium?.withColor(Colors.white70),
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                  ),
-                ],
-              ),
-            ),
-            200.verticalSpace,
-          ],
+              200.verticalSpace,
+            ],
+          ),
         ),
       );
     }
@@ -328,14 +337,19 @@ class _ArchivedConversationsPageState extends State<ArchivedConversationsPage> {
         final me = SupabaseService.currentUser!.id;
         final isBuyer = conv['buyer_id'] == me;
         final other = isBuyer ? conv['seller'] : conv['buyer'];
-        final otherName = other != null 
-            ? (other['full_name'] ?? other['display_name'] ?? other['name'])?.toString() 
+        final otherName = other != null
+            ? (other['full_name'] ?? other['display_name'] ?? other['name'])
+                ?.toString()
             : 'user'.tr();
-        final otherAvatar = other != null 
-            ? (other['avatar_url'] ?? other['photo_url'] ?? other['picture'])?.toString() 
+        final otherAvatar = other != null
+            ? (other['avatar_url'] ?? other['photo_url'] ?? other['picture'])
+                ?.toString()
             : null;
         final subtitle = (conv['last_message'] ?? '').toString();
-        final timeText = (conv['last_message_at'] ?? conv['updated_at'] ?? conv['created_at'])?.toString();
+        final timeText = (conv['last_message_at'] ??
+                conv['updated_at'] ??
+                conv['created_at'])
+            ?.toString();
 
         return Padding(
           padding: HWEdgeInsets.only(top: index == 0 ? 0 : 25),
@@ -399,7 +413,7 @@ class _ArchivedConversationsPageState extends State<ArchivedConversationsPage> {
         );
       },
     );
-    
+
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(),
       child: list,

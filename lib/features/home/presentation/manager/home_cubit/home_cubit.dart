@@ -103,12 +103,16 @@ class HomeCubit extends Cubit<HomeState> {
         if (!prefs.isWorldwide) {
           final code = prefs.selectedCountryCode;
           final region = prefs.selectedRegionOrCity;
-          final countryName = code != null ? LocationsData.findByCode(code)?.name : null;
-          if (countryName != null && countryName.isNotEmpty) {
-            finalList = finalList.where((e) => (e['country']?.toString() ?? '') == countryName).toList();
-          }
+          
+          // إذا تم تحديد محافظة/مدينة، فلتر حسب المحافظة فقط (لأنها أكثر تحديداً)
           if (region != null && region.isNotEmpty) {
             finalList = finalList.where((e) => (e['city']?.toString() ?? '') == region).toList();
+          } else {
+            // إذا لم يتم تحديد محافظة، فلتر حسب الدولة فقط
+            final countryName = code != null ? LocationsData.findByCode(code)?.name : null;
+            if (countryName != null && countryName.isNotEmpty) {
+              finalList = finalList.where((e) => (e['country']?.toString() ?? '') == countryName).toList();
+            }
           }
         }
       } catch (_) {}
