@@ -22,17 +22,11 @@ Map<String, dynamic> _$PaginationModelToJson<T>(
   Object? Function(T value) toJsonT,
 ) =>
     <String, dynamic>{
-      'data': _$nullableGenericToJson(instance.data, toJsonT),
+      'data': toJsonT(instance.data),
       'links': instance.links,
       'meta': instance.meta,
       'message': instance.message,
     };
-
-Object? _$nullableGenericToJson<T>(
-  T? input,
-  Object? Function(T value) toJson,
-) =>
-    input == null ? null : toJson(input);
 
 _$LinksImpl _$$LinksImplFromJson(Map<String, dynamic> json) => _$LinksImpl(
       first: json['first'] as String?,

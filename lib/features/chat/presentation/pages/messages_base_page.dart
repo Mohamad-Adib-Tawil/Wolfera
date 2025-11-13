@@ -17,6 +17,7 @@ import 'package:wolfera/features/chat/presentation/widgets/chat_item.dart';
 import 'package:wolfera/services/chat_service.dart';
 import 'package:wolfera/services/supabase_service.dart';
 import 'package:wolfera/services/chat_route_tracker.dart';
+import 'package:wolfera/features/chat/presentation/pages/archived_conversations_page.dart';
 
 class MessagesBasePage extends StatefulWidget {
   const MessagesBasePage({super.key});
@@ -44,28 +45,6 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
     ChatRouteTracker.incomingMessageTick.addListener(_onIncomingPushTick);
   }
 
-  Future<void> _confirmClear(Map<String, dynamic> conv) async {
-    final ok = await showDialog<bool>(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text('clear_conversation_q'.tr()),
-            content: Text('clear_conversation_body'.tr()),
-            actions: [
-              TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('cancel'.tr())),
-              TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text('clear_conversation'.tr(), style: const TextStyle(color: Colors.red))),
-            ],
-          ),
-        ) ??
-        false;
-    if (!ok) return;
-    final id = conv['id']?.toString();
-    final actor = SupabaseService.currentUser?.id;
-    if (id == null || actor == null) return;
-    final success = await _chatService.clearConversation(conversationId: id, actorId: actor);
-    if (success && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('conversation_cleared'.tr())));
-    }
-  }
 
   void _showActionsSheet(Map<String, dynamic> conv) {
     showModalBottomSheet(
@@ -93,14 +72,6 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
                 onTap: () {
                   Navigator.pop(ctx);
                   _confirmArchive(conv);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.cleaning_services_outlined, color: Colors.redAccent),
-                title:  AppText('clear_conversation'.tr()),
-                onTap: () {
-                  Navigator.pop(ctx);
-                  _confirmClear(conv);
                 },
               ),
               6.verticalSpace,
@@ -153,9 +124,12 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
                   )
                 : appBar(context),
           ),
-          body: Padding(
-            padding: HWEdgeInsets.only(left: 20, right: 20, top: 10),
-            child: _buildBody(),
+          body: RefreshIndicator(
+            onRefresh: _loadConversations,
+            child: Padding(
+              padding: HWEdgeInsets.only(left: 20, right: 20, top: 10),
+              child: _buildBody(),
+            ),
           )),
     );
   }
@@ -165,18 +139,23 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
       return const Center(child: AppLoader());
     }
     if (_conversations.isNullOrEmpty) {
-      return Column(
-        children: [
-          169.verticalSpace,
-          _shouldAnimateEntrance
-              ? const _DelayedFadeSlide(
-                  delay: Duration(milliseconds: 220),
-                  duration: Duration(milliseconds: 1000),
-                  beginOffset: Offset(-0.24, 0),
-                  child: ChatsEmptyStateWidget(),
-                )
-              : const ChatsEmptyStateWidget(),
-        ],
+      return SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          children: [
+            169.verticalSpace,
+            _shouldAnimateEntrance
+                ? const _DelayedFadeSlide(
+                    delay: Duration(milliseconds: 220),
+                    duration: Duration(milliseconds: 1000),
+                    beginOffset: Offset(-0.24, 0),
+                    child: ChatsEmptyStateWidget(),
+                  )
+                : const ChatsEmptyStateWidget(),
+            // Add some bottom padding to ensure pull-to-refresh works
+            200.verticalSpace,
+          ],
+        ),
       );
     }
     final list = ListView.builder(
@@ -203,7 +182,7 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
                 key: ValueKey('conv-${conv['id']}'),
                 startActionPane: ActionPane(
                   motion: const StretchMotion(),
-                  extentRatio: 0.46,
+                  extentRatio: 0.25,
                   children: [
                     SlidableAction(
                       onPressed: (_) => _confirmArchive(conv),
@@ -213,19 +192,11 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
                       label: 'hide'.tr(),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    SlidableAction(
-                      onPressed: (_) => _confirmClear(conv),
-                      backgroundColor: const Color(0xFF3A1F1F),
-                      foregroundColor: Colors.redAccent,
-                      icon: Icons.cleaning_services_outlined,
-                      label: 'clear_conversation'.tr(),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
                   ],
                 ),
                 endActionPane: ActionPane(
                   motion: const StretchMotion(),
-                  extentRatio: 0.46,
+                  extentRatio: 0.25,
                   children: [
                     SlidableAction(
                       onPressed: (_) => _confirmArchive(conv),
@@ -233,14 +204,6 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
                       foregroundColor: AppColors.primary,
                       icon: Icons.archive_outlined,
                       label: 'Hide',
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    SlidableAction(
-                      onPressed: (_) => _confirmClear(conv),
-                      backgroundColor: const Color(0xFF3A1F1F),
-                      foregroundColor: Colors.redAccent,
-                      icon: Icons.cleaning_services_outlined,
-                      label: 'Clear',
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ],
@@ -277,45 +240,88 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
   }
 
   Future<void> _loadConversations() async {
+    print('🔍 [MessagesBasePage] Starting _loadConversations...');
+    
     final user = SupabaseService.currentUser;
     if (user == null) {
+      print('❌ [MessagesBasePage] No current user found');
       setState(() {
         _isLoading = false;
         _conversations = [];
       });
       return;
     }
+    
+    print('🔍 [MessagesBasePage] Current user: ${user.id}');
+    
     try {
+      setState(() {
+        _isLoading = true;
+      });
+      
       final list = await _chatService.getUserConversations(user.id);
+      print('🔍 [MessagesBasePage] Received ${list.length} conversations from service');
+      
       // استبعد المحادثات الخاطئة التي يكون فيها الطرفان نفس المستخدم
       final filtered = list.where((c) => c['buyer_id'] != c['seller_id']).toList();
-      setState(() {
-        _conversations = filtered;
-        _isLoading = false;
-      });
+      print('🔍 [MessagesBasePage] After filtering: ${filtered.length} conversations');
+      
+      if (mounted) {
+        setState(() {
+          _conversations = filtered;
+          _isLoading = false;
+        });
+      }
+      
+      // Setup realtime subscription
       _sub?.unsubscribe();
       _sub = _chatService.subscribeToUserConversations(
         userId: user.id,
         onConversationUpdate: (conv) {
+          print('🔍 [MessagesBasePage] Realtime conversation update: ${conv['id']}');
+          if (!mounted) return;
+          
           setState(() {
             // إذا أصبحت غير نشطة (مؤرشفة) احذفها من اللائحة
             if (conv['is_active'] != true) {
               _conversations.removeWhere((e) => e['id'] == conv['id']);
+              print('🔍 [MessagesBasePage] Removed inactive conversation: ${conv['id']}');
             } else {
               final i = _conversations.indexWhere((e) => e['id'] == conv['id']);
               if (i >= 0) {
                 _conversations[i] = conv;
+                print('🔍 [MessagesBasePage] Updated existing conversation: ${conv['id']}');
               } else {
                 _conversations.insert(0, conv);
+                print('🔍 [MessagesBasePage] Added new conversation: ${conv['id']}');
               }
             }
           });
         },
       );
-    } catch (_) {
-      setState(() {
-        _isLoading = false;
-      });
+      
+      print('✅ [MessagesBasePage] Conversations loaded successfully');
+    } catch (e, stackTrace) {
+      print('❌ [MessagesBasePage] Error loading conversations: $e');
+      print('❌ [MessagesBasePage] Stack trace: $stackTrace');
+      
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        
+        // Show error message to user
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to load conversations. Tap to retry.'),
+            action: SnackBarAction(
+              label: 'Retry',
+              onPressed: _loadConversations,
+            ),
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      }
     }
   }
 
@@ -382,6 +388,20 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
         'messages',
         style: context.textTheme.bodyMedium.s20.m,
       ),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.archive_outlined, color: Colors.white),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const ArchivedConversationsPage(),
+              ),
+            );
+          },
+          tooltip: 'archived_conversations'.tr(),
+        ),
+      ],
     );
   }
 }
@@ -398,6 +418,20 @@ class _AnimatedAppBar extends StatelessWidget {
           'messages',
           style: context.textTheme.bodyMedium.s20.m,
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.archive_outlined, color: Colors.white),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ArchivedConversationsPage(),
+                ),
+              );
+            },
+            tooltip: 'archived_conversations'.tr(),
+          ),
+        ],
       );
 }
 

@@ -60,15 +60,12 @@ class ChatService {
     }
   }
 
-  /// حذف رسالة واحدة بتحويلها إلى رسالة محذوفة مرئية للطرفين
+  /// حذف رسالة واحدة نهائياً من قاعدة البيانات
   Future<bool> deleteMessage({required String messageId}) async {
     try {
       await _client
           .from('messages')
-          .update({
-            'message_type': 'deleted',
-            'message_text': 'تم حذف هذه الرسالة',
-          })
+          .delete()
           .eq('id', messageId);
       return true;
     } catch (e) {
@@ -83,32 +80,41 @@ class ChatService {
     required String actorId,
   }) async {
     try {
-      // أرسل رسالة نظام لإعلام الطرف الآخر
-      final system = await _client
+      // احذف جميع الرسائل مباشرة
+      await _client
           .from('messages')
-          .insert({
-            'conversation_id': conversationId,
-            'sender_id': actorId,
-            'message_type': 'system',
-            'message_text': 'قام المستخدم بحذف الدردشة',
-          })
-          .select('id')
-          .single();
+          .delete()
+          .eq('conversation_id', conversationId);
 
-      final sysId = system['id']?.toString();
-      // احذف كل الرسائل الأخرى وأبقِ رسالة النظام فقط
-      if (sysId != null) {
+      // أرسل رسالة عادية لإعلام الطرف الآخر
+      try {
         await _client
             .from('messages')
-            .delete()
-            .eq('conversation_id', conversationId)
-            .neq('id', sysId);
-      } else {
-        await _client
-            .from('messages')
-            .delete()
-            .eq('conversation_id', conversationId);
+            .insert({
+              'conversation_id': conversationId,
+              'sender_id': actorId,
+              'message_type': 'text',
+              'message_text': 'تم مسح المحادثة',
+            });
+      } catch (e) {
+        print('⚠️ Could not send system message: $e');
+        // لا بأس إذا فشل إرسال رسالة النظام
       }
+
+      // تحديث بيانات المحادثة
+      try {
+        await _client
+            .from('conversations')
+            .update({
+              'last_message': 'تم مسح المحادثة',
+              'last_message_at': DateTime.now().toIso8601String(),
+              'updated_at': DateTime.now().toIso8601String(),
+            })
+            .eq('id', conversationId);
+      } catch (e) {
+        print('⚠️ Could not update conversation meta: $e');
+      }
+
       return true;
     } catch (e) {
       print('❌ Error clearing conversation: $e');
@@ -130,6 +136,41 @@ class ChatService {
     }
   }
 
+  /// استعادة محادثة مخفية عبر جعل is_active = true
+  Future<bool> restoreConversation(String conversationId) async {
+    try {
+      await _client
+          .from('conversations')
+          .update({'is_active': true})
+          .eq('id', conversationId);
+      return true;
+    } catch (e) {
+      print('❌ Error restoring conversation: $e');
+      return false;
+    }
+  }
+
+  /// جلب المحادثات المخفية للمستخدم
+  Future<List<Map<String, dynamic>>> getArchivedConversations(String userId) async {
+    try {
+      print('🔍 [ChatService] Fetching archived conversations for user: $userId');
+      
+      final response = await _client
+          .from('conversations')
+          .select('id,buyer_id,seller_id,car_id,is_active,last_message,last_message_at,updated_at,buyer_unread_count,seller_unread_count, buyer:users!buyer_id(id,full_name,avatar_url,photo_url), seller:users!seller_id(id,full_name,avatar_url,photo_url), car:cars!car_id(id,title,user_id)')
+          .or('buyer_id.eq.$userId,seller_id.eq.$userId')
+          .eq('is_active', false)
+          .order('updated_at', ascending: false);
+      
+      print('🔍 [ChatService] Found ${response.length} archived conversations');
+      
+      return List<Map<String, dynamic>>.from(response);
+    } catch (e) {
+      print('❌ [ChatService] Error fetching archived conversations: $e');
+      return [];
+    }
+  }
+
   /// حذف محادثة نهائيًا (قد يتطلب قيود ON DELETE CASCADE في قاعدة البيانات)
   Future<bool> deleteConversation(String conversationId) async {
     try {
@@ -147,6 +188,8 @@ class ChatService {
   /// جلب كل محادثات المستخدم
   Future<List<Map<String, dynamic>>> getUserConversations(String userId) async {
     try {
+      print('🔍 [ChatService] Fetching conversations for user: $userId');
+      
       final response = await _client
           .from('conversations')
           .select('id,buyer_id,seller_id,car_id,is_active,last_message,last_message_at,updated_at,buyer_unread_count,seller_unread_count, buyer:users!buyer_id(id,full_name,avatar_url,photo_url), seller:users!seller_id(id,full_name,avatar_url,photo_url), car:cars!car_id(id,title,user_id)')
@@ -154,11 +197,38 @@ class ChatService {
           .eq('is_active', true)
           .order('last_message_at', ascending: false);
       
-      // Debug removed to reduce noise
+      print('🔍 [ChatService] Raw response count: ${response.length}');
+      
+      if (response.isEmpty) {
+        print('⚠️ [ChatService] No conversations found. Checking if any exist without is_active filter...');
+        
+        // Check if conversations exist without is_active filter
+        final allConversations = await _client
+            .from('conversations')
+            .select('id,buyer_id,seller_id,car_id,is_active,last_message,last_message_at,updated_at')
+            .or('buyer_id.eq.$userId,seller_id.eq.$userId');
+        
+        print('🔍 [ChatService] Total conversations (including inactive): ${allConversations.length}');
+        
+        for (final conv in allConversations) {
+          print('   - Conv ${conv['id']}: buyer=${conv['buyer_id']}, seller=${conv['seller_id']}, active=${conv['is_active']}');
+        }
+      } else {
+        print('✅ [ChatService] Found ${response.length} active conversations');
+        for (final conv in response) {
+          print('   - Conv ${conv['id']}: buyer=${conv['buyer_id']}, seller=${conv['seller_id']}, last_msg="${conv['last_message']}"');
+        }
+      }
       
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
-      print('❌ Error fetching conversations: $e');
+      print('❌ [ChatService] Error fetching conversations: $e');
+      print('❌ [ChatService] Error type: ${e.runtimeType}');
+      if (e is PostgrestException) {
+        print('❌ [ChatService] Postgrest error details: ${e.details}');
+        print('❌ [ChatService] Postgrest error hint: ${e.hint}');
+        print('❌ [ChatService] Postgrest error code: ${e.code}');
+      }
       return [];
     }
   }
