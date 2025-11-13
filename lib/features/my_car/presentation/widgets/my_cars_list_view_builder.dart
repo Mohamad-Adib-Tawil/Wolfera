@@ -395,18 +395,27 @@ class MyCarsListViewBuilder extends StatelessWidget {
                                   .toLowerCase();
                           final isRental =
                               listingType == 'rent' || listingType == 'both';
-                          final items = <PopupMenuEntry<String>>[
-                            PopupMenuItem(
-                              value: 'edit_price',
-                              child: ListTile(
-                                leading:
-                                    Icon(Icons.edit, color: Colors.white70),
-                                title: Text('edit_price'.tr(),
-                                    style:
-                                        const TextStyle(color: Colors.white)),
+                          final isRentalOnly = listingType == 'rent';
+                          
+                          final items = <PopupMenuEntry<String>>[];
+                          
+                          // إظهار "edit_price" فقط للسيارات المعروضة للبيع
+                          if (!isRentalOnly) {
+                            items.add(
+                              PopupMenuItem(
+                                value: 'edit_price',
+                                child: ListTile(
+                                  leading:
+                                      Icon(Icons.edit, color: Colors.white70),
+                                  title: Text('edit_price'.tr(),
+                                      style:
+                                          const TextStyle(color: Colors.white)),
+                                ),
                               ),
-                            ),
-                          ];
+                            );
+                          }
+                          
+                          // إظهار "edit_rental_prices" فقط للسيارات المعروضة للإيجار
                           if (isRental) {
                             items.add(
                               PopupMenuItem(
@@ -420,21 +429,28 @@ class MyCarsListViewBuilder extends StatelessWidget {
                               ),
                             );
                           }
-                          items.addAll([
-                            PopupMenuItem(
-                              value: 'toggle_sold',
-                              child: ListTile(
-                                leading: Icon(
-                                    isSold ? Icons.undo : Icons.sell_outlined,
-                                    color: Colors.white70),
-                                title: Text(
-                                    isSold
-                                        ? 'mark_as_active'.tr()
-                                        : 'mark_as_sold'.tr(),
-                                    style:
-                                        const TextStyle(color: Colors.white)),
+                          
+                          // إظهار "mark_as_sold" فقط للسيارات المعروضة للبيع
+                          if (!isRentalOnly) {
+                            items.add(
+                              PopupMenuItem(
+                                value: 'toggle_sold',
+                                child: ListTile(
+                                  leading: Icon(
+                                      isSold ? Icons.undo : Icons.sell_outlined,
+                                      color: Colors.white70),
+                                  title: Text(
+                                      isSold
+                                          ? 'mark_as_active'.tr()
+                                          : 'mark_as_sold'.tr(),
+                                      style:
+                                          const TextStyle(color: Colors.white)),
+                                ),
                               ),
-                            ),
+                            );
+                          }
+                          
+                          items.addAll([
                             PopupMenuItem(
                               value: 'delete',
                               child: ListTile(
