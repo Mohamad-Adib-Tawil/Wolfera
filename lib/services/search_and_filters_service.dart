@@ -105,15 +105,18 @@ class SearchFilterService {
 
       // فلاتر العنوان: الدولة + المنطقة/المدينة (تُطبّق فقط إذا كان الوضع ليس Worldwide)
       if (!filters.isWorldwide) {
-        final countryName = filters.selectedCountryCode != null
-            ? LocationsData.findByCode(filters.selectedCountryCode!)?.name
-            : null;
-        if (countryName != null && countryName != 'Worldwide') {
-          queryBuilder = queryBuilder.eq('country', countryName);
-        }
+        // إذا تم تحديد محافظة/مدينة، فلتر حسب المحافظة فقط (لأنها أكثر تحديداً)
         if (filters.selectedRegionOrCity != null &&
             filters.selectedRegionOrCity!.trim().isNotEmpty) {
           queryBuilder = queryBuilder.eq('city', filters.selectedRegionOrCity!);
+        } else {
+          // إذا لم يتم تحديد محافظة، فلتر حسب الدولة فقط
+          final countryName = filters.selectedCountryCode != null
+              ? LocationsData.findByCode(filters.selectedCountryCode!)?.name
+              : null;
+          if (countryName != null && countryName != 'Worldwide') {
+            queryBuilder = queryBuilder.eq('country', countryName);
+          }
         }
       }
 
