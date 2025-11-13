@@ -1,10 +1,7 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
-import 'package:wolfera/services/chat_service.dart';
-import 'chat_bubble_item_widget.dart';
-import 'date_time_widget_message_item.dart';
+import 'package:wolfera/features/chat/presentation/widgets/chat_bubble_item_widget.dart';
+import 'package:wolfera/features/chat/presentation/widgets/date_time_widget_message_item.dart';
 
 class MessageItemWidget extends StatelessWidget {
   const MessageItemWidget({
@@ -25,7 +22,6 @@ class MessageItemWidget extends StatelessWidget {
         ? DateTime.tryParse(createdAt.toString())?.toLocal()
         : null;
     final messageType = (message['message_type'] ?? 'text').toString();
-    final messageId = message['id']?.toString();
     
     // عرض رسائل النظام في الوسط بشكل مميز
     if (messageType == 'system') {
@@ -61,24 +57,8 @@ class MessageItemWidget extends StatelessWidget {
         else
           const SizedBox.shrink(),
         GestureDetector(
-          onLongPress: !isCurrent || messageId == null
-              ? null
-              : () async {
-                  final ok = await showDialog<bool>(
-                        context: context,
-                        builder: (ctx) => AlertDialog(
-                          title: Text('delete_message_q'.tr()),
-                          content: Text('delete_message_confirm'.tr()),
-                          actions: [
-                            TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('cancel'.tr())),
-                            TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text('delete'.tr(), style: const TextStyle(color: Colors.red))),
-                          ],
-                        ),
-                      ) ??
-                      false;
-                  if (!ok) return;
-                  await GetIt.I<ChatService>().deleteMessage(messageId: messageId);
-                },
+          // تم إخفاء وظيفة حذف الرسالة
+          onLongPress: null,
           child: Row(
             mainAxisAlignment:
                 isCurrent ? MainAxisAlignment.end : MainAxisAlignment.start,

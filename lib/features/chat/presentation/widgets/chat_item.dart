@@ -43,9 +43,10 @@ class ChatItem extends StatelessWidget {
             userImage: avatarUrl,
           ),
           14.horizontalSpace,
-          Padding(
-            padding: HWEdgeInsets.symmetric(vertical: 8),
-            child: Column(
+          Expanded(
+            child: Padding(
+              padding: HWEdgeInsets.symmetric(vertical: 8),
+              child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -53,6 +54,7 @@ class ChatItem extends StatelessWidget {
                 8.verticalSpace,
                 lastMessage(context),
               ],
+            ),
             ),
           ),
         ],
