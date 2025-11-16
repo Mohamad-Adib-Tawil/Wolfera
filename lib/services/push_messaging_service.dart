@@ -38,8 +38,9 @@ class PushMessagingService {
     await _requestPermissions();
 
     // تقديم الإشعارات أثناء المقدمة على iOS
+    // على iOS: نعطّل alert في المقدمة ونعتمد على الإشعارات المحلية فقط لضبط السلوك (مثل الكتم داخل نفس المحادثة)
     await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-      alert: true,
+      alert: false,
       badge: true,
       sound: true,
     );
@@ -69,16 +70,61 @@ class PushMessagingService {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       final data = message.data;
       final type = (data['type'] ?? data['action'])?.toString();
-      final conversationId = data['conversation_id']?.toString();
+      // حاول استخلاص conversationId من عدة مفاتيح مع دعم fallback عند الحاجة
+      String? conversationId =
+          data['conversation_id']?.toString() ??
+          data['conv_id']?.toString() ??
+          data['conversationId']?.toString();
 
-      // لا تعرض إشعار محلي إذا كنت داخل نفس المحادثة
-      if (type == 'new_message' &&
-          conversationId != null &&
-          ChatRouteTracker.currentConversationId.value == conversationId) {
-        if (kDebugMode) {
-          print('🔕 Suppressed notification: currently in conversation $conversationId');
+      if (type == 'new_message') {
+        final currentConv = ChatRouteTracker.currentConversationId.value;
+        // إن لم يصل conversationId ضمن الحمولة، جرّب استنتاجه
+        if ((conversationId == null || conversationId.isEmpty)) {
+          try {
+            // 1) إذا توفّر message_id أو id كمعرّف رسالة، استنتج منه المحادثة
+            final msgId = (data['message_id'] ?? data['id'])?.toString();
+            if (msgId != null && msgId.isNotEmpty) {
+              final msg = await _client
+                  .from('messages')
+                  .select('conversation_id')
+                  .eq('id', msgId)
+                  .maybeSingle();
+              conversationId = msg?['conversation_id']?.toString() ?? conversationId;
+            }
+          } catch (_) {}
+
+          // 2) إذا لم نصل لشيء، وحملت البيانات other_user_id/sender_id/seller_id، ابحث عن أحدث محادثة معه
+          if (conversationId == null || conversationId.isEmpty) {
+            try {
+              final currentUser = _client.auth.currentUser;
+              final otherId = (data['other_user_id'] ?? data['sender_id'] ?? data['seller_id'])?.toString();
+              if (currentUser != null && otherId != null && otherId.isNotEmpty) {
+                final conv = await _client
+                    .from('conversations')
+                    .select('id')
+                    .or('and(buyer_id.eq.${currentUser.id},seller_id.eq.$otherId),and(buyer_id.eq.$otherId,seller_id.eq.${currentUser.id})')
+                    .order('last_message_at', ascending: false)
+                    .limit(1)
+                    .maybeSingle();
+                conversationId = conv?['id']?.toString() ?? conversationId;
+              }
+            } catch (_) {}
+          }
         }
-        return;
+
+        // لا تعرض إشعار محلي إذا كنت داخل نفس المحادثة
+        if (currentConv != null &&
+            currentConv.isNotEmpty &&
+            conversationId != null &&
+            conversationId.isNotEmpty &&
+            currentConv == conversationId) {
+          if (kDebugMode) {
+            print('🔕 Suppressed notification: currently in conversation $conversationId');
+          }
+          // حتى مع الكتم، أعلِم الواجهة لتحديث عدادات غير المقروء (قد تُصبح صفراً)
+          ChatRouteTracker.notifyIncomingMessage();
+          return;
+        }
       }
 
       // ابنِ العنوان/النص محليًا لضمان الترجمة الصحيحة وعدم استخدام نصوص خام من الخادم

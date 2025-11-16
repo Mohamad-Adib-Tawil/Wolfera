@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:wolfera/services/chat_service.dart';
+import 'package:wolfera/services/chat_route_tracker.dart';
 import 'package:wolfera/services/supabase_service.dart';
 
 // Chat State is defined at the bottom of this file
@@ -48,6 +49,8 @@ class ChatCubit extends Cubit<ChatState> {
             conversationId: _currentConversationId!,
             userId: currentUser.id,
           );
+          // أعلِم الواجهة لتحديث عدادات غير المقروء مباشرة بعد القراءة
+          ChatRouteTracker.notifyIncomingMessage();
           _subscribeToMessages();
 
           // معلومات الطرف الآخر
@@ -97,6 +100,8 @@ class ChatCubit extends Cubit<ChatState> {
               conversationId: _currentConversationId!,
               userId: currentUser.id,
             );
+            // أعلِم الواجهة لتحديث عدادات غير المقروء مباشرة بعد القراءة
+            ChatRouteTracker.notifyIncomingMessage();
             _subscribeToMessages();
 
             final isCurrentBuyer = conv['buyer_id'] == currentUser.id;
@@ -221,6 +226,8 @@ class ChatCubit extends Cubit<ChatState> {
         conversationId: _currentConversationId!,
         userId: currentUser.id,
       );
+      // أعلِم الواجهة لتحديث عدادات غير المقروء مباشرة بعد القراءة
+      ChatRouteTracker.notifyIncomingMessage();
       
       // الاشتراك في تحديثات الرسائل
       _subscribeToMessages();
@@ -281,6 +288,22 @@ class ChatCubit extends Cubit<ChatState> {
             state.messages.where((m) => !isLocalPending(m)).toList();
         final List<Map<String, dynamic>> updatedMessages = [...filtered, message];
         emit(state.copyWith(messages: updatedMessages));
+
+        // إذا كانت الرسالة من الطرف الآخر أثناء فتح المحادثة، حدّدها كمقروءة فورًا
+        final incomingSenderId = message['sender_id']?.toString();
+        if (incomingSenderId != null && incomingSenderId.isNotEmpty && incomingSenderId != state.currentUserId) {
+          final cid = _currentConversationId;
+          final uid = state.currentUserId;
+          if (cid != null && uid != null) {
+            // تحديث حالة القراءة بدون انتظار لمنع تعليق الواجهة
+            unawaited(_chatService.markMessagesAsRead(
+              conversationId: cid,
+              userId: uid,
+            ));
+            // أعلِم الواجهة لتحديث عدادات الشات/التبويب
+            ChatRouteTracker.notifyIncomingMessage();
+          }
+        }
       },
       onMessageUpdate: (message) {
         // تحديث الرسالة إذا كانت موجودة، وإلا إضافتها

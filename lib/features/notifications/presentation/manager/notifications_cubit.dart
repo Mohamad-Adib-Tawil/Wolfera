@@ -4,6 +4,7 @@ import 'package:injectable/injectable.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:wolfera/services/notification_service.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:wolfera/services/chat_route_tracker.dart';
 
 @lazySingleton
 class NotificationsCubit extends Cubit<NotificationsState> {
@@ -112,8 +113,8 @@ class NotificationsCubit extends Cubit<NotificationsState> {
                 unreadCount: state.unreadCount + 1,
               ));
               
-              // عرض إشعار محلي
-              _showLocalNotification(notification);
+              // عرض إشعار محلي (مع كتم إذا كنت ضمن نفس المحادثة)
+              await _showLocalNotification(notification);
             }
           },
         )
@@ -155,12 +156,65 @@ class NotificationsCubit extends Cubit<NotificationsState> {
     _notificationsChannel = null;
   }
   
-  // عرض إشعار محلي
-  void _showLocalNotification(Map<String, dynamic> notification) {
+  // عرض إشعار محلي (مع كتم إشعار الرسائل داخل نفس المحادثة المفتوحة)
+  Future<void> _showLocalNotification(Map<String, dynamic> notification) async {
     final type = notification['type']?.toString() ?? 'general';
     final data = (notification['data'] as Map?)?.cast<String, dynamic>() ?? <String, dynamic>{};
     String title = notification['title']?.toString() ?? 'notification'.tr();
     String body = notification['body']?.toString() ?? '';
+
+    // كتم إشعار الرسالة الجديدة إذا كنا داخل نفس المحادثة
+    if (type == 'new_message') {
+      // جرّب استخراج conversationId من البيانات مباشرة
+      String? conversationId =
+          data['conversation_id']?.toString() ??
+          data['conv_id']?.toString() ??
+          data['conversationId']?.toString();
+
+      // إذا لم يوجد، حاول الاستنتاج عبر message_id
+      if (conversationId == null || conversationId.isEmpty) {
+        try {
+          final msgId = (data['message_id'] ?? data['id'])?.toString();
+          if (msgId != null && msgId.isNotEmpty) {
+            final msg = await _client
+                .from('messages')
+                .select('conversation_id')
+                .eq('id', msgId)
+                .maybeSingle();
+            conversationId = msg?['conversation_id']?.toString() ?? conversationId;
+          }
+        } catch (_) {}
+      }
+
+      // إذا ما زال غير معروف، حاول الاستنتاج من معرف الطرف الآخر
+      if (conversationId == null || conversationId.isEmpty) {
+        try {
+          final currentUser = _client.auth.currentUser;
+          final otherId = (data['other_user_id'] ?? data['sender_id'] ?? data['seller_id'])?.toString();
+          if (currentUser != null && otherId != null && otherId.isNotEmpty) {
+            final conv = await _client
+                .from('conversations')
+                .select('id')
+                .or('and(buyer_id.eq.${currentUser.id},seller_id.eq.$otherId),and(buyer_id.eq.$otherId,seller_id.eq.${currentUser.id})')
+                .order('last_message_at', ascending: false)
+                .limit(1)
+                .maybeSingle();
+            conversationId = conv?['id']?.toString() ?? conversationId;
+          }
+        } catch (_) {}
+      }
+
+      final currentConv = ChatRouteTracker.currentConversationId.value;
+      if (currentConv != null &&
+          currentConv.isNotEmpty &&
+          conversationId != null &&
+          conversationId.isNotEmpty &&
+          currentConv == conversationId) {
+        // لا تعرض إشعارًا إذا كانت الرسالة لنفس المحادثة المفتوحة حاليًا
+        ChatRouteTracker.notifyIncomingMessage();
+        return;
+      }
+    }
 
     try {
       switch (type) {
@@ -202,7 +256,7 @@ class NotificationsCubit extends Cubit<NotificationsState> {
       }
     } catch (_) {}
 
-    NotificationService.showLocalNotification(
+    await NotificationService.showLocalNotification(
       id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
       title: title,
       body: body,
