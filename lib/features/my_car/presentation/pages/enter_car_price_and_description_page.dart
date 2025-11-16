@@ -1,5 +1,4 @@
 part of 'sell_my_car_page.dart';
-
 class _EnterCarPriceAndDescriptionPage extends StatefulWidget {
   const _EnterCarPriceAndDescriptionPage();
 
@@ -8,8 +7,7 @@ class _EnterCarPriceAndDescriptionPage extends StatefulWidget {
       _EnterCarPriceAndDescriptionPageState();
 }
 
-class _EnterCarPriceAndDescriptionPageState
-    extends State<_EnterCarPriceAndDescriptionPage> {
+class _EnterCarPriceAndDescriptionPageState extends State<_EnterCarPriceAndDescriptionPage> {
   late MyCarsBloc _myCarsBloc;
 
   @override
@@ -41,6 +39,7 @@ class _EnterCarPriceAndDescriptionPageState
               },
             ),
             30.verticalSpace,
+            // Description field
             SellCarItem(
               title: 'description',
               isDescription: true,
@@ -129,15 +128,18 @@ class _EnterCarPriceAndDescriptionPageState
                         .control(_myCarsBloc.kFromCurrencyCode),
                     builder: (context, currencyControl, child) {
                       final code = currencyControl.value as String? ?? 'USD';
-                      final currency = CurrenciesData.findByCode(code) ??
-                          CurrenciesData.defaultCurrency();
                       return Column(
                         children: [
                           30.verticalSpace,
                           RentalPriceSection(
                             rentalPricesForm:
                                 _myCarsBloc.descriptionSectionForm,
-                            currencySymbol: currency.symbol,
+                            currencyCode: code,
+                            onCurrencyChanged: (c) {
+                              _myCarsBloc.descriptionSectionForm
+                                  .control(_myCarsBloc.kFromCurrencyCode)
+                                  .updateValue(c.code);
+                            },
                           ),
                         ],
                       );
