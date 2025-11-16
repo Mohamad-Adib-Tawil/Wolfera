@@ -825,6 +825,10 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
     sellMyCarForm.control(kFromCarCondition).value = templateData['condition'];
     sellMyCarForm.control(kFromCarColor).value = templateData['color'];
     sellMyCarForm.control(kFromCarSeats).value = templateData['seats'];
+    // تأكيد أن العملة الافتراضية هي الدولار الأمريكي حتى مع القالب
+    try {
+      descriptionSectionForm.control(kFromCurrencyCode).updateValue('USD');
+    } catch (_) {}
     sellMyCarForm.control(kFromCarCylinders).value = templateData['cylinders'];
     sellMyCarForm.control(kFromCarMileage).value = templateData['mileage'];
     sellMyCarForm.control(kFromCarTrim).value = templateData['trim'];
