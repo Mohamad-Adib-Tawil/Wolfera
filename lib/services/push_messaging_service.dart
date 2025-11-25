@@ -27,8 +27,23 @@ class PushMessagingService {
 
   static Future<void> initialize() async {
     // تأكد من تهيئة Firebase
+    var firebaseReady = true;
     if (Firebase.apps.isEmpty) {
-      await Firebase.initializeApp();
+      try {
+        await Firebase.initializeApp();
+      } catch (e, st) {
+        if (kDebugMode) {
+          print('⚠️ Firebase.initializeApp failed: $e');
+          print(st);
+        }
+        firebaseReady = false;
+      }
+    }
+    if (!firebaseReady) {
+      if (kDebugMode) {
+        print('⚠️ Skipping FCM setup because Firebase is not configured on this platform.');
+      }
+      return;
     }
 
     // معالج الرسائل في الخلفية
