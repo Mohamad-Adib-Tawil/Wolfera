@@ -47,6 +47,7 @@ class _ProfileRoutes {
   final String profile = '/profile';
   final String profileEdit = 'profileEdit';
   final String addressPage = 'addressPage';
+  final String manageAds = 'manageAds';
 }
 
 class _NotificationsRoutes {

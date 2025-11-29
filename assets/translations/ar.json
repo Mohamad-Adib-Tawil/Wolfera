@@ -851,5 +851,15 @@
   "password_min_length": "كلمة المرور يجب أن تكون 6 أحرف على الأقل",
   "login_button": "تسجيل الدخول",
   "login_with_google": "تسجيل الدخول بـ Google",
-  "create_new_account": "إنشاء حساب جديد"
-}
+  "create_new_account": "إنشاء حساب جديد",
+  "manage_ads": "إدارة الإعلانات",
+  "upload_banner": "رفع بانر الإعلان",
+  "start_date": "تاريخ البدء",
+  "end_date": "تاريخ الانتهاء",
+  "create_ad": "إنشاء إعلان",
+  "no_ads": "لا توجد إعلانات",
+  "ad_created": "تم إنشاء الإعلان بنجاح",
+  "ad_updated": "تم تحديث الإعلان بنجاح",
+  "ad_deleted": "تم حذف الإعلان",
+  "edit_duration": "تعديل المدة",
+  "are_you_sure_delete_ad": "حذف هذا الإعلان؟"

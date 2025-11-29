@@ -13,7 +13,7 @@ dependencies:
   badges: ^3.1.2
   bloc_concurrency: ^0.2.1
   cached_network_image: ^3.3.0
-  carousel_slider: ^4.2.1
+  card_swiper: ^3.0.1
   supabase_flutter: ^2.8.2
   collection: ^1.17.2
   country_picker: ^2.0.26

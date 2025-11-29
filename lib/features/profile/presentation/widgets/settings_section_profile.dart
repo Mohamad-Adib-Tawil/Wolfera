@@ -42,6 +42,13 @@ class SettingsSectionProfile extends StatelessWidget {
             if (!isSuper) return const SizedBox.shrink();
             return Column(
               children: [
+                // Manage Ads (Super Admin only)
+                ProfileItemSettingsWidget(
+                  title: 'manage_ads',
+                  svgIcon: Assets.svgInfoRect,
+                  onTap: () => GRouter.router
+                      .pushNamed(GRouter.config.profileRoutes.manageAds),
+                ),
                 ProfileItemSettingsWidget(
                   title: 'add_admin_title',
                   svgIcon: Assets.svgPerson,
