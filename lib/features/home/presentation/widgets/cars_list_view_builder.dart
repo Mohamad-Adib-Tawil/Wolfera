@@ -3,6 +3,9 @@ import 'package:wolfera/core/utils/responsive_padding.dart';
 import 'package:wolfera/features/home/presentation/widgets/car_mini_details_card_widget.dart';
 import 'package:wolfera/generated/assets.dart';
 import 'package:wolfera/core/utils/money_formatter.dart';
+import 'package:get_it/get_it.dart';
+import 'package:wolfera/features/app/domin/repositories/prefs_repository.dart';
+import 'package:wolfera/core/constants/currencies.dart';
 import 'package:wolfera/core/utils/car_value_translator.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -93,7 +96,19 @@ class CarsListViewBuilder extends StatelessWidget {
           location = c != '-' ? c : locationRaw;
         }
         final priceVal = car['price']?.toString();
-        final currency = car['currency']?.toString() ?? '\$';
+        // Resolve display currency symbol: car's own symbol OR user's preferred/location default
+        final prefs = GetIt.I<PrefsRepository>();
+        final preferredCode = prefs.selectedCurrencyCode;
+        final defaultCode = prefs.isWorldwide
+            ? 'USD'
+            : CurrenciesData.codeForCountry(prefs.selectedCountryCode);
+        final fallbackSymbol = (CurrenciesData.findByCode(preferredCode ?? defaultCode)
+                    ?? CurrenciesData.defaultCurrency())
+                .symbol;
+        final carCurrencyRaw = car['currency']?.toString();
+        final currencySymbol = (carCurrencyRaw != null && carCurrencyRaw.isNotEmpty)
+            ? carCurrencyRaw
+            : fallbackSymbol;
         // Choose displayed price based on listing type
         final listingType = car['listing_type']?.toString().toLowerCase();
         String? price;
@@ -112,7 +127,7 @@ class CarsListViewBuilder extends StatelessWidget {
             if (raw != null) {
               final num? v = raw is num ? raw : num.tryParse(raw.toString());
               if (v != null) {
-                final compact = MoneyFormatter.compact(v, symbol: currency);
+                final compact = MoneyFormatter.compact(v, symbol: currencySymbol);
                 final period = c[1];
                 price = compact != null ? '$compact / ${period.tr()}' : null;
                 break;
@@ -121,10 +136,10 @@ class CarsListViewBuilder extends StatelessWidget {
           }
           // Fallback to sale price if no rental value was found and it's 'both'
           if (price == null && listingType == 'both') {
-            price = MoneyFormatter.compactFromString(priceVal, symbol: currency);
+            price = MoneyFormatter.compactFromString(priceVal, symbol: currencySymbol);
           }
         } else {
-          price = MoneyFormatter.compactFromString(priceVal, symbol: currency);
+          price = MoneyFormatter.compactFromString(priceVal, symbol: currencySymbol);
         }
 
         return Padding(

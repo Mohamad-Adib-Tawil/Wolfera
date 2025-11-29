@@ -8,6 +8,9 @@ import 'package:wolfera/features/cars/presentation/widget/car_details_item.dart'
 import 'package:wolfera/features/cars/presentation/widget/car_name_and_price_row_widget.dart';
 import 'package:wolfera/features/cars/presentation/widget/car_detailes_grid_view.dart';
 import 'package:wolfera/core/utils/money_formatter.dart';
+import 'package:get_it/get_it.dart';
+import 'package:wolfera/features/app/domin/repositories/prefs_repository.dart';
+import 'package:wolfera/core/constants/currencies.dart';
 import 'package:wolfera/features/chat/presentation/widgets/white_divider.dart';
 
 class CarDetailsSection extends StatelessWidget {
@@ -84,7 +87,19 @@ class CarDetailsSection extends StatelessWidget {
     // Rental prices (show if listing type is rent or both)
     final listingType = carData['listing_type']?.toString();
     if (listingType == 'rent' || listingType == 'both') {
-      final currency = carData['currency']?.toString() ?? r'$';
+      // Resolve display currency symbol: car's own symbol OR user's preferred/location default
+      final prefs = GetIt.I<PrefsRepository>();
+      final preferredCode = prefs.selectedCurrencyCode;
+      final defaultCode = prefs.isWorldwide
+          ? 'USD'
+          : CurrenciesData.codeForCountry(prefs.selectedCountryCode);
+      final fallbackSymbol = (CurrenciesData.findByCode(preferredCode ?? defaultCode)
+                  ?? CurrenciesData.defaultCurrency())
+              .symbol;
+      final carCurrencyRaw = carData['currency']?.toString();
+      final currency = (carCurrencyRaw != null && carCurrencyRaw.isNotEmpty)
+          ? carCurrencyRaw
+          : fallbackSymbol;
       String? fmt(num? v) => MoneyFormatter.compact(v, symbol: currency);
       // For each available rental field, add an item
       void addRental(String title, dynamic raw) {

@@ -6,6 +6,9 @@ import 'package:wolfera/core/config/theme/typography.dart';
 import 'package:wolfera/core/utils/extensions/build_context.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
 import 'package:wolfera/core/utils/money_formatter.dart';
+import 'package:get_it/get_it.dart';
+import 'package:wolfera/features/app/domin/repositories/prefs_repository.dart';
+import 'package:wolfera/core/constants/currencies.dart';
 import '../../../app/presentation/widgets/bottom_section_car_mini_details_card.dart';
 import '../../../app/presentation/widgets/status_section_widget.dart';
 import '../../../app/presentation/widgets/top_secrion_car_mini_details_card.dart';
@@ -53,7 +56,19 @@ class CarMiniDetailsCardWidget extends StatelessWidget {
     String? salePriceDisplay;
     String? rentPriceDisplay;
     if (carData != null) {
-      final currency = carData!['currency']?.toString() ?? r'$';
+      // Resolve display currency symbol: car's own symbol OR user's preferred/location default
+      final prefs = GetIt.I<PrefsRepository>();
+      final preferredCode = prefs.selectedCurrencyCode;
+      final defaultCode = prefs.isWorldwide
+          ? 'USD'
+          : CurrenciesData.codeForCountry(prefs.selectedCountryCode);
+      final fallbackSymbol = (CurrenciesData.findByCode(preferredCode ?? defaultCode)
+                  ?? CurrenciesData.defaultCurrency())
+              .symbol;
+      final carCurrencyRaw = carData!['currency']?.toString();
+      final currency = (carCurrencyRaw != null && carCurrencyRaw.isNotEmpty)
+          ? carCurrencyRaw
+          : fallbackSymbol;
       // Sale price
       salePriceDisplay = MoneyFormatter.compactFromString(
         carData!['price']?.toString(),
