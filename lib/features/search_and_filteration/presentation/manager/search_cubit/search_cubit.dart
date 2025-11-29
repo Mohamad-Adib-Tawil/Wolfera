@@ -185,6 +185,17 @@ class SearchCubit extends Cubit<SearchState> {
     _applyFiltersAndSearch();
   }
 
+  void toggleModelSelection(String model) {
+    final updatedState = _searchFilterService.toggleModelSelection(state, model);
+    emit(updatedState);
+    _applyFiltersAndSearch();
+  }
+
+  void setModelsSelection(List<String> models) {
+    emit(state.copyWith(selectedCarModelsFilter: models));
+    _applyFiltersAndSearch();
+  }
+
   void changeCarKilometersFilter(
       {String? minKilometers, String? maxKilometers}) {
     final updatedState = _searchFilterService.changeCarKilometersFilter(state,
@@ -265,6 +276,12 @@ class SearchCubit extends Cubit<SearchState> {
   // Reset Filters Section
   void resetMakerSelectionFilter() {
     final updatedState = _searchFilterService.resetMakerSelectionFilter(state);
+    emit(updatedState);
+    _applyFiltersAndSearch();
+  }
+
+  void resetModelSelectionFilter() {
+    final updatedState = _searchFilterService.resetModelSelectionFilter(state);
     emit(updatedState);
     _applyFiltersAndSearch();
   }

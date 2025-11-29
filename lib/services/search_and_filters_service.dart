@@ -67,6 +67,20 @@ class SearchFilterService {
         queryBuilder = queryBuilder.inFilter('brand', variants.toList());
       }
 
+      // Filter by specific models if provided
+      if (filters.selectedCarModelsFilter.isNotEmpty) {
+        final variants = <String>{};
+        for (final m in filters.selectedCarModelsFilter) {
+          if (m.trim().isEmpty) continue;
+          variants.add(m);
+          variants.add(m.toLowerCase());
+          variants.add(m.toUpperCase());
+          final title = m.isNotEmpty ? '${m[0].toUpperCase()}${m.substring(1).toLowerCase()}' : m;
+          variants.add(title);
+        }
+        queryBuilder = queryBuilder.inFilter('model', variants.toList());
+      }
+
       if (filters.selectedTransmission != null) {
         queryBuilder = queryBuilder.eq('transmission', filters.selectedTransmission!);
       }
@@ -188,6 +202,17 @@ class SearchFilterService {
     return state.copyWith(selectedCarMakersFilter: currentSelected);
   }
 
+  // Toggle Car Model Selection Filter
+  SearchState toggleModelSelection(SearchState state, String model) {
+    final currentSelected = List<String>.from(state.selectedCarModelsFilter);
+    if (currentSelected.contains(model)) {
+      currentSelected.remove(model);
+    } else {
+      currentSelected.add(model);
+    }
+    return state.copyWith(selectedCarModelsFilter: currentSelected);
+  }
+
   // Change Car Year Filter
   SearchState changeCarKilometersFilter(SearchState state,
       {String? minKilometers, String? maxKilometers}) {
@@ -261,6 +286,10 @@ class SearchFilterService {
   // Reset Filters
   SearchState resetMakerSelectionFilter(SearchState state) {
     return state.copyWith(selectedCarMakersFilter: []);
+  }
+
+  SearchState resetModelSelectionFilter(SearchState state) {
+    return state.copyWith(selectedCarModelsFilter: []);
   }
 
   SearchState resetKilometersFilter(SearchState state,

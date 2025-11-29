@@ -11,6 +11,7 @@ import 'package:wolfera/features/app/presentation/widgets/animations/delayed_fad
 import 'package:wolfera/features/search_and_filteration/presentation/manager/search_cubit/search_cubit.dart';
 import 'package:wolfera/features/search_and_filteration/presentation/widget/kilometers_section_filter.dart';
 import 'package:wolfera/features/search_and_filteration/presentation/widget/makers_section_filter.dart';
+import 'package:wolfera/features/search_and_filteration/presentation/widget/models_section_filter.dart';
 import 'package:wolfera/features/search_and_filteration/presentation/widget/seats_section.dart';
 import 'package:wolfera/features/search_and_filteration/presentation/widget/year_section_filter.dart';
 import '../widget/car_type_section.dart';
@@ -48,6 +49,7 @@ class _FilterPageState extends State<FilterPage> {
         children: [
           20.verticalSpace,
           MakersSectionFilter(searchCubit: bloc),
+          ModelsSectionFilter(searchCubit: bloc),
           KilometersSectionFilter(searchCubit: bloc),
           YearSectionFilter(searchCubit: bloc),
           PriceSection(searchCubit: bloc),
