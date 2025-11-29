@@ -20,6 +20,7 @@ class _HomePageState extends State<HomePage>
   static bool _didAnimateOnce = false;
   late final bool _shouldAnimateEntrance;
   late HomeCubit _homeCubit;
+  int _adRefresh = 0;
   @override
   void initState() {
     _homeCubit = GetIt.I<HomeCubit>()..getHomeData();
@@ -43,6 +44,8 @@ class _HomePageState extends State<HomePage>
               // Refresh Recommended (featured) and Combined Search lists
               _homeCubit.getHomeData(); // returns void
               await GetIt.I<SearchCubit>().searchCars();
+              // Trigger banner refresh
+              setState(() => _adRefresh++);
             },
             child: CustomScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
@@ -50,7 +53,10 @@ class _HomePageState extends State<HomePage>
                 // App Bar
                 HomeAppBar(animate: _shouldAnimateEntrance),
                 // Home Body
-                HomeBody(animate: _shouldAnimateEntrance),
+                HomeBody(
+                  animate: _shouldAnimateEntrance,
+                  refreshToken: _adRefresh,
+                ),
               ],
             ),
           ),

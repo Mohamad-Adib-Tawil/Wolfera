@@ -852,5 +852,16 @@
   "password_min_length": "Password must be at least 6 characters",
   "login_button": "Login",
   "login_with_google": "Login with Google",
-  "create_new_account": "Create new account"
+  "create_new_account": "Create new account",
+  "manage_ads": "Manage Ads",
+  "upload_banner": "Upload banner",
+  "start_date": "Start date",
+  "end_date": "End date",
+  "create_ad": "Create Ad",
+  "no_ads": "No ads yet",
+  "ad_created": "Ad created successfully",
+  "ad_updated": "Ad updated successfully",
+  "ad_deleted": "Ad deleted",
+  "edit_duration": "Edit duration",
+  "are_you_sure_delete_ad": "Delete this ad?"
 }

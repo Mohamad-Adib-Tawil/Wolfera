@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 // Removed legacy separate filter sections in favor of CombinedFiltersBar
 import 'package:wolfera/features/home/presentation/widgets/combined_filters_bar.dart';
 import 'package:wolfera/features/home/presentation/widgets/recommended_section.dart';
-import 'package:wolfera/features/home/presentation/widgets/rental_cars_section.dart';
+import 'package:wolfera/features/home/presentation/widgets/home_ad_banner.dart';
 import 'package:wolfera/features/home/presentation/widgets/search_bar_button.dart';
 import 'package:wolfera/features/home/presentation/widgets/search_results_vertical_list.dart';
 
@@ -12,9 +12,11 @@ class HomeBody extends StatelessWidget {
   const HomeBody({
     super.key,
     this.animate = false,
+    this.refreshToken = 0,
   });
 
   final bool animate;
+  final int refreshToken;
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +26,8 @@ class HomeBody extends StatelessWidget {
           10.verticalSpace,
           SearchBarButton(
               onTap: () => StatefulNavigationShell.of(context).goBranch(1)),
+          
+          HomeAdBanner(refreshToken: refreshToken),
           const RecommendedSection(),
           const CombinedFiltersBar(),
           8.verticalSpace,
@@ -44,6 +48,12 @@ class HomeBody extends StatelessWidget {
           beginOffset: const Offset(0, -0.24),
           child: SearchBarButton(
               onTap: () => StatefulNavigationShell.of(context).goBranch(1)),
+        ),
+        // Ads banner from RIGHT
+        _DelayedFadeSlide(
+          delay: const Duration(milliseconds: 180),
+          beginOffset: const Offset(0.18, 0),
+          child: HomeAdBanner(refreshToken: refreshToken),
         ),
         // Recommended cars list from LEFT
         _DelayedFadeSlide(
