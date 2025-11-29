@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class RefreshListWidget extends StatelessWidget {
+class RefreshListWidget extends StatefulWidget {
   const RefreshListWidget({
     super.key,
     required this.child,
@@ -8,16 +8,22 @@ class RefreshListWidget extends StatelessWidget {
   });
 
   final Widget child;
-  final VoidCallback onRefresh;
+  final Future<void> Function() onRefresh;
+
+  @override
+  State<RefreshListWidget> createState() => _RefreshListWidgetState();
+}
+
+class _RefreshListWidgetState extends State<RefreshListWidget> {
+  final GlobalKey<RefreshIndicatorState> _refreshKey =
+      GlobalKey<RefreshIndicatorState>();
 
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
-      onRefresh: () {
-        onRefresh();
-        return Future.delayed(const Duration(milliseconds: 700));
-      },
-      child: child,
+      key: _refreshKey,
+      onRefresh: widget.onRefresh,
+      child: widget.child,
     );
   }
 }

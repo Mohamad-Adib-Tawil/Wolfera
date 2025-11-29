@@ -282,10 +282,6 @@
   "suv": "SUV",
   "sedan": "سيدان",
   "micro": "ميكرو",
-  "country_sy": "سوريا",
-  "country_qa": "قطر",
-  "country_ae": "الإمارات العربية المتحدة",
-  "country_sa": "السعودية",
   "country_eg": "مصر",
   "country_jo": "الأردن",
   "country_lb": "لبنان",
@@ -863,3 +859,4 @@
   "ad_deleted": "تم حذف الإعلان",
   "edit_duration": "تعديل المدة",
   "are_you_sure_delete_ad": "حذف هذا الإعلان؟"
+}

@@ -21,6 +21,7 @@ class _HomePageState extends State<HomePage>
   late final bool _shouldAnimateEntrance;
   late HomeCubit _homeCubit;
   int _adRefresh = 0;
+  Future<void> Function()? _bannerReload;
   @override
   void initState() {
     _homeCubit = GetIt.I<HomeCubit>()..getHomeData();
@@ -44,8 +45,8 @@ class _HomePageState extends State<HomePage>
               // Refresh Recommended (featured) and Combined Search lists
               _homeCubit.getHomeData(); // returns void
               await GetIt.I<SearchCubit>().searchCars();
-              // Trigger banner refresh
-              setState(() => _adRefresh++);
+              // Refresh banners without rebuilding the whole sliver list
+              await _bannerReload?.call();
             },
             child: CustomScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
@@ -56,6 +57,7 @@ class _HomePageState extends State<HomePage>
                 HomeBody(
                   animate: _shouldAnimateEntrance,
                   refreshToken: _adRefresh,
+                  onRegisterBannerReload: (fn) => _bannerReload = fn,
                 ),
               ],
             ),

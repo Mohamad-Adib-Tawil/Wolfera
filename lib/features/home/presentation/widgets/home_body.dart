@@ -13,10 +13,12 @@ class HomeBody extends StatelessWidget {
     super.key,
     this.animate = false,
     this.refreshToken = 0,
+    this.onRegisterBannerReload,
   });
 
   final bool animate;
   final int refreshToken;
+  final void Function(Future<void> Function())? onRegisterBannerReload;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +29,10 @@ class HomeBody extends StatelessWidget {
           SearchBarButton(
               onTap: () => StatefulNavigationShell.of(context).goBranch(1)),
           
-          HomeAdBanner(refreshToken: refreshToken),
+          HomeAdBanner(
+            refreshToken: refreshToken,
+            onRegisterReload: onRegisterBannerReload,
+          ),
           const RecommendedSection(),
           const CombinedFiltersBar(),
           8.verticalSpace,
@@ -53,7 +58,10 @@ class HomeBody extends StatelessWidget {
         _DelayedFadeSlide(
           delay: const Duration(milliseconds: 180),
           beginOffset: const Offset(0.18, 0),
-          child: HomeAdBanner(refreshToken: refreshToken),
+          child: HomeAdBanner(
+            refreshToken: refreshToken,
+            onRegisterReload: onRegisterBannerReload,
+          ),
         ),
         // Recommended cars list from LEFT
         _DelayedFadeSlide(
