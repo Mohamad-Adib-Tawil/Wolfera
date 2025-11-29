@@ -43,6 +43,7 @@ import 'package:country_flags/country_flags.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:wolfera/core/constants/currencies.dart';
 import 'package:wolfera/core/utils/extensions/parse_string_to_enum.dart';
+import 'package:wolfera/features/app/domin/repositories/prefs_repository.dart';
 
 part 'enter_car_details_page.dart';
 part 'enter_car_features_page.dart';

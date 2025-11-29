@@ -95,11 +95,15 @@ class _EnterCarPriceAndDescriptionPageState extends State<_EnterCarPriceAndDescr
                             icon: Icon(Icons.keyboard_arrow_down_rounded,
                                 size: 16, color: AppColors.white),
                           ),
-                          onChanged: (c) {
+                          onChanged: (c) async {
                             if (c == null) return;
                             _myCarsBloc.descriptionSectionForm
                                 .control(_myCarsBloc.kFromCurrencyCode)
                                 .updateValue(c.code);
+                            // persist user override
+                            try {
+                              await GetIt.I<PrefsRepository>().setSelectedCurrencyCode(c.code);
+                            } catch (_) {}
                           },
                           borderColor: Colors.transparent,
                           filled: false,
@@ -135,10 +139,14 @@ class _EnterCarPriceAndDescriptionPageState extends State<_EnterCarPriceAndDescr
                             rentalPricesForm:
                                 _myCarsBloc.descriptionSectionForm,
                             currencyCode: code,
-                            onCurrencyChanged: (c) {
+                            onCurrencyChanged: (c) async {
                               _myCarsBloc.descriptionSectionForm
                                   .control(_myCarsBloc.kFromCurrencyCode)
                                   .updateValue(c.code);
+                              // persist user override
+                              try {
+                                await GetIt.I<PrefsRepository>().setSelectedCurrencyCode(c.code);
+                              } catch (_) {}
                             },
                           ),
                         ],
@@ -221,7 +229,7 @@ class _EnterCarPriceAndDescriptionPageState extends State<_EnterCarPriceAndDescr
                       );
                     },
                   ),
-                  onChanged: (co) {
+                  onChanged: (co) async {
                     if (co == null) return;
                     // تحديث الدولة ومسح المدينة
                     _myCarsBloc.descriptionSectionForm
@@ -236,6 +244,21 @@ class _EnterCarPriceAndDescriptionPageState extends State<_EnterCarPriceAndDescr
                     _myCarsBloc.descriptionSectionForm
                         .control(_myCarsBloc.kFromWorldwide)
                         .updateValue(co.code == LocationsData.worldwideCode);
+
+                    // إذا لم يكن هناك اختيار عملة محفوظ من قبل، عيّن عملة افتراضية حسب الوطن/حول العالم
+                    try {
+                      final prefs = GetIt.I<PrefsRepository>();
+                      final saved = prefs.selectedCurrencyCode;
+                      if (saved == null || saved.isEmpty) {
+                        final isWw = co.code == LocationsData.worldwideCode;
+                        final code = isWw
+                            ? 'USD'
+                            : CurrenciesData.codeForCountry(co.code);
+                        _myCarsBloc.descriptionSectionForm
+                            .control(_myCarsBloc.kFromCurrencyCode)
+                            .updateValue(code);
+                      }
+                    } catch (_) {}
                   },
                   borderColor: Colors.transparent,
                   filled: false,

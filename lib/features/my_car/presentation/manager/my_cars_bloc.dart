@@ -617,6 +617,15 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
         descriptionSectionForm.control(kFromRegionOrCity).updateValue(null);
         print('ℹ️ No saved address, using Worldwide');
       }
+
+      // ===== Initialize currency code =====
+      final savedCurrency = prefs.selectedCurrencyCode;
+      final bool ww = descriptionSectionForm.control(kFromWorldwide).value as bool? ?? true;
+      final String? cc = descriptionSectionForm.control(kFromCountryCode).value as String?;
+      final String resolved = savedCurrency != null && savedCurrency.isNotEmpty
+          ? savedCurrency
+          : (ww ? 'USD' : CurrenciesData.codeForCountry(cc));
+      descriptionSectionForm.control(kFromCurrencyCode).updateValue(resolved);
     } catch (e, stackTrace) {
       print('⚠️ Failed to load default location: $e');
       print('Stack trace: $stackTrace');
@@ -624,6 +633,7 @@ class MyCarsBloc extends Bloc<MyCarsEvent, MyCarsState> {
       descriptionSectionForm.control(kFromWorldwide).updateValue(true);
       descriptionSectionForm.control(kFromCountryCode).updateValue(null);
       descriptionSectionForm.control(kFromRegionOrCity).updateValue(null);
+      descriptionSectionForm.control(kFromCurrencyCode).updateValue('USD');
     }
   }
   late final imagesSectionForm = FormGroup({
