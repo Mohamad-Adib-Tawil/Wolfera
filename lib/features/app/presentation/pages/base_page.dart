@@ -63,6 +63,10 @@ class _BasePageState extends State<BasePage> {
 
   @override
   Widget build(BuildContext context) {
+    // Compute dynamic bottom padding to avoid overlap with system nav bar
+    final bottomInset = MediaQuery.of(context).padding.bottom;
+    final navHeight = 85.h; // must match CustomNavigationBar height
+    final bodyBottomPadding = navHeight + bottomInset;
     return PopScope(
       onPopInvoked: (didPop) {
         if (widget.child.currentIndex != 0) {
@@ -116,17 +120,23 @@ class _BasePageState extends State<BasePage> {
         scaffoldKey: BasePage._scaffoldKey,
         body: Stack(children: [
           Padding(
-            padding: HWEdgeInsets.only(bottom: 75),
+            padding: HWEdgeInsets.only(bottom: bodyBottomPadding),
             child: widget.child,
           ),
           Positioned(
             bottom: 0,
             left: 0,
             right: 0,
-            child: _AnimatedBottomOnce(
-              animate: _shouldAnimateBottom,
-              child: CustomNavigationBar(
-                child: widget.child,
+            child: SafeArea(
+              top: false,
+              left: false,
+              right: false,
+              bottom: true,
+              child: _AnimatedBottomOnce(
+                animate: _shouldAnimateBottom,
+                child: CustomNavigationBar(
+                  child: widget.child,
+                ),
               ),
             ),
           ),
