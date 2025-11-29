@@ -6,9 +6,14 @@ import 'package:wolfera/features/app/presentation/widgets/app_cached_network_ima
 import 'package:wolfera/services/ads_service.dart';
 
 class HomeAdBanner extends StatefulWidget {
-  const HomeAdBanner({super.key, this.refreshToken = 0});
+  const HomeAdBanner({
+    super.key,
+    this.refreshToken = 0,
+    this.onRegisterReload,
+  });
 
   final int refreshToken;
+  final void Function(Future<void> Function())? onRegisterReload;
 
   @override
   State<HomeAdBanner> createState() => _HomeAdBannerState();
@@ -22,6 +27,8 @@ class _HomeAdBannerState extends State<HomeAdBanner> {
   @override
   void initState() {
     super.initState();
+    // Expose a reload handle to parent once mounted
+    widget.onRegisterReload?.call(_reload);
     _load();
   }
 
@@ -35,6 +42,15 @@ class _HomeAdBannerState extends State<HomeAdBanner> {
       });
       _load();
     }
+  }
+
+  Future<void> _reload() async {
+    if (!mounted) return;
+    setState(() {
+      _loading = true;
+      _activeIndex = 0;
+    });
+    await _load();
   }
 
   Future<void> _load() async {
@@ -68,7 +84,8 @@ class _HomeAdBannerState extends State<HomeAdBanner> {
               width: double.infinity,
               child: Swiper(
                 itemCount: _ads.length,
-                autoplay: true,
+                autoplay: _ads.length > 1,
+                loop: _ads.length > 1,
                 autoplayDelay: 5000,
                 viewportFraction: 1.0,
                 onIndexChanged: (index) => setState(() => _activeIndex = index),
