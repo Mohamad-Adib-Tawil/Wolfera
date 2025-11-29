@@ -18,6 +18,7 @@ import 'package:wolfera/features/my_car/presentation/widgets/fuel_type_dialog.da
 import 'package:wolfera/features/my_car/presentation/widgets/interior_features_dialog.dart';
 import 'package:wolfera/features/my_car/presentation/widgets/makers_dialog.dart';
 import 'package:wolfera/features/my_car/presentation/widgets/models_dialog.dart';
+import 'package:wolfera/features/my_car/presentation/widgets/engine_variants_dialog.dart';
 import 'package:wolfera/features/my_car/presentation/widgets/safety_features_dialog.dart';
 import 'package:wolfera/features/my_car/presentation/widgets/seats_number_dialog.dart';
 import 'package:wolfera/features/my_car/presentation/widgets/sell_car_item.dart';

@@ -87,6 +87,36 @@ class _EnterCarDetailsPageState extends State<_EnterCarDetailsPage> {
             SellCarItem(
               title: 'engine_variant',
               formControlName: _myCarsBloc.kFromCarEngine,
+              form: _myCarsBloc.sellMyCarForm,
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.tune, color: Colors.white),
+                onPressed: () {
+                  final current = _myCarsBloc.sellMyCarForm
+                      .control(_myCarsBloc.kFromCarEngine)
+                      .value as String?;
+                  AnimatedDialog.show(
+                    context,
+                    insetPadding: HWEdgeInsets.only(
+                        top: 60, left: 40, right: 40, bottom: 30),
+                    child: EngineVariantsDialog(
+                      selected: current,
+                      onSelectionConfirmed: (selected) {
+                        if (selected != null && selected.trim().isNotEmpty) {
+                          _myCarsBloc.sellMyCarForm
+                              .control(_myCarsBloc.kFromCarEngine)
+                              .updateValue(selected);
+                        } else {
+                          _myCarsBloc.sellMyCarForm
+                              .control(_myCarsBloc.kFromCarEngine)
+                              .value = null;
+                        }
+                      },
+                    ),
+                    barrierDismissible: true,
+                    barrierLabel: 'EngineVariantsDialog',
+                  );
+                },
+              ),
             ),
             SellCarItem(
               title: 'label_year',

@@ -18,6 +18,7 @@ class SellCarItem extends StatelessWidget {
   final String formControlName;
   final Widget? dialogWidget;
   final Widget? prefix;
+  final Widget? suffixIcon;
   final FormGroup? form;
   final TextInputType? textInputType;
 
@@ -29,6 +30,7 @@ class SellCarItem extends StatelessWidget {
       this.dialogWidget,
       this.textInputType,
       this.prefix,
+      this.suffixIcon,
       this.isDescription = false,
       this.form});
 
@@ -83,6 +85,7 @@ class SellCarItem extends StatelessWidget {
                                 .withColor(AppColors.white),
                             textInputType: textInputType,
                             prefix: prefix,
+                            suffixIcon: suffixIcon,
                             maxLines: isDescription ? 8 : null,
                             textInputAction: isDescription
                                 ? TextInputAction.newline
