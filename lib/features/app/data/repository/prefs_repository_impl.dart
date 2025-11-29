@@ -103,6 +103,18 @@ class PrefsRepositoryImpl extends PrefsRepository {
     return _preferences.setBool(PrefsKey.worldwide, value);
   }
 
+  // ===== Currency selection persistence =====
+  @override
+  String? get selectedCurrencyCode => _preferences.getString(PrefsKey.currencyCode);
+
+  @override
+  Future<bool> setSelectedCurrencyCode(String? code) async {
+    if (code == null || code.isEmpty) {
+      return _preferences.remove(PrefsKey.currencyCode);
+    }
+    return _preferences.setString(PrefsKey.currencyCode, code);
+  }
+
   @override
   LocalUser? get user {
     final currentUser = _preferences.getString(PrefsKey.user);

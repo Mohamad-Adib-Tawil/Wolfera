@@ -6,4 +6,5 @@ abstract class PrefsKey {
   static const countryCode = r'__$__selected_country_code__$__';
   static const regionOrCity = r'__$__selected_region_or_city__$__';
   static const worldwide = r'__$__worldwide__$__';
+  static const currencyCode = r'__$__currency_code__$__';
 }

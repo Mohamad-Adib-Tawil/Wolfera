@@ -55,4 +55,45 @@ class CurrenciesData {
     final opt = findByCode(codeOrSymbol);
     return opt?.symbol ?? codeOrSymbol;
   }
+
+  // Map known country codes to preferred currency codes
+  static const Map<String, String> _countryToCurrency = {
+    'WW': 'USD', // Worldwide defaults to USD
+    'AE': 'AED',
+    'QA': 'QAR',
+    'SA': 'SAR',
+    'KW': 'KWD',
+    'BH': 'BHD',
+    'OM': 'OMR',
+    'SY': 'SYP',
+    'LB': 'LBP',
+    'EG': 'EGP',
+    'TR': 'TRY',
+    'DE': 'EUR',
+    'GB': 'GBP',
+    'US': 'USD',
+  };
+
+  /// Returns the default currency code for a given country code.
+  /// If code is null or unknown, returns 'USD'.
+  static String codeForCountry(String? countryCode) {
+    if (countryCode == null || countryCode.isEmpty) return 'USD';
+    final up = countryCode.toUpperCase();
+    return _countryToCurrency[up] ?? 'USD';
+  }
+
+  /// Returns the default currency option for a given country or worldwide.
+  static CurrencyOption defaultForCountry(String? countryCode) {
+    final code = codeForCountry(countryCode);
+    return findByCode(code) ?? defaultCurrency();
+  }
+
+  /// Optional helper in case we need to map from a symbol back to option
+  static CurrencyOption? findBySymbol(String symbol) {
+    try {
+      return list.firstWhere((c) => c.symbol == symbol);
+    } catch (_) {
+      return null;
+    }
+  }
 }

@@ -23,4 +23,8 @@ abstract class PrefsRepository {
 
   bool get isWorldwide; // true => Worldwide mode
   Future<bool> setWorldwide(bool value);
+
+  // Currency selection persistence
+  String? get selectedCurrencyCode; // e.g., 'USD', 'AED'
+  Future<bool> setSelectedCurrencyCode(String? code);
 }
