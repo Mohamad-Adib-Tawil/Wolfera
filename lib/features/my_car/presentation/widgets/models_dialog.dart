@@ -16,6 +16,7 @@ class CarModelsDialog extends StatefulWidget {
   final List<CarMaker>? makers; // Or a list of makers to aggregate models
   final List<String> selectedModels;
   final Function(dynamic) onSelectionConfirmed;
+  final bool includeAllOption; // Show 'All Models' shortcut (for search filter)
 
   const CarModelsDialog({
     super.key,
@@ -24,6 +25,7 @@ class CarModelsDialog extends StatefulWidget {
     this.maker,
     this.makers,
     this.selectedModels = const [],
+    this.includeAllOption = false,
   });
 
   @override
@@ -43,6 +45,29 @@ class _CarModelsDialogState extends State<CarModelsDialog> {
     _allModels = _computeModels();
     _filteredModels = _filter("");
     _searchController.addListener(_onSearchChanged);
+  }
+
+  Widget _allButton(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: ElevatedButton(
+        style: ButtonStyle(
+          backgroundColor: const WidgetStatePropertyAll(AppColors.grey),
+          minimumSize: WidgetStatePropertyAll(Size(80.w, 32.h)),
+          padding: const WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 10, vertical: 6)),
+        ),
+        onPressed: () {
+          // Treat 'All' as clearing model filter
+          widget.onSelectionConfirmed(null);
+          Navigator.of(context).pop();
+        },
+        child: AppText(
+          'All',
+          translation: false,
+          style: context.textTheme.bodySmall?.b,
+        ),
+      ),
+    );
   }
 
   @override
@@ -131,6 +156,11 @@ class _CarModelsDialogState extends State<CarModelsDialog> {
               searchController: _searchController,
               hintText: 'Search for Models',
             ),
+            if (widget.includeAllOption) ...[
+              8.verticalSpace,
+              _allButton(context),
+              8.verticalSpace,
+            ],
             10.verticalSpace,
             Expanded(
               child: _filteredModels.isEmpty

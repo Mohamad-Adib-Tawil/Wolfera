@@ -107,6 +107,7 @@ class ModelsSectionFilter extends StatelessWidget {
         isMultiSelect: true,
         makers: makers.isEmpty ? null : makers,
         selectedModels: bloc.state.selectedCarModelsFilter,
+        includeAllOption: true,
         onSelectionConfirmed: (selected) {
           if (selected is List<String>) {
             bloc.setModelsSelection(selected);
