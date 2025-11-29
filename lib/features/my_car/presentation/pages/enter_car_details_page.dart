@@ -38,6 +38,27 @@ class _EnterCarDetailsPageState extends State<_EnterCarDetailsPage> {
                     _myCarsBloc.sellMyCarForm
                         .control(_myCarsBloc.kFromCarModel)
                         .value = null;
+                    // Auto-open models dialog immediately after maker selection
+                    Future.delayed(const Duration(milliseconds: 50), () {
+                      AnimatedDialog.show(
+                        context,
+                        insetPadding: HWEdgeInsets.only(
+                            top: 60, left: 40, right: 40, bottom: 30),
+                        child: CarModelsDialog(
+                          isMultiSelect: false,
+                          maker: selected,
+                          onSelectionConfirmed: (selectedModel) {
+                            if (selectedModel is String && selectedModel.isNotEmpty) {
+                              _myCarsBloc.sellMyCarForm
+                                  .control(_myCarsBloc.kFromCarModel)
+                                  .updateValue(selectedModel);
+                            }
+                          },
+                        ),
+                        barrierDismissible: true,
+                        barrierLabel: 'ModelsDialogAfterMaker',
+                      );
+                    });
                   } else {
                     _myCarsBloc.sellMyCarForm
                         .control(_myCarsBloc.kFromCarMaker)
@@ -54,8 +75,9 @@ class _EnterCarDetailsPageState extends State<_EnterCarDetailsPage> {
               title: 'label_model',
               formControlName: _myCarsBloc.kFromCarModel,
               form: _myCarsBloc.sellMyCarForm,
-              dialogWidget: Builder(
-                builder: (context) {
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.directions_car, color: Colors.white),
+                onPressed: () {
                   final makerStr = _myCarsBloc.sellMyCarForm
                       .control(_myCarsBloc.kFromCarMaker)
                       .value as String?;
@@ -65,24 +87,26 @@ class _EnterCarDetailsPageState extends State<_EnterCarDetailsPage> {
                       maker = makerStr.toEnum();
                     }
                   } catch (_) {}
-                  return CarModelsDialog(
-                    isMultiSelect: false,
-                    maker: maker,
-                    onSelectionConfirmed: (selected) {
-                      if (selected is String && selected.isNotEmpty) {
-                        _myCarsBloc.sellMyCarForm
-                            .control(_myCarsBloc.kFromCarModel)
-                            .updateValue(selected);
-                      } else {
-                        _myCarsBloc.sellMyCarForm
-                            .control(_myCarsBloc.kFromCarModel)
-                            .value = null;
-                      }
-                    },
+                  AnimatedDialog.show(
+                    context,
+                    insetPadding: HWEdgeInsets.only(
+                        top: 60, left: 40, right: 40, bottom: 30),
+                    child: CarModelsDialog(
+                      isMultiSelect: false,
+                      maker: maker,
+                      onSelectionConfirmed: (selected) {
+                        if (selected is String && selected.isNotEmpty) {
+                          _myCarsBloc.sellMyCarForm
+                              .control(_myCarsBloc.kFromCarModel)
+                              .updateValue(selected);
+                        }
+                      },
+                    ),
+                    barrierDismissible: true,
+                    barrierLabel: 'ModelsDialog',
                   );
                 },
               ),
-              isDialog: true,
             ),
             SellCarItem(
               title: 'engine_variant',
@@ -122,25 +146,49 @@ class _EnterCarDetailsPageState extends State<_EnterCarDetailsPage> {
               title: 'label_year',
               formControlName: _myCarsBloc.kFromCarYear,
               form: _myCarsBloc.sellMyCarForm,
-              dialogWidget: YearPickerDialog(
-                onYearChanged: (selectedYear) {
-                  _myCarsBloc.sellMyCarForm
-                      .control(_myCarsBloc.kFromCarYear)
-                      .updateValue(selectedYear.toString());
+              textInputType:
+                  const TextInputType.numberWithOptions(signed: false, decimal: false),
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.event, color: Colors.white),
+                onPressed: () {
+                  AnimatedDialog.show(
+                    context,
+                    insetPadding: HWEdgeInsets.only(
+                        top: 60, left: 40, right: 40, bottom: 30),
+                    child: YearPickerDialog(
+                      onYearChanged: (selectedYear) {
+                        _myCarsBloc.sellMyCarForm
+                            .control(_myCarsBloc.kFromCarYear)
+                            .updateValue(selectedYear.toString());
+                      },
+                    ),
+                    barrierDismissible: true,
+                    barrierLabel: 'YearPickerDialog',
+                  );
                 },
               ),
-              isDialog: true,
             ),
             SellCarItem(
               title: 'label_transmission',
               formControlName: _myCarsBloc.kFromCarTransmission,
               form: _myCarsBloc.sellMyCarForm,
-              dialogWidget: TranmissionDialog(
-                onItemSelected: (p0) => _myCarsBloc.sellMyCarForm
-                    .control(_myCarsBloc.kFromCarTransmission)
-                    .updateValue(p0),
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.settings, color: Colors.white),
+                onPressed: () {
+                  AnimatedDialog.show(
+                    context,
+                    insetPadding: HWEdgeInsets.only(
+                        top: 60, left: 40, right: 40, bottom: 30),
+                    child: TranmissionDialog(
+                      onItemSelected: (p0) => _myCarsBloc.sellMyCarForm
+                          .control(_myCarsBloc.kFromCarTransmission)
+                          .updateValue(p0),
+                    ),
+                    barrierDismissible: true,
+                    barrierLabel: 'TransmissionDialog',
+                  );
+                },
               ),
-              isDialog: true,
             ),
             SellCarItem(
               title: 'label_mileage',
@@ -152,12 +200,23 @@ class _EnterCarDetailsPageState extends State<_EnterCarDetailsPage> {
               title: 'fuel_type_label',
               formControlName: _myCarsBloc.kFromCarFuelType,
               form: _myCarsBloc.sellMyCarForm,
-              dialogWidget: FuelTypeDialog(
-                onItemSelected: (p0) => _myCarsBloc.sellMyCarForm
-                    .control(_myCarsBloc.kFromCarFuelType)
-                    .updateValue(p0),
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.local_gas_station, color: Colors.white),
+                onPressed: () {
+                  AnimatedDialog.show(
+                    context,
+                    insetPadding: HWEdgeInsets.only(
+                        top: 60, left: 40, right: 40, bottom: 30),
+                    child: FuelTypeDialog(
+                      onItemSelected: (p0) => _myCarsBloc.sellMyCarForm
+                          .control(_myCarsBloc.kFromCarFuelType)
+                          .updateValue(p0),
+                    ),
+                    barrierDismissible: true,
+                    barrierLabel: 'FuelTypeDialog',
+                  );
+                },
               ),
-              isDialog: true,
             ),
             SellCarItem(
               title: 'label_trim',
@@ -168,23 +227,49 @@ class _EnterCarDetailsPageState extends State<_EnterCarDetailsPage> {
               title: 'label_cylinders',
               form: _myCarsBloc.sellMyCarForm,
               formControlName: _myCarsBloc.kFromCarCylinders,
-              dialogWidget: CylindersDialog(
-                onItemSelected: (p0) => _myCarsBloc.sellMyCarForm
-                    .control(_myCarsBloc.kFromCarCylinders)
-                    .updateValue(p0),
+              textInputType:
+                  const TextInputType.numberWithOptions(signed: false, decimal: false),
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.tune, color: Colors.white),
+                onPressed: () {
+                  AnimatedDialog.show(
+                    context,
+                    insetPadding: HWEdgeInsets.only(
+                        top: 60, left: 40, right: 40, bottom: 30),
+                    child: CylindersDialog(
+                      onItemSelected: (p0) => _myCarsBloc.sellMyCarForm
+                          .control(_myCarsBloc.kFromCarCylinders)
+                          .updateValue(p0),
+                    ),
+                    barrierDismissible: true,
+                    barrierLabel: 'CylindersDialog',
+                  );
+                },
               ),
-              isDialog: true,
             ),
             SellCarItem(
               title: 'seats_number',
               form: _myCarsBloc.sellMyCarForm,
               formControlName: _myCarsBloc.kFromCarSeats,
-              dialogWidget: SeatsNumberDialog(
-                onItemSelected: (p0) => _myCarsBloc.sellMyCarForm
-                    .control(_myCarsBloc.kFromCarSeats)
-                    .updateValue(p0),
+              textInputType:
+                  const TextInputType.numberWithOptions(signed: false, decimal: false),
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.event_seat, color: Colors.white),
+                onPressed: () {
+                  AnimatedDialog.show(
+                    context,
+                    insetPadding: HWEdgeInsets.only(
+                        top: 60, left: 40, right: 40, bottom: 30),
+                    child: SeatsNumberDialog(
+                      onItemSelected: (p0) => _myCarsBloc.sellMyCarForm
+                          .control(_myCarsBloc.kFromCarSeats)
+                          .updateValue(p0),
+                    ),
+                    barrierDismissible: true,
+                    barrierLabel: 'SeatsNumberDialog',
+                  );
+                },
               ),
-              isDialog: true,
             ),
             SellCarItem(
               title: 'paint_parts',
@@ -194,12 +279,23 @@ class _EnterCarDetailsPageState extends State<_EnterCarDetailsPage> {
               title: 'label_condition',
               form: _myCarsBloc.sellMyCarForm,
               formControlName: _myCarsBloc.kFromCarCondition,
-              dialogWidget: ConditionDialog(
-                onItemSelected: (p0) => _myCarsBloc.sellMyCarForm
-                    .control(_myCarsBloc.kFromCarCondition)
-                    .updateValue(p0),
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.handyman, color: Colors.white),
+                onPressed: () {
+                  AnimatedDialog.show(
+                    context,
+                    insetPadding: HWEdgeInsets.only(
+                        top: 60, left: 40, right: 40, bottom: 30),
+                    child: ConditionDialog(
+                      onItemSelected: (p0) => _myCarsBloc.sellMyCarForm
+                          .control(_myCarsBloc.kFromCarCondition)
+                          .updateValue(p0),
+                    ),
+                    barrierDismissible: true,
+                    barrierLabel: 'ConditionDialog',
+                  );
+                },
               ),
-              isDialog: true,
             ),
             SellCarItem(
               title: 'label_plate',
@@ -209,12 +305,23 @@ class _EnterCarDetailsPageState extends State<_EnterCarDetailsPage> {
               title: 'label_color',
               formControlName: _myCarsBloc.kFromCarColor,
               form: _myCarsBloc.sellMyCarForm,
-              dialogWidget: ColorsDialog(
-                onItemSelected: (p0) => _myCarsBloc.sellMyCarForm
-                    .control(_myCarsBloc.kFromCarColor)
-                    .updateValue(p0),
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.color_lens, color: Colors.white),
+                onPressed: () {
+                  AnimatedDialog.show(
+                    context,
+                    insetPadding: HWEdgeInsets.only(
+                        top: 60, left: 40, right: 40, bottom: 30),
+                    child: ColorsDialog(
+                      onItemSelected: (p0) => _myCarsBloc.sellMyCarForm
+                          .control(_myCarsBloc.kFromCarColor)
+                          .updateValue(p0),
+                    ),
+                    barrierDismissible: true,
+                    barrierLabel: 'ColorsDialog',
+                  );
+                },
               ),
-              isDialog: true,
             ),
             SellCarItem(
               title: 'seat_material',
@@ -230,34 +337,67 @@ class _EnterCarDetailsPageState extends State<_EnterCarDetailsPage> {
               title: 'vehicle_type',
               formControlName: _myCarsBloc.kFromCarVehicleType,
               form: _myCarsBloc.sellMyCarForm,
-              dialogWidget: VehicleTypeDialog(
-                onItemSelected: (p0) => _myCarsBloc.sellMyCarForm
-                    .control(_myCarsBloc.kFromCarVehicleType)
-                    .updateValue(p0),
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.directions_car, color: Colors.white),
+                onPressed: () {
+                  AnimatedDialog.show(
+                    context,
+                    insetPadding: HWEdgeInsets.only(
+                        top: 60, left: 40, right: 40, bottom: 30),
+                    child: VehicleTypeDialog(
+                      onItemSelected: (p0) => _myCarsBloc.sellMyCarForm
+                          .control(_myCarsBloc.kFromCarVehicleType)
+                          .updateValue(p0),
+                    ),
+                    barrierDismissible: true,
+                    barrierLabel: 'VehicleTypeDialog',
+                  );
+                },
               ),
-              isDialog: true,
             ),
             SellCarItem(
               title: 'interior_color',
               formControlName: _myCarsBloc.kFromCarInteriorColor,
               form: _myCarsBloc.sellMyCarForm,
-              dialogWidget: ColorsDialog(
-                onItemSelected: (p0) => _myCarsBloc.sellMyCarForm
-                    .control(_myCarsBloc.kFromCarInteriorColor)
-                    .updateValue(p0),
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.colorize, color: Colors.white),
+                onPressed: () {
+                  AnimatedDialog.show(
+                    context,
+                    insetPadding: HWEdgeInsets.only(
+                        top: 60, left: 40, right: 40, bottom: 30),
+                    child: ColorsDialog(
+                      onItemSelected: (p0) => _myCarsBloc.sellMyCarForm
+                          .control(_myCarsBloc.kFromCarInteriorColor)
+                          .updateValue(p0),
+                    ),
+                    barrierDismissible: true,
+                    barrierLabel: 'InteriorColorsDialog',
+                  );
+                },
               ),
-              isDialog: true,
             ),
             SellCarItem(
               title: 'exterior_color',
               formControlName: _myCarsBloc.kFromCarExteriorColor,
               form: _myCarsBloc.sellMyCarForm,
-              dialogWidget: ColorsDialog(
-                onItemSelected: (p0) => _myCarsBloc.sellMyCarForm
-                    .control(_myCarsBloc.kFromCarExteriorColor)
-                    .updateValue(p0),
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.palette_outlined, color: Colors.white),
+                onPressed: () {
+                  AnimatedDialog.show(
+                    context,
+                    insetPadding: HWEdgeInsets.only(
+                        top: 60, left: 40, right: 40, bottom: 30),
+                    child: ColorsDialog(
+                      onItemSelected: (p0) => _myCarsBloc.sellMyCarForm
+                          .control(_myCarsBloc.kFromCarExteriorColor)
+                          .updateValue(p0),
+                    ),
+                    barrierDismissible: true,
+                    barrierLabel: 'ExteriorColorsDialog',
+                  );
+                },
               ),
-              isDialog: true,
             ),
           ],
         ),
