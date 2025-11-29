@@ -17,6 +17,7 @@ import 'package:wolfera/features/my_car/presentation/widgets/feature_section_wid
 import 'package:wolfera/features/my_car/presentation/widgets/fuel_type_dialog.dart';
 import 'package:wolfera/features/my_car/presentation/widgets/interior_features_dialog.dart';
 import 'package:wolfera/features/my_car/presentation/widgets/makers_dialog.dart';
+import 'package:wolfera/features/my_car/presentation/widgets/models_dialog.dart';
 import 'package:wolfera/features/my_car/presentation/widgets/safety_features_dialog.dart';
 import 'package:wolfera/features/my_car/presentation/widgets/seats_number_dialog.dart';
 import 'package:wolfera/features/my_car/presentation/widgets/sell_car_item.dart';
@@ -40,6 +41,7 @@ import 'package:wolfera/features/app/presentation/widgets/app_dropdown_search.da
 import 'package:country_flags/country_flags.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:wolfera/core/constants/currencies.dart';
+import 'package:wolfera/core/utils/extensions/parse_string_to_enum.dart';
 
 part 'enter_car_details_page.dart';
 part 'enter_car_features_page.dart';

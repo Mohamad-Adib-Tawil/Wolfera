@@ -34,9 +34,16 @@ class _EnterCarDetailsPageState extends State<_EnterCarDetailsPage> {
                     _myCarsBloc.sellMyCarForm
                         .control(_myCarsBloc.kFromCarMaker)
                         .updateValue(selected.name);
+                    // Reset model when maker changes
+                    _myCarsBloc.sellMyCarForm
+                        .control(_myCarsBloc.kFromCarModel)
+                        .value = null;
                   } else {
                     _myCarsBloc.sellMyCarForm
                         .control(_myCarsBloc.kFromCarMaker)
+                        .value = null;
+                    _myCarsBloc.sellMyCarForm
+                        .control(_myCarsBloc.kFromCarModel)
                         .value = null;
                   }
                 },
@@ -46,6 +53,36 @@ class _EnterCarDetailsPageState extends State<_EnterCarDetailsPage> {
             SellCarItem(
               title: 'label_model',
               formControlName: _myCarsBloc.kFromCarModel,
+              form: _myCarsBloc.sellMyCarForm,
+              dialogWidget: Builder(
+                builder: (context) {
+                  final makerStr = _myCarsBloc.sellMyCarForm
+                      .control(_myCarsBloc.kFromCarMaker)
+                      .value as String?;
+                  CarMaker? maker;
+                  try {
+                    if (makerStr != null && makerStr.trim().isNotEmpty) {
+                      maker = makerStr.toEnum();
+                    }
+                  } catch (_) {}
+                  return CarModelsDialog(
+                    isMultiSelect: false,
+                    maker: maker,
+                    onSelectionConfirmed: (selected) {
+                      if (selected is String && selected.isNotEmpty) {
+                        _myCarsBloc.sellMyCarForm
+                            .control(_myCarsBloc.kFromCarModel)
+                            .updateValue(selected);
+                      } else {
+                        _myCarsBloc.sellMyCarForm
+                            .control(_myCarsBloc.kFromCarModel)
+                            .value = null;
+                      }
+                    },
+                  );
+                },
+              ),
+              isDialog: true,
             ),
             SellCarItem(
               title: 'engine_variant',

@@ -11,6 +11,7 @@ class SearchState {
   final int? selectedCarMinYear;
   final int? selectedCarMaxYear;
   final List<String> selectedCarMakersFilter;
+  final List<String> selectedCarModelsFilter;
   final List<String> seletedColors;
   final String? seletedCylinders;
   final String? seletedSeatsCount;
@@ -62,6 +63,7 @@ class SearchState {
     this.selectedCarMinYear,
     this.selectedCarMaxYear,
     this.selectedCarMakersFilter = const [],
+    this.selectedCarModelsFilter = const [],
     this.seletedColors = const [],
     this.seletedCylinders,
     this.seletedSeatsCount,
@@ -89,6 +91,7 @@ class SearchState {
       selectedCarMinKilometers: null,
       selectedCarMaxKilometers: null,
       selectedCarMakersFilter: [],
+      selectedCarModelsFilter: [],
       seletedColors: [],
       seletedCylinders: null,
       seletedSeatsCount: null,
@@ -116,6 +119,7 @@ class SearchState {
     Nullable<String?>? selectedCarMinKilometers,
     Nullable<String?>? selectedCarMaxKilometers,
     List<String>? selectedCarMakersFilter,
+    List<String>? selectedCarModelsFilter,
     List<String>? seletedColors,
     Nullable<String?>? seletedCylinders,
     Nullable<String?>? seletedSeatsCount,
@@ -157,6 +161,8 @@ class SearchState {
           : this.selectedCarMaxKilometers,
       selectedCarMakersFilter:
           selectedCarMakersFilter ?? this.selectedCarMakersFilter,
+      selectedCarModelsFilter:
+          selectedCarModelsFilter ?? this.selectedCarModelsFilter,
       seletedColors: seletedColors ?? this.seletedColors,
       seletedCylinders: seletedCylinders != null
           ? seletedCylinders.value
@@ -201,6 +207,7 @@ class SearchState {
     if (selectedCarMinYear != null) count++;
     if (selectedCarMaxYear != null) count++;
     if (selectedCarMakersFilter.isNotEmpty) count++;
+    if (selectedCarModelsFilter.isNotEmpty) count++;
     if (seletedColors.isNotEmpty) count++;
     if (seletedCylinders != null) count++;
     if (seletedSeatsCount != null) count++;
