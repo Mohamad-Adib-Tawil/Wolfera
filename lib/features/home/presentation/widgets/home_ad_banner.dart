@@ -22,7 +22,6 @@ class HomeAdBanner extends StatefulWidget {
 class _HomeAdBannerState extends State<HomeAdBanner> {
   int _activeIndex = 0;
   List<Map<String, dynamic>> _ads = const [];
-  bool _loading = true;
 
   @override
   void initState() {
@@ -37,7 +36,6 @@ class _HomeAdBannerState extends State<HomeAdBanner> {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.refreshToken != widget.refreshToken) {
       setState(() {
-        _loading = true;
         _activeIndex = 0;
       });
       _load();
@@ -47,7 +45,6 @@ class _HomeAdBannerState extends State<HomeAdBanner> {
   Future<void> _reload() async {
     if (!mounted) return;
     setState(() {
-      _loading = true;
       _activeIndex = 0;
     });
     await _load();
@@ -59,18 +56,18 @@ class _HomeAdBannerState extends State<HomeAdBanner> {
       if (!mounted) return;
       setState(() {
         _ads = res;
-        _loading = false;
       });
     } catch (_) {
       if (!mounted) return;
-      setState(() => _loading = false);
+      // Keep previous UI; do not alter layout when load fails
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (_loading) return SizedBox(height: 160.h);
+    // If there are no ads yet (initial load or empty), occupy zero height
     if (_ads.isEmpty) return const SizedBox.shrink();
+    // While reloading with existing ads, keep showing current content (no layout jump)
 
     return Padding(
       padding: EdgeInsets.only(left: 14.w,right: 14.w,top:14.h),
