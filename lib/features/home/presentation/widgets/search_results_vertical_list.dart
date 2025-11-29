@@ -5,6 +5,8 @@ import 'package:get_it/get_it.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
 import 'package:wolfera/core/utils/money_formatter.dart';
+import 'package:wolfera/core/constants/currencies.dart';
+import 'package:wolfera/features/app/domin/repositories/prefs_repository.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
 import 'package:wolfera/features/home/presentation/widgets/car_mini_details_card_widget.dart';
 import 'package:wolfera/features/app/presentation/widgets/shimmer_loading.dart';
@@ -210,7 +212,19 @@ class _SearchResultsVerticalListState extends State<SearchResultsVerticalList> {
                   }
                 }
                 final priceVal = car['price']?.toString();
-                final currency = car['currency']?.toString() ?? r'$';
+                // Resolve display currency symbol: car's own symbol OR user's preferred/location default
+                final prefs = GetIt.I<PrefsRepository>();
+                final preferredCode = prefs.selectedCurrencyCode;
+                final defaultCode = prefs.isWorldwide
+                    ? 'USD'
+                    : CurrenciesData.codeForCountry(prefs.selectedCountryCode);
+                final fallbackSymbol = (CurrenciesData.findByCode(preferredCode ?? defaultCode)
+                            ?? CurrenciesData.defaultCurrency())
+                        .symbol;
+                final carCurrencyRaw = car['currency']?.toString();
+                final currency = (carCurrencyRaw != null && carCurrencyRaw.isNotEmpty)
+                    ? carCurrencyRaw
+                    : fallbackSymbol;
                 final lt = car['listing_type']?.toString().toLowerCase();
                 String? price;
                 if (lt == 'rent' || lt == 'both') {

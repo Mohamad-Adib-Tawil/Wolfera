@@ -8,6 +8,9 @@ import 'package:wolfera/features/app/presentation/widgets/custom_text_container.
 import 'package:wolfera/features/app/presentation/widgets/space_text_widget.dart';
 import 'package:wolfera/generated/assets.dart';
 import 'package:wolfera/core/utils/money_formatter.dart';
+import 'package:get_it/get_it.dart';
+import 'package:wolfera/features/app/domin/repositories/prefs_repository.dart';
+import 'package:wolfera/core/constants/currencies.dart';
 
 class SimilarCarCardInfo extends StatelessWidget {
   final Map<String, dynamic>? carData;
@@ -36,8 +39,20 @@ class SimilarCarCardInfo extends StatelessWidget {
     final location = city ?? country ?? 'Unknown';
     
     final priceRaw = carData?['price']?.toString();
-    final currency = carData?['currency']?.toString() ?? '\$';
-    final priceText = MoneyFormatter.compactFromString(priceRaw, symbol: currency) ?? 'N/A';
+    // Resolve display currency symbol: car's own symbol OR user's preferred/location default
+    final prefs = GetIt.I<PrefsRepository>();
+    final preferredCode = prefs.selectedCurrencyCode;
+    final defaultCode = prefs.isWorldwide
+        ? 'USD'
+        : CurrenciesData.codeForCountry(prefs.selectedCountryCode);
+    final fallbackSymbol = (CurrenciesData.findByCode(preferredCode ?? defaultCode)
+                ?? CurrenciesData.defaultCurrency())
+            .symbol;
+    final carCurrencyRaw = carData?['currency']?.toString();
+    final currencySymbol = (carCurrencyRaw != null && carCurrencyRaw.isNotEmpty)
+        ? carCurrencyRaw
+        : fallbackSymbol;
+    final priceText = MoneyFormatter.compactFromString(priceRaw, symbol: currencySymbol) ?? 'N/A';
     
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

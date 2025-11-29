@@ -5,6 +5,9 @@ import 'package:wolfera/core/config/theme/typography.dart';
 import 'package:wolfera/core/utils/extensions/build_context.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
 import 'package:wolfera/core/utils/money_formatter.dart';
+import 'package:get_it/get_it.dart';
+import 'package:wolfera/features/app/domin/repositories/prefs_repository.dart';
+import 'package:wolfera/core/constants/currencies.dart';
 
 class CarNameAndPriceRowWidget extends StatelessWidget {
   final Map<String, dynamic> carData;
@@ -13,19 +16,29 @@ class CarNameAndPriceRowWidget extends StatelessWidget {
     super.key,
     required this.carData,
   });
-
   @override
   Widget build(BuildContext context) {
     final brand = carData['brand']?.toString() ?? '';
     final model = carData['model']?.toString() ?? '';
     final priceRaw = carData['price']?.toString();
-    final currency = carData['currency']?.toString() ?? '\$';
+    // Resolve display currency symbol: car's own symbol OR user's preferred/location default
+    final prefs = GetIt.I<PrefsRepository>();
+    final preferredCode = prefs.selectedCurrencyCode;
+    final defaultCode = prefs.isWorldwide
+        ? 'USD'
+        : CurrenciesData.codeForCountry(prefs.selectedCountryCode);
+    final fallbackSymbol = (CurrenciesData.findByCode(preferredCode ?? defaultCode)
+                ?? CurrenciesData.defaultCurrency())
+            .symbol;
+    final carCurrencyRaw = carData['currency']?.toString();
+    final currency = (carCurrencyRaw != null && carCurrencyRaw.isNotEmpty)
+        ? carCurrencyRaw
+        : fallbackSymbol;
     final listingType = carData['listing_type']?.toString();
     String displayPrice;
     if (listingType == 'rent') {
       final candidates = [
         ['rental_price_per_day', 'day'],
-        ['rental_price_per_week', 'week'],
         ['rental_price_per_month', 'month'],
         ['rental_price_per_3months', '3 months'],
         ['rental_price_per_6months', '6 months'],
