@@ -10,10 +10,12 @@ class HomeAdBanner extends StatefulWidget {
     super.key,
     this.refreshToken = 0,
     this.onRegisterReload,
+    this.onPresenceChanged,
   });
 
   final int refreshToken;
   final void Function(Future<void> Function())? onRegisterReload;
+  final void Function(bool hasAds)? onPresenceChanged;
 
   @override
   State<HomeAdBanner> createState() => _HomeAdBannerState();
@@ -57,6 +59,8 @@ class _HomeAdBannerState extends State<HomeAdBanner> {
       setState(() {
         _ads = res;
       });
+      // notify parent if ads presence changed
+      widget.onPresenceChanged?.call(_ads.isNotEmpty);
     } catch (_) {
       if (!mounted) return;
       // Keep previous UI; do not alter layout when load fails

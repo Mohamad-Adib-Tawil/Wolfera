@@ -14,11 +14,15 @@ class HomeBody extends StatelessWidget {
     this.animate = false,
     this.refreshToken = 0,
     this.onRegisterBannerReload,
+    this.hasBanner = false,
+    this.onBannerPresenceChanged,
   });
 
   final bool animate;
   final int refreshToken;
   final void Function(Future<void> Function())? onRegisterBannerReload;
+  final bool hasBanner;
+  final void Function(bool hasBanner)? onBannerPresenceChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -32,12 +36,14 @@ class HomeBody extends StatelessWidget {
           HomeAdBanner(
             refreshToken: refreshToken,
             onRegisterReload: onRegisterBannerReload,
+            onPresenceChanged: onBannerPresenceChanged,
           ),
           const RecommendedSection(),
           const CombinedFiltersBar(),
           8.verticalSpace,
-          const SearchResultsVerticalList(),
-          35.verticalSpace,
+          SearchResultsVerticalList(
+            bottomPadding: hasBanner ? 35.h : 0,
+          ),
         ]),
       );
     }
@@ -61,6 +67,7 @@ class HomeBody extends StatelessWidget {
           child: HomeAdBanner(
             refreshToken: refreshToken,
             onRegisterReload: onRegisterBannerReload,
+            onPresenceChanged: onBannerPresenceChanged,
           ),
         ),
         // Recommended cars list from LEFT
@@ -83,9 +90,10 @@ class HomeBody extends StatelessWidget {
           delay: const Duration(milliseconds: 520),
           beginOffset: const Offset(-0.18, 0),
           duration: const Duration(milliseconds: 1000),
-          child: const SearchResultsVerticalList(),
+          child: SearchResultsVerticalList(
+            bottomPadding: hasBanner ? 35.h : 0,
+          ),
         ),
-        35.verticalSpace,
       ]),
     );
   }

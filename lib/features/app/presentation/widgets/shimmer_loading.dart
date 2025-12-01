@@ -51,7 +51,13 @@ class ShimmerState extends State<Shimmer> with SingleTickerProviderStateMixin {
 
   LinearGradient get gradient => LinearGradient(
         colors: widget.linearGradient.colors,
-        stops: widget.linearGradient.stops,
+        // If stops length doesn't match colors length, pass null to let Flutter
+        // compute evenly distributed stops to avoid runtime exceptions.
+        stops: (widget.linearGradient.stops != null &&
+                widget.linearGradient.stops!.length ==
+                    widget.linearGradient.colors.length)
+            ? widget.linearGradient.stops
+            : null,
         begin: widget.linearGradient.begin,
         end: widget.linearGradient.end,
         transform:
