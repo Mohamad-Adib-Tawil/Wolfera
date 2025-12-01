@@ -14,7 +14,9 @@ import 'package:wolfera/features/search_and_filteration/presentation/manager/sea
 import 'package:wolfera/core/utils/car_value_translator.dart';
 
 class SearchResultsVerticalList extends StatefulWidget {
-  const SearchResultsVerticalList({super.key});
+  const SearchResultsVerticalList({super.key, this.bottomPadding = 0});
+
+  final double bottomPadding;
 
   @override
   State<SearchResultsVerticalList> createState() => _SearchResultsVerticalListState();
@@ -117,21 +119,24 @@ class _SearchResultsVerticalListState extends State<SearchResultsVerticalList> {
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
             ),
-            child: Column(
-              children: List.generate(4, (index) {
-                return Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
-                  child: const ShimmerLoading(
-                    isLoading: true,
-                    child: _SkeletonCarMiniCard(fullWidth: true),
-                  ),
-                );
-              }),
+            child: Padding(
+              padding: EdgeInsets.only(bottom: widget.bottomPadding),
+              child: Column(
+                children: List.generate(4, (index) {
+                  return Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                    child: const ShimmerLoading(
+                      isLoading: true,
+                      child: _SkeletonCarMiniCard(fullWidth: true),
+                    ),
+                  );
+                }),
+              ),
             ),
           );
         } else if (state.searchError != null && state.searchError!.isNotEmpty) {
           content = Padding(
-            padding: EdgeInsets.symmetric(vertical: 12.h),
+            padding: EdgeInsets.only(top: 12.h, bottom: widget.bottomPadding),
             child: Center(
               child: AppText(
                 state.searchError!,
@@ -143,7 +148,7 @@ class _SearchResultsVerticalListState extends State<SearchResultsVerticalList> {
           final list = state.searchResults;
           if (list.isEmpty) {
             content = Padding(
-              padding: EdgeInsets.symmetric(vertical: 12.h),
+              padding: EdgeInsets.only(top: 12.h, bottom: widget.bottomPadding),
               child: const Center(
                 child: AppText('no_cars_found'),
               ),
@@ -154,13 +159,15 @@ class _SearchResultsVerticalListState extends State<SearchResultsVerticalList> {
               physics: const NeverScrollableScrollPhysics(),
               itemCount: list.length,
               separatorBuilder: (_, __) => 12.verticalSpace,
-              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+              padding: EdgeInsets.fromLTRB(12.w, 8.h, 12.w, widget.bottomPadding),
               itemBuilder: (context, index) {
                 final car = list[index];
 
                 final imageUrls = (car['image_urls'] as List?)?.cast<dynamic>() ?? const [];
                 final mainImage = car['main_image_url']?.toString();
-                final imageUrl = imageUrls.isNotEmpty ? imageUrls.first?.toString() : mainImage;
+                final imageUrl = imageUrls.isNotEmpty
+                    ? imageUrls.first?.toString()
+                    : mainImage;
 
                 final titleParts = [
                   car['year']?.toString(),
@@ -168,7 +175,6 @@ class _SearchResultsVerticalListState extends State<SearchResultsVerticalList> {
                   car['model']?.toString(),
                 ];
                 final title = titleParts.where((e) => e != null && e.isNotEmpty).join(' ');
-
                 final rawSpec1 = car['body_type']?.toString();
                 final spec1 = rawSpec1 != null
                     ? CarValueTranslator.translateBodyType(rawSpec1)

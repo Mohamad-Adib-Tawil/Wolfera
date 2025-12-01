@@ -22,6 +22,7 @@ class _HomePageState extends State<HomePage>
   late HomeCubit _homeCubit;
   int _adRefresh = 0;
   Future<void> Function()? _bannerReload;
+  bool _hasBanner = false;
   @override
   void initState() {
     _homeCubit = GetIt.I<HomeCubit>()..getHomeData();
@@ -39,6 +40,8 @@ class _HomePageState extends State<HomePage>
     return BlocProvider.value(
       value: _homeCubit,
       child: SafeArea(
+        top: true,
+        bottom: false,
         child: Scaffold(
           body: RefreshListWidget(
             onRefresh: () async {
@@ -58,6 +61,12 @@ class _HomePageState extends State<HomePage>
                   animate: _shouldAnimateEntrance,
                   refreshToken: _adRefresh,
                   onRegisterBannerReload: (fn) => _bannerReload = fn,
+                  hasBanner: _hasBanner,
+                  onBannerPresenceChanged: (has) {
+                    if (_hasBanner != has && mounted) {
+                      setState(() => _hasBanner = has);
+                    }
+                  },
                 ),
               ],
             ),

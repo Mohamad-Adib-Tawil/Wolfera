@@ -120,7 +120,7 @@ class _BasePageState extends State<BasePage> {
         scaffoldKey: BasePage._scaffoldKey,
         body: Stack(children: [
           Padding(
-            padding: HWEdgeInsets.only(bottom: bodyBottomPadding),
+            padding: HWEdgeInsets.only(bottom: 50),
             child: widget.child,
           ),
           Positioned(
