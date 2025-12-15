@@ -15,31 +15,18 @@ Future<void> initialization(
 }) async {
   WidgetsFlutterBinding.ensureInitialized();
   await configureDependencies();
-  // Ensure FavoriteCubit is available via GetIt for cross-feature refreshes
   final getIt = GetIt.I;
   if (!getIt.isRegistered<FavoriteCubit>()) {
     getIt.registerLazySingleton<FavoriteCubit>(() => FavoriteCubit());
   }
   await AppService.initializeApp();
   
-  // تحميل إعدادات التطبيق مرة واحدة عند البدء (مثل إخفاء سوريا)
   await AppSettingsService.instance.initialize();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitDown,
     DeviceOrientation.portraitUp,
   ]);
-  // if (kDebugMode) {
-  //   try {
-  //     final emulatorHost = defaultTargetPlatform == TargetPlatform.android
-  //         ? "10.0.2.2"
-  //         : "localhost";
-  //     FirebaseStorage.instance.useStorageEmulator(emulatorHost, 9199);
-  //     FirebaseFirestore.instance.useFirestoreEmulator(emulatorHost, 8080);
-  //   } catch (e) {
-  //     // ignore: avoid_print
-  //     print(e);
-  //   }
-  // }
+  
 
   final Widget app;
   if (localizationConfig != null) {
