@@ -205,7 +205,7 @@ class _ArchivedConversationsPageState extends State<ArchivedConversationsPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   AppText(
-                    'archived_conversation_actions'.tr(),
+                    'archived_conversation_actions',
                     style: context.textTheme.titleMedium.s18.xb,
                   ),
                   IconButton(
@@ -217,7 +217,7 @@ class _ArchivedConversationsPageState extends State<ArchivedConversationsPage> {
               10.verticalSpace,
               ListTile(
                 leading: const Icon(Icons.restore, color: AppColors.primary),
-                title: AppText('restore_conversation'.tr()),
+                title: AppText('restore_conversation'),
                 onTap: () {
                   Navigator.pop(ctx);
                   _restoreConversation(conv);
@@ -226,7 +226,7 @@ class _ArchivedConversationsPageState extends State<ArchivedConversationsPage> {
               ListTile(
                 leading:
                     const Icon(Icons.delete_forever, color: Colors.redAccent),
-                title: AppText('delete_permanently'.tr()),
+                title: AppText('delete_permanently'),
                 onTap: () {
                   Navigator.pop(ctx);
                   _deleteConversationPermanently(conv);
@@ -248,7 +248,7 @@ class _ArchivedConversationsPageState extends State<ArchivedConversationsPage> {
         centerTitle: true,
         backgroundColor: Colors.transparent,
         title: AppText(
-          'archived_conversations'.tr(),
+          'archived_conversations',
           style: context.textTheme.bodyMedium.s20.m,
         ),
         leading: IconButton(

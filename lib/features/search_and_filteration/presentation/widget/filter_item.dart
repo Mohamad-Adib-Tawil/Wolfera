@@ -35,7 +35,7 @@ class FilterItem extends StatelessWidget {
         ),
         child: Row(
           children: [
-            AppText(title.tr(),
+            AppText(title,
                 style: context.textTheme.titleMedium?.s13.m
                     .withColor(isAcitve ? AppColors.primary : AppColors.grey)),
             5.horizontalSpace,
