@@ -1,4 +1,3 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
@@ -117,7 +116,7 @@ class _AppElevatedButtonState extends ThemeState<AppElevatedButton> {
 
   Widget get firstChild => widget.child ??
       AppText(
-        widget.text!.tr(),
+        widget.text!,
         style: widget.textStyle,
       );
 

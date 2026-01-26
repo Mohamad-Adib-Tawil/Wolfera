@@ -10,6 +10,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:wolfera/services/notification_service.dart';
 import 'package:wolfera/services/chat_route_tracker.dart';
 import 'package:wolfera/core/config/routing/router.dart';
+import 'package:wolfera/core/config/env.dart';
 
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -30,7 +31,25 @@ class PushMessagingService {
     var firebaseReady = true;
     if (Firebase.apps.isEmpty) {
       try {
-        await Firebase.initializeApp();
+        // iOS: استخدم خيارات Firebase من dart-define إذا كانت متوفرة، وإلا اعتمد على GoogleService-Info.plist
+        if (Platform.isIOS) {
+          if (Env.hasFirebaseIosOptions) {
+            await Firebase.initializeApp(
+              options: FirebaseOptions(
+                apiKey: Env.firebaseIosApiKey,
+                appId: Env.firebaseIosAppId,
+                messagingSenderId: Env.firebaseIosMessagingSenderId,
+                projectId: Env.firebaseIosProjectId,
+                storageBucket: Env.firebaseIosStorageBucket,
+              ),
+            );
+          } else {
+            await Firebase.initializeApp();
+          }
+        } else {
+          // باقي المنصات: الإعداد التلقائي كافٍ
+          await Firebase.initializeApp();
+        }
       } catch (e, st) {
         if (kDebugMode) {
           print('⚠️ Firebase.initializeApp failed: $e');

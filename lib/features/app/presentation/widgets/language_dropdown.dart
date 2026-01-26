@@ -49,7 +49,7 @@ class LanguageDropdown extends StatelessWidget {
                   ),
                   8.horizontalSpace,
                   AppText(
-                    'عربي'.tr(),
+                    'arabic',
                     style: context.textTheme.bodyMedium.m
                         .withColor(AppColors.white),
                   ),
@@ -71,7 +71,7 @@ class LanguageDropdown extends StatelessWidget {
                   ),
                   8.horizontalSpace,
                   AppText(
-                    'English'.tr(),
+                    'english',
                     style: context.textTheme.bodyMedium.m
                         .withColor(AppColors.white),
                   ),

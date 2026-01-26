@@ -98,7 +98,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
                 backgroundColor: Colors.transparent,
                 centerTitle: true,
                 automaticallyImplyLeading: true,
-                title: AppText('notifications'.tr()),
+                title: AppText('notifications'),
                 bottom: TabBar(
                   indicatorColor: AppColors.primary,
                   labelColor: Colors.white,

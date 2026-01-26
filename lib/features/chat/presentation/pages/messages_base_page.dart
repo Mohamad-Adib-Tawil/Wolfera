@@ -61,14 +61,14 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  AppText('conversation_actions'.tr(), style: context.textTheme.titleMedium.s18.xb),
+                  AppText('conversation_actions', style: context.textTheme.titleMedium.s18.xb),
                   IconButton(onPressed: () => Navigator.pop(ctx), icon: const Icon(Icons.close, color: Colors.white70))
                 ],
               ),
               10.verticalSpace,
               ListTile(
                 leading: const Icon(Icons.archive_outlined, color: AppColors.primary),
-                title:  AppText('hide_conversation'.tr()),
+                title:  AppText('hide_conversation'),
                 onTap: () {
                   Navigator.pop(ctx);
                   _confirmArchive(conv);

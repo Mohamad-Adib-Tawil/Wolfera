@@ -1,17 +1,22 @@
+import 'dart:io';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter/foundation.dart';
 import 'package:wolfera/services/notification_service.dart';
 
 import '../core/config/supabase_config.dart';
+import 'package:wolfera/core/config/env.dart';
 
 class SupabaseService {
   static SupabaseClient get client => Supabase.instance.client;
 
   static Future<void> initialize() async {
     SupabaseConfig.ensureConfigured();
+    final url = Env.hasSupabase ? Env.supabaseUrl : SupabaseConfig.supabaseUrl;
+    final anon = Env.hasSupabase ? Env.supabaseAnonKey : SupabaseConfig.supabaseAnonKey;
     await Supabase.initialize(
-      url: SupabaseConfig.supabaseUrl,
-      anonKey: SupabaseConfig.supabaseAnonKey,
+      url: url,
+      anonKey: anon,
     );
   }
 
@@ -54,16 +59,33 @@ class SupabaseService {
   static Future<AuthResponse> signInWithGoogle() async {
     try {
       // Google Sign-In v7+: use singleton + initialize + authenticate
-      await GoogleSignIn.instance.initialize(
-        serverClientId: SupabaseConfig.googleWebClientId,
-      );
+      if (Platform.isIOS) {
+        final iosClientId = Env.googleIosClientId;
+        if (iosClientId.isNotEmpty) {
+          await GoogleSignIn.instance.initialize(clientId: iosClientId);
+        } else {
+          // Fallback to default configuration (if plugin can resolve from Info.plist)
+          await GoogleSignIn.instance.initialize();
+        }
+      } else {
+        final webClientId = Env.googleWebClientId.isNotEmpty
+            ? Env.googleWebClientId
+            : SupabaseConfig.googleWebClientId; // fallback to existing config if provided locally
+        if (webClientId.isNotEmpty) {
+          await GoogleSignIn.instance.initialize(serverClientId: webClientId);
+        } else {
+          await GoogleSignIn.instance.initialize();
+        }
+      }
 
       // Start interactive authentication with scope hints
       final account = await GoogleSignIn.instance.authenticate(
         scopeHint: const ['email', 'profile'],
       );
 
-      final idToken = account.authentication.idToken;
+      // In GoogleSignIn v7, you must await the authentication
+      final googleAuth = await account.authentication;
+      final idToken = googleAuth.idToken;
       if (idToken == null) {
         throw 'No ID Token found.';
       }
@@ -76,9 +98,17 @@ class SupabaseService {
 
       // Google Sign-In successful
       return response;
-    } catch (e) {
+    } catch (e, st) {
       // Handle specific Google Sign-In errors and map to i18n keys
       final error = e.toString();
+      if (kDebugMode) {
+        // Debug log the raw error to help diagnose platform issues (iOS vs Android)
+        // Avoid verbose logs in release for security/UX
+        // ignore: avoid_print
+        print('google_signin_error_raw: $error');
+        // ignore: avoid_print
+        print('google_signin_error_stack: $st');
+      }
       if (error.contains('ApiException: 10') ||
           error.contains('Developer console is not set up correctly')) {
         throw 'google_signin_misconfigured';
