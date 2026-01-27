@@ -73,6 +73,7 @@ vscode
 # Documentation: ignore all markdown files except README.md
 *.md
 !README.md
+!doc/GALLERY.md
 
 # ML model artifacts (local only; do NOT commit)
 assets/models/nsfw.tflite
