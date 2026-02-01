@@ -5,6 +5,9 @@ import 'package:get_it/get_it.dart';
 import 'package:wolfera/features/faviorate/presentation/manager/favorite_cubit.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import '../services/firebase_service.dart';
 import '../services/app_settings_service.dart';
 import 'di/di_container.dart';
@@ -20,6 +23,19 @@ Future<void> initialization(
     getIt.registerLazySingleton<FavoriteCubit>(() => FavoriteCubit());
   }
   await AppService.initializeApp();
+  // Configure Firebase Crashlytics (enable in release, set handlers)
+  try {
+    if (Firebase.apps.isNotEmpty) {
+      await FirebaseCrashlytics.instance
+          .setCrashlyticsCollectionEnabled(!kDebugMode);
+      FlutterError.onError = (FlutterErrorDetails details) {
+        // Keep default Flutter error behavior
+        FlutterError.presentError(details);
+        // Also report to Crashlytics
+        FirebaseCrashlytics.instance.recordFlutterError(details);
+      };
+    }
+  } catch (_) {}
   
   await AppSettingsService.instance.initialize();
   SystemChrome.setPreferredOrientations([
@@ -35,7 +51,16 @@ Future<void> initialization(
     app = await builder();
   }
 
-  runApp(app);
+  if (Firebase.apps.isNotEmpty) {
+    // Capture all uncaught async errors
+    runZonedGuarded(() => runApp(app), (error, stack) {
+      try {
+        FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+      } catch (_) {}
+    });
+  } else {
+    runApp(app);
+  }
 }
 
 Future<EasyLocalization> _easyLocalization(
