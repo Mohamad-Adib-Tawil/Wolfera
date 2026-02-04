@@ -3,6 +3,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:wolfera/services/notification_service.dart';
+import 'package:wolfera/services/apple_auth_service.dart';
 
 import '../core/config/supabase_config.dart';
 import 'package:wolfera/core/config/env.dart';
@@ -18,6 +19,85 @@ class SupabaseService {
       url: url,
       anonKey: anon,
     );
+  }
+
+  // Apple Sign In (iOS 13+) using native sheet + Supabase signInWithIdToken
+  static Future<AuthResponse> signInWithApple() async {
+    try {
+      if (!Platform.isIOS) {
+        throw 'apple_signin_not_supported';
+      }
+
+      // 1) Get Apple ID credential with nonce (SHA256) and retrieve idToken
+      final result = await AppleAuthService.getIdTokenAndUserInfo();
+
+      // 2) Sign in to Supabase with ID token and original (raw) nonce
+      final response = await client.auth.signInWithIdToken(
+        provider: OAuthProvider.apple,
+        idToken: result.idToken,
+        nonce: result.rawNonce,
+      );
+
+      // 3) If Apple provided display name on first login, persist as auth metadata (best effort)
+      try {
+        if (result.displayName != null && result.displayName!.isNotEmpty) {
+          await client.auth.updateUser(
+            UserAttributes(
+              data: {
+                'display_name': result.displayName,
+              },
+            ),
+          );
+        }
+      } catch (_) {}
+
+      // 4) Ensure user row exists in 'users'
+      try { await _ensureUserRow(); } catch (_) {}
+
+      return response;
+    } catch (e, st) {
+      final error = e.toString();
+      if (kDebugMode) {
+        // ignore: avoid_print
+        print('apple_signin_error_raw: $error');
+        // ignore: avoid_print
+        print('apple_signin_error_stack: $st');
+      }
+      if (error.contains('apple_signin_canceled')) {
+        throw 'apple_signin_canceled';
+      }
+      if (error.contains('network') || error.contains('SocketException')) {
+        throw 'apple_signin_network_error';
+      }
+      if (error.contains('apple_signin_not_supported')) {
+        throw 'apple_signin_not_supported';
+      }
+      if (error.contains('apple_no_identity_token')) {
+        throw 'apple_no_identity_token';
+      }
+      if (error.contains('already') && error.contains('registered')) {
+        // Supabase may return messages like: 'User already registered'
+        throw 'apple_email_already_in_use';
+      }
+      // Generic
+      throw 'apple_signin_failed';
+    }
+  }
+
+  static Future<void> _ensureUserRow() async {
+    final u = Supabase.instance.client.auth.currentUser;
+    if (u == null) return;
+    final md = u.userMetadata ?? const <String, dynamic>{};
+    final fullName = (md['display_name'] ?? md['full_name'] ?? '').toString();
+    final avatar = (md['avatar_url'] ?? md['picture'] ?? '').toString();
+    final data = <String, dynamic>{
+      'id': u.id,
+      'email': u.email,
+      if (fullName.isNotEmpty) 'full_name': fullName,
+      if (avatar.isNotEmpty) 'avatar_url': avatar,
+      'updated_at': DateTime.now().toIso8601String(),
+    };
+    await client.from('users').upsert(data, onConflict: 'id');
   }
 
   // Update preferred language for current user
@@ -95,6 +175,9 @@ class SupabaseService {
         provider: OAuthProvider.google,
         idToken: idToken,
       );
+
+      // Ensure user row exists in 'users'
+      try { await _ensureUserRow(); } catch (_) {}
 
       // Google Sign-In successful
       return response;
