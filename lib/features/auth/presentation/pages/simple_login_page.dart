@@ -1,6 +1,8 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:wolfera/services/supabase_service.dart';
+import 'dart:io' show Platform;
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class SimpleLoginPage extends StatefulWidget {
   const SimpleLoginPage({super.key});
@@ -20,6 +22,53 @@ class _SimpleLoginPageState extends State<SimpleLoginPage> {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  Future<void> _signInWithApple() async {
+    if (!Platform.isIOS) return;
+    setState(() => _isLoading = true);
+
+    try {
+      final response = await SupabaseService.signInWithApple();
+
+      if (response.user != null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Signed in with Apple'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          Navigator.of(context).pushReplacementNamed('/home');
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        final msg = e.toString();
+        String text;
+        if (msg.contains('apple_signin_canceled')) {
+          text = 'Sign in with Apple canceled';
+        } else if (msg.contains('apple_signin_network_error')) {
+          text = 'Network error. Please try again.';
+        } else if (msg.contains('apple_no_identity_token')) {
+          text = 'Unable to retrieve Apple identity token.';
+        } else if (msg.contains('apple_signin_not_supported')) {
+          text = 'Apple Sign-In is only available on iOS.';
+        } else {
+          text = 'Apple sign-in failed';
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(text),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   Future<void> _signInWithEmail() async {
@@ -232,6 +281,20 @@ class _SimpleLoginPageState extends State<SimpleLoginPage> {
                     ),
                   ),
                 ),
+                if (Platform.isIOS) ...[
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: SignInWithAppleButton(
+                      style: Theme.of(context).brightness == Brightness.dark
+                          ? SignInWithAppleButtonStyle.white
+                          : SignInWithAppleButtonStyle.black,
+                      onPressed: _signInWithApple,
+                      borderRadius: const BorderRadius.all(Radius.circular(6)),
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 16),
                 TextButton(
                   onPressed: _signUp,
