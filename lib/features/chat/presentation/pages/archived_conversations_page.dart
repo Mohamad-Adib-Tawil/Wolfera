@@ -189,55 +189,56 @@ class _ArchivedConversationsPageState extends State<ArchivedConversationsPage> {
     await _confirmDelete(conv);
   }
 
-  void _showConversationActions(Map<String, dynamic> conv) {
-    showModalBottomSheet(
+  Future<void> _showConversationFocusMenu(
+      Offset globalPosition, Map<String, dynamic> conv) async {
+    final overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox?;
+    if (overlay == null) return;
+
+    final selected = await showMenu<String>(
       context: context,
-      backgroundColor: const Color(0xFF1E1F24),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      builder: (ctx) {
-        return Padding(
-          padding: HWEdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
+      color: const Color(0xFF1E1F24),
+      position: RelativeRect.fromRect(
+        Rect.fromLTWH(globalPosition.dx, globalPosition.dy, 0, 0),
+        Offset.zero & overlay.size,
+      ),
+      items: [
+        PopupMenuItem<String>(
+          value: 'restore',
+          child: Row(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  AppText(
-                    'archived_conversation_actions',
-                    style: context.textTheme.titleMedium.s18.xb,
-                  ),
-                  IconButton(
-                    onPressed: () => Navigator.pop(ctx),
-                    icon: const Icon(Icons.close, color: Colors.white70),
-                  )
-                ],
+              const Icon(Icons.restore, color: AppColors.primary),
+              10.horizontalSpace,
+              AppText(
+                'restore_conversation',
+                style:
+                    context.textTheme.bodyMedium?.copyWith(color: Colors.white),
               ),
-              10.verticalSpace,
-              ListTile(
-                leading: const Icon(Icons.restore, color: AppColors.primary),
-                title: AppText('restore_conversation'),
-                onTap: () {
-                  Navigator.pop(ctx);
-                  _restoreConversation(conv);
-                },
-              ),
-              ListTile(
-                leading:
-                    const Icon(Icons.delete_forever, color: Colors.redAccent),
-                title: AppText('delete_permanently'),
-                onTap: () {
-                  Navigator.pop(ctx);
-                  _deleteConversationPermanently(conv);
-                },
-              ),
-              6.verticalSpace,
             ],
           ),
-        );
-      },
+        ),
+        PopupMenuItem<String>(
+          value: 'delete',
+          child: Row(
+            children: [
+              const Icon(Icons.delete_forever, color: Colors.redAccent),
+              10.horizontalSpace,
+              AppText(
+                'delete_permanently',
+                style:
+                    context.textTheme.bodyMedium?.copyWith(color: Colors.white),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
+
+    if (selected == 'restore') {
+      _restoreConversation(conv);
+    } else if (selected == 'delete') {
+      _deleteConversationPermanently(conv);
+    }
   }
 
   @override
@@ -407,7 +408,8 @@ class _ArchivedConversationsPageState extends State<ArchivedConversationsPage> {
               timeText: timeText,
               unreadCount: 0, // Archived conversations don't show unread count
               onTap: () => _confirmRestore(conv),
-              onLongPress: () => _showConversationActions(conv),
+              onLongPressStart: (details) =>
+                  _showConversationFocusMenu(details.globalPosition, conv),
             ),
           ),
         );

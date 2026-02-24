@@ -13,6 +13,7 @@ class ChatItem extends StatelessWidget {
   final int? index;
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
+  final GestureLongPressStartCallback? onLongPressStart;
   final String? title;
   final String? subtitle;
   final String? avatarUrl;
@@ -27,6 +28,7 @@ class ChatItem extends StatelessWidget {
     this.avatarUrl,
     this.timeText,
     this.onLongPress,
+    this.onLongPressStart,
     this.unreadCount = 0,
   });
 
@@ -35,6 +37,7 @@ class ChatItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       onLongPress: onLongPress,
+      onLongPressStart: onLongPressStart,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -47,14 +50,14 @@ class ChatItem extends StatelessWidget {
             child: Padding(
               padding: HWEdgeInsets.symmetric(vertical: 8),
               child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                profileName(context),
-                8.verticalSpace,
-                lastMessage(context),
-              ],
-            ),
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  profileName(context),
+                  8.verticalSpace,
+                  lastMessage(context),
+                ],
+              ),
             ),
           ),
         ],

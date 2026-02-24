@@ -45,41 +45,40 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
     ChatRouteTracker.incomingMessageTick.addListener(_onIncomingPushTick);
   }
 
+  Future<void> _showConversationFocusMenu(
+      Offset globalPosition, Map<String, dynamic> conv) async {
+    final overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox?;
+    if (overlay == null) return;
 
-  void _showActionsSheet(Map<String, dynamic> conv) {
-    showModalBottomSheet(
+    final selected = await showMenu<String>(
       context: context,
-      backgroundColor: const Color(0xFF1E1F24),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      builder: (ctx) {
-        return Padding(
-          padding: HWEdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
+      color: const Color(0xFF1E1F24),
+      position: RelativeRect.fromRect(
+        Rect.fromLTWH(globalPosition.dx, globalPosition.dy, 0, 0),
+        Offset.zero & overlay.size,
+      ),
+      items: [
+        PopupMenuItem<String>(
+          value: 'archive',
+          child: Row(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  AppText('conversation_actions', style: context.textTheme.titleMedium.s18.xb),
-                  IconButton(onPressed: () => Navigator.pop(ctx), icon: const Icon(Icons.close, color: Colors.white70))
-                ],
+              const Icon(Icons.archive_outlined, color: AppColors.primary),
+              10.horizontalSpace,
+              AppText(
+                'hide_conversation',
+                style:
+                    context.textTheme.bodyMedium?.copyWith(color: Colors.white),
               ),
-              10.verticalSpace,
-              ListTile(
-                leading: const Icon(Icons.archive_outlined, color: AppColors.primary),
-                title:  AppText('hide_conversation'),
-                onTap: () {
-                  Navigator.pop(ctx);
-                  _confirmArchive(conv);
-                },
-              ),
-              6.verticalSpace,
             ],
           ),
-        );
-      },
+        ),
+      ],
     );
+
+    if (selected == 'archive') {
+      _confirmArchive(conv);
+    }
   }
 
   Future<void> _confirmArchive(Map<String, dynamic> conv) async {
@@ -89,8 +88,12 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
             title: Text('hide_conversation_q'.tr()),
             content: Text('hide_conversation_body'.tr()),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text('cancel'.tr())),
-              TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text('hide'.tr())),
+              TextButton(
+                  onPressed: () => Navigator.pop(ctx, false),
+                  child: Text('cancel'.tr())),
+              TextButton(
+                  onPressed: () => Navigator.pop(ctx, true),
+                  child: Text('hide'.tr())),
             ],
           ),
         ) ??
@@ -102,11 +105,11 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
     if (success) {
       setState(() => _conversations.removeWhere((e) => e['id'] == id));
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('conversation_hidden'.tr())));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('conversation_hidden'.tr())));
       }
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -168,14 +171,24 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
         final me = SupabaseService.currentUser!.id;
         final isBuyer = conv['buyer_id'] == me;
         final other = isBuyer ? conv['seller'] : conv['buyer'];
-        final otherName = other != null ? (other['full_name'] ?? other['display_name'] ?? other['name'])?.toString() : 'user'.tr();
-        final otherAvatar = other != null ? (other['avatar_url'] ?? other['photo_url'] ?? other['picture'])?.toString() : null;
+        final otherName = other != null
+            ? (other['full_name'] ?? other['display_name'] ?? other['name'])
+                ?.toString()
+            : 'user'.tr();
+        final otherAvatar = other != null
+            ? (other['avatar_url'] ?? other['photo_url'] ?? other['picture'])
+                ?.toString()
+            : null;
         final subtitle = (conv['last_message'] ?? '').toString();
-        final timeText = (conv['last_message_at'] ?? conv['updated_at'] ?? conv['created_at'])?.toString();
+        final timeText = (conv['last_message_at'] ??
+                conv['updated_at'] ??
+                conv['created_at'])
+            ?.toString();
         return Padding(
           padding: HWEdgeInsets.only(top: index == 0 ? 0 : 25),
           child: FutureBuilder<int>(
-            future: _chatService.getUnreadMessagesForConversation(conv['id']?.toString() ?? '', me),
+            future: _chatService.getUnreadMessagesForConversation(
+                conv['id']?.toString() ?? '', me),
             builder: (context, snapshot) {
               final unread = snapshot.data ?? 0;
               return Slidable(
@@ -186,7 +199,8 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
                   children: [
                     SlidableAction(
                       onPressed: (_) => _confirmArchive(conv),
-                      backgroundColor: AppColors.primary.withValues(alpha: 0.18),
+                      backgroundColor:
+                          AppColors.primary.withValues(alpha: 0.18),
                       foregroundColor: AppColors.primary,
                       icon: Icons.archive_outlined,
                       label: 'hide'.tr(),
@@ -200,7 +214,8 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
                   children: [
                     SlidableAction(
                       onPressed: (_) => _confirmArchive(conv),
-                      backgroundColor: AppColors.primary.withValues(alpha: 0.18),
+                      backgroundColor:
+                          AppColors.primary.withValues(alpha: 0.18),
                       foregroundColor: AppColors.primary,
                       icon: Icons.archive_outlined,
                       label: 'Hide',
@@ -221,7 +236,8 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
                     otherName: otherName,
                     otherAvatar: otherAvatar,
                   ),
-                  onLongPress: () => _showActionsSheet(conv),
+                  onLongPressStart: (details) =>
+                      _showConversationFocusMenu(details.globalPosition, conv),
                 ),
               );
             },
@@ -241,7 +257,7 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
 
   Future<void> _loadConversations() async {
     print('🔍 [MessagesBasePage] Starting _loadConversations...');
-    
+
     final user = SupabaseService.currentUser;
     if (user == null) {
       print('❌ [MessagesBasePage] No current user found');
@@ -251,65 +267,72 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
       });
       return;
     }
-    
+
     print('🔍 [MessagesBasePage] Current user: ${user.id}');
-    
+
     try {
       setState(() {
         _isLoading = true;
       });
-      
+
       final list = await _chatService.getUserConversations(user.id);
-      print('🔍 [MessagesBasePage] Received ${list.length} conversations from service');
-      
+      print(
+          '🔍 [MessagesBasePage] Received ${list.length} conversations from service');
+
       // استبعد المحادثات الخاطئة التي يكون فيها الطرفان نفس المستخدم
-      final filtered = list.where((c) => c['buyer_id'] != c['seller_id']).toList();
-      print('🔍 [MessagesBasePage] After filtering: ${filtered.length} conversations');
-      
+      final filtered =
+          list.where((c) => c['buyer_id'] != c['seller_id']).toList();
+      print(
+          '🔍 [MessagesBasePage] After filtering: ${filtered.length} conversations');
+
       if (mounted) {
         setState(() {
           _conversations = filtered;
           _isLoading = false;
         });
       }
-      
+
       // Setup realtime subscription
       _sub?.unsubscribe();
       _sub = _chatService.subscribeToUserConversations(
         userId: user.id,
         onConversationUpdate: (conv) {
-          print('🔍 [MessagesBasePage] Realtime conversation update: ${conv['id']}');
+          print(
+              '🔍 [MessagesBasePage] Realtime conversation update: ${conv['id']}');
           if (!mounted) return;
-          
+
           setState(() {
             // إذا أصبحت غير نشطة (مؤرشفة) احذفها من اللائحة
             if (conv['is_active'] != true) {
               _conversations.removeWhere((e) => e['id'] == conv['id']);
-              print('🔍 [MessagesBasePage] Removed inactive conversation: ${conv['id']}');
+              print(
+                  '🔍 [MessagesBasePage] Removed inactive conversation: ${conv['id']}');
             } else {
               final i = _conversations.indexWhere((e) => e['id'] == conv['id']);
               if (i >= 0) {
                 _conversations[i] = conv;
-                print('🔍 [MessagesBasePage] Updated existing conversation: ${conv['id']}');
+                print(
+                    '🔍 [MessagesBasePage] Updated existing conversation: ${conv['id']}');
               } else {
                 _conversations.insert(0, conv);
-                print('🔍 [MessagesBasePage] Added new conversation: ${conv['id']}');
+                print(
+                    '🔍 [MessagesBasePage] Added new conversation: ${conv['id']}');
               }
             }
           });
         },
       );
-      
+
       print('✅ [MessagesBasePage] Conversations loaded successfully');
     } catch (e, stackTrace) {
       print('❌ [MessagesBasePage] Error loading conversations: $e');
       print('❌ [MessagesBasePage] Stack trace: $stackTrace');
-      
+
       if (mounted) {
         setState(() {
           _isLoading = false;
         });
-        
+
         // Show error message to user
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -332,24 +355,28 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
     if (user == null) return;
     try {
       final list = await _chatService.getUserConversations(user.id);
-      final filtered = list.where((c) => c['buyer_id'] != c['seller_id']).toList();
+      final filtered =
+          list.where((c) => c['buyer_id'] != c['seller_id']).toList();
       if (!mounted) return;
       setState(() {
         _conversations = filtered;
         _isLoading = false;
       });
-      print('🔍 [DEBUG] MessagesBasePage: Conversations refreshed, count = ${filtered.length}');
+      print(
+          '🔍 [DEBUG] MessagesBasePage: Conversations refreshed, count = ${filtered.length}');
     } catch (e) {
       print('❌ [DEBUG] MessagesBasePage: Error in _onIncomingPushTick: $e');
     }
   }
 
-  void _openConversation(Map<String, dynamic> conv, {String? otherId, String? otherName, String? otherAvatar}) {
+  void _openConversation(Map<String, dynamic> conv,
+      {String? otherId, String? otherName, String? otherAvatar}) {
     final me = SupabaseService.currentUser?.id;
     if (me == null) return;
 
     // إذا كانت المحادثة خاطئة (buyer == seller == me)، استخدم مالك السيارة كطرف آخر
-    if ((conv['buyer_id'] == conv['seller_id']) && conv['car']?['user_id'] != null) {
+    if ((conv['buyer_id'] == conv['seller_id']) &&
+        conv['car']?['user_id'] != null) {
       final carOwner = conv['car']['user_id']?.toString();
       if (carOwner != null && carOwner != me) {
         otherId = carOwner;
