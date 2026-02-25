@@ -70,12 +70,19 @@ class _AddAdminDialogState extends State<AddAdminDialog> {
         },
         child: Container(
           decoration: BoxDecoration(
-            color: AppColors.blackLight,
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFF393743), Color(0xFF25242C)],
+            ),
             borderRadius: BorderRadius.circular(18.r),
-            border: Border.all(color: AppColors.primary.withOpacity(0.18), width: 1.2),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.12),
+              width: 1.2,
+            ),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.35),
+                color: Colors.black.withValues(alpha: 0.35),
                 blurRadius: 24.r,
                 offset: const Offset(0, 10),
               ),
@@ -89,7 +96,7 @@ class _AddAdminDialogState extends State<AddAdminDialog> {
               Container(
                 height: 64.h,
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
+                  gradient: const LinearGradient(
                     colors: [AppColors.primary, AppColors.orange],
                     begin: Alignment.centerLeft,
                     end: Alignment.centerRight,
@@ -106,10 +113,11 @@ class _AddAdminDialogState extends State<AddAdminDialog> {
                       height: 36.r,
                       width: 36.r,
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.18),
+                        color: Colors.white.withValues(alpha: 0.18),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.admin_panel_settings_rounded, color: Colors.white),
+                      child: const Icon(Icons.admin_panel_settings_rounded,
+                          color: Colors.white),
                     ),
                     12.horizontalSpace,
                     const Expanded(child: AppText('add_admin_title')),
@@ -136,31 +144,45 @@ class _AddAdminDialogState extends State<AddAdminDialog> {
                       child: TextFormField(
                         controller: _controller,
                         autofocus: true,
+                        style: const TextStyle(color: Colors.white),
+                        cursorColor: Colors.white,
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.done,
                         onFieldSubmitted: (_) => _submit(),
                         decoration: InputDecoration(
                           labelText: 'user_email'.tr(),
-                          prefixIcon: const Icon(Icons.email_rounded, color: Colors.white70),
+                          hintText: 'example@email.com',
+                          hintStyle: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.72)),
+                          labelStyle: const TextStyle(color: Colors.white),
+                          floatingLabelStyle:
+                              const TextStyle(color: Colors.white),
+                          prefixIcon: const Icon(Icons.email_rounded,
+                              color: Colors.white70),
                           filled: true,
-                          fillColor: Colors.white.withOpacity(0.06),
+                          fillColor: Colors.white.withValues(alpha: 0.06),
                           enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white.withOpacity(0.12)),
+                            borderSide: BorderSide(
+                                color: Colors.white.withValues(alpha: 0.12)),
                             borderRadius: BorderRadius.circular(14.r),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: AppColors.primary, width: 1.6),
+                            borderSide: const BorderSide(
+                                color: AppColors.primary, width: 1.6),
                             borderRadius: BorderRadius.circular(14.r),
                           ),
                           errorBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.redAccent),
+                            borderSide:
+                                const BorderSide(color: Colors.redAccent),
                             borderRadius: BorderRadius.circular(14.r),
                           ),
                           focusedErrorBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.redAccent),
+                            borderSide:
+                                const BorderSide(color: Colors.redAccent),
                             borderRadius: BorderRadius.circular(14.r),
                           ),
-                          contentPadding: HWEdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                          contentPadding: HWEdgeInsets.symmetric(
+                              horizontal: 14, vertical: 14),
                         ),
                         validator: _validateEmail,
                       ),
@@ -177,24 +199,30 @@ class _AddAdminDialogState extends State<AddAdminDialog> {
                             borderRadius: BorderRadius.circular(14.r),
                           ),
                         ),
-                        onPressed: _submitting ? null : () {
-                          FocusScope.of(context).unfocus();
-                          _submit();
-                        },
+                        onPressed: _submitting
+                            ? null
+                            : () {
+                                FocusScope.of(context).unfocus();
+                                _submit();
+                              },
                         child: _submitting
                             ? const SizedBox(
                                 height: 20,
                                 width: 20,
-                                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                                child: CircularProgressIndicator(
+                                    strokeWidth: 2, color: Colors.white),
                               )
                             : const AppText('promote_to_admin'),
                       ),
                     ),
 
                     10.verticalSpace,
-                    Opacity(
+                    const Opacity(
                       opacity: 0.8,
-                      child: const AppText('add_admin_note'),
+                      child: AppText(
+                        'add_admin_note',
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   ],
                 ),
