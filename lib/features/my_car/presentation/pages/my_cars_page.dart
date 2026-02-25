@@ -36,12 +36,13 @@ class _MyCarsPageState extends State<MyCarsPage> {
   Widget build(BuildContext context) {
     // Show delete-all only if loading finished successfully AND user has cars
     final showDeleteAll = context.select<MyCarsBloc, bool>(
-      (bloc) => bloc.state.loadCarsStatus.isSuccess() && bloc.state.myCars.isNotEmpty,
+      (bloc) =>
+          bloc.state.loadCarsStatus.isSuccess() && bloc.state.myCars.isNotEmpty,
     );
     return SafeArea(
       child: Scaffold(
         bottomNavigationBar: Padding(
-          padding: HWEdgeInsets.only(left: 16, right: 16, bottom: 16),
+          padding: HWEdgeInsets.only(left: 16, right: 16, bottom: 40),
           child: _shouldAnimateEntrance
               ? _DelayedFadeSlide(
                   delay: const Duration(milliseconds: 360),
@@ -69,28 +70,36 @@ class _MyCarsPageState extends State<MyCarsPage> {
                     action: showDeleteAll
                         ? IconButton(
                             tooltip: 'Delete all',
-                            icon: const Icon(Icons.delete_forever_outlined, color: Colors.white),
+                            icon: const Icon(Icons.delete_forever_outlined,
+                                color: Colors.white),
                             onPressed: () async {
                               final confirmed = await showDialog<bool>(
                                     context: context,
                                     builder: (ctx) => AlertDialog(
                                       title: const Text('Delete all cars?'),
-                                      content: const Text('Are you sure you want to delete all your cars? This action cannot be undone.'),
+                                      content: const Text(
+                                          'Are you sure you want to delete all your cars? This action cannot be undone.'),
                                       actions: [
                                         TextButton(
-                                          onPressed: () => Navigator.of(ctx).pop(false),
+                                          onPressed: () =>
+                                              Navigator.of(ctx).pop(false),
                                           child: const Text('Cancel'),
                                         ),
                                         TextButton(
-                                          onPressed: () => Navigator.of(ctx).pop(true),
-                                          child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                                          onPressed: () =>
+                                              Navigator.of(ctx).pop(true),
+                                          child: const Text('Delete',
+                                              style:
+                                                  TextStyle(color: Colors.red)),
                                         ),
                                       ],
                                     ),
                                   ) ??
                                   false;
                               if (confirmed) {
-                                context.read<MyCarsBloc>().add(DeleteAllMyCarsEvent());
+                                context
+                                    .read<MyCarsBloc>()
+                                    .add(DeleteAllMyCarsEvent());
                               }
                             },
                           )
@@ -102,28 +111,36 @@ class _MyCarsPageState extends State<MyCarsPage> {
                   action: showDeleteAll
                       ? IconButton(
                           tooltip: 'Delete all',
-                          icon: const Icon(Icons.delete_forever_outlined, color: Colors.white),
+                          icon: const Icon(Icons.delete_forever_outlined,
+                              color: Colors.white),
                           onPressed: () async {
                             final confirmed = await showDialog<bool>(
                                   context: context,
                                   builder: (ctx) => AlertDialog(
                                     title: const Text('Delete all cars?'),
-                                    content: const Text('Are you sure you want to delete all your cars? This action cannot be undone.'),
+                                    content: const Text(
+                                        'Are you sure you want to delete all your cars? This action cannot be undone.'),
                                     actions: [
                                       TextButton(
-                                        onPressed: () => Navigator.of(ctx).pop(false),
+                                        onPressed: () =>
+                                            Navigator.of(ctx).pop(false),
                                         child: const Text('Cancel'),
                                       ),
                                       TextButton(
-                                        onPressed: () => Navigator.of(ctx).pop(true),
-                                        child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                                        onPressed: () =>
+                                            Navigator.of(ctx).pop(true),
+                                        child: const Text('Delete',
+                                            style:
+                                                TextStyle(color: Colors.red)),
                                       ),
                                     ],
                                   ),
                                 ) ??
                                 false;
                             if (confirmed) {
-                              context.read<MyCarsBloc>().add(DeleteAllMyCarsEvent());
+                              context
+                                  .read<MyCarsBloc>()
+                                  .add(DeleteAllMyCarsEvent());
                             }
                           },
                         )
@@ -165,41 +182,81 @@ class _SellCarCta extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final radius = 14.r;
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(radius),
-        onTap: onTap,
-        child: Ink(
-          height: 56.h,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(radius),
-            gradient: LinearGradient(
-              colors: [
-                AppColors.primary.withValues(alpha: 0.95),
-                AppColors.primary,
+    final radius = 18.r;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(radius),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(radius),
+          onTap: onTap,
+          child: Ink(
+            height: 62.h,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(radius),
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xFFFFA742),
+                  AppColors.primary,
+                  Color(0xFFE67E00),
+                ],
+              ),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.22),
+                width: 1.1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: 0.28),
+                  blurRadius: 20,
+                  spreadRadius: 1,
+                  offset: const Offset(0, 10),
+                ),
               ],
             ),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primary.withValues(alpha: 0.28),
-                blurRadius: 18,
-                offset: const Offset(0, 8),
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 14.w),
+              child: Row(
+                children: [
+                  Container(
+                    width: 34.r,
+                    height: 34.r,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.sell_rounded,
+                      color: Colors.white,
+                      size: 18,
+                    ),
+                  ),
+                  12.horizontalSpace,
+                  Expanded(
+                    child: AppText(
+                      'sell_my_car',
+                      style: context.textTheme.titleMedium?.s18.xb
+                          .withColor(Colors.white),
+                    ),
+                  ),
+                  Container(
+                    width: 28.r,
+                    height: 28.r,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.18),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.arrow_forward_rounded,
+                      color: Colors.white,
+                      size: 17,
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.directions_car_filled, color: Colors.white),
-              10.horizontalSpace,
-              AppText(
-                'sell_my_car',
-                style: context.textTheme.titleMedium?.s18.xb
-                    .withColor(Colors.white),
-              ),
-            ],
+            ),
           ),
         ),
       ),
