@@ -63,7 +63,8 @@ class _ManageAdsPageState extends State<ManageAdsPage> {
   }
 
   Future<void> _pickImage() async {
-    final x = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 90);
+    final x =
+        await _picker.pickImage(source: ImageSource.gallery, imageQuality: 90);
     if (x == null) return;
     setState(() => _selectedFile = File(x.path));
   }
@@ -77,7 +78,8 @@ class _ManageAdsPageState extends State<ManageAdsPage> {
       lastDate: now.add(const Duration(days: 365 * 3)),
     );
     if (picked != null) {
-      setState(() => _startAt = DateTime(picked.year, picked.month, picked.day));
+      setState(
+          () => _startAt = DateTime(picked.year, picked.month, picked.day));
     }
   }
 
@@ -90,7 +92,8 @@ class _ManageAdsPageState extends State<ManageAdsPage> {
       lastDate: base.add(const Duration(days: 365 * 3)),
     );
     if (picked != null) {
-      setState(() => _endAt = DateTime(picked.year, picked.month, picked.day, 23, 59, 59));
+      setState(() =>
+          _endAt = DateTime(picked.year, picked.month, picked.day, 23, 59, 59));
     }
   }
 
@@ -109,7 +112,8 @@ class _ManageAdsPageState extends State<ManageAdsPage> {
     }
     setState(() => _creating = true);
     try {
-      await AdsService.createAd(file: _selectedFile!, startAt: _startAt!, endAt: _endAt!);
+      await AdsService.createAd(
+          file: _selectedFile!, startAt: _startAt!, endAt: _endAt!);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('ad_created'.tr())),
@@ -131,8 +135,10 @@ class _ManageAdsPageState extends State<ManageAdsPage> {
   }
 
   Future<void> _editDuration(Map<String, dynamic> ad) async {
-    DateTime start = DateTime.tryParse(ad['start_at']?.toString() ?? '') ?? DateTime.now();
-    DateTime end = DateTime.tryParse(ad['end_at']?.toString() ?? '') ?? start.add(const Duration(days: 7));
+    DateTime start =
+        DateTime.tryParse(ad['start_at']?.toString() ?? '') ?? DateTime.now();
+    DateTime end = DateTime.tryParse(ad['end_at']?.toString() ?? '') ??
+        start.add(const Duration(days: 7));
 
     final newStart = await showDatePicker(
       context: context,
@@ -141,6 +147,7 @@ class _ManageAdsPageState extends State<ManageAdsPage> {
       lastDate: DateTime.now().add(const Duration(days: 365 * 3)),
     );
     if (newStart == null) return;
+    if (!mounted) return;
     final newEnd = await showDatePicker(
       context: context,
       initialDate: end,
@@ -174,8 +181,12 @@ class _ManageAdsPageState extends State<ManageAdsPage> {
           builder: (ctx) => AlertDialog(
             title: Text('are_you_sure_delete_ad'.tr()),
             actions: [
-              TextButton(onPressed: () => Navigator.of(ctx).pop(false), child: Text('cancel'.tr())),
-              TextButton(onPressed: () => Navigator.of(ctx).pop(true), child: Text('delete'.tr())),
+              TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(false),
+                  child: Text('cancel'.tr())),
+              TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(true),
+                  child: Text('delete'.tr())),
             ],
           ),
         ) ??
@@ -197,53 +208,193 @@ class _ManageAdsPageState extends State<ManageAdsPage> {
     }
   }
 
+  String _formatDate(DateTime? date) {
+    if (date == null) return '-';
+    return DateFormat.yMMMd().format(date);
+  }
+
+  bool _isActive(DateTime? start, DateTime? end) {
+    if (start == null || end == null) return false;
+    final now = DateTime.now();
+    return !now.isBefore(start) && !now.isAfter(end);
+  }
+
+  int _daysLeft(DateTime? end) {
+    if (end == null) return 0;
+    final now = DateTime.now();
+    return end.difference(now).inDays;
+  }
+
+  Widget _buildMetaChip({
+    required IconData icon,
+    required String text,
+    Color background = const Color(0x22FFFFFF),
+  }) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(999.r),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.14)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13.sp, color: Colors.white),
+          SizedBox(width: 6.w),
+          Text(
+            text,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 11.sp,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildCreateCard() {
-    return Card(
-      color: AppColors.blackLight.withOpacity(0.4),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.r)),
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18.r),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF3A3843), Color(0xFF2C2B34)],
+        ),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.24),
+            blurRadius: 14,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
       child: Padding(
         padding: EdgeInsets.all(14.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('manage_ads'.tr(), style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-            SizedBox(height: 10.h),
+            Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(8.r),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(10.r),
+                  ),
+                  child: Icon(Icons.campaign_rounded,
+                      size: 18.sp, color: Colors.white),
+                ),
+                SizedBox(width: 10.w),
+                Expanded(
+                  child: Text(
+                    'manage_ads'.tr(),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 12.h),
             Row(
               children: [
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: _pickImage,
-                    icon: const Icon(Icons.image_outlined),
+                    icon: const Icon(Icons.image_outlined, color: Colors.white),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      side: BorderSide(
+                          color: Colors.white.withValues(alpha: 0.40)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      padding: EdgeInsets.symmetric(vertical: 12.h),
+                    ),
                     label: Text('upload_banner'.tr()),
                   ),
                 ),
               ],
             ),
             if (_selectedFile != null) ...[
-              SizedBox(height: 10.h),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8.r),
-                child: Image.file(_selectedFile!, height: 140.h, width: double.infinity, fit: BoxFit.cover),
+              SizedBox(height: 12.h),
+              Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12.r),
+                    child: Image.file(
+                      _selectedFile!,
+                      height: 150.h,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Positioned(
+                    top: 8.h,
+                    right: 8.w,
+                    child: InkWell(
+                      onTap: () => setState(() => _selectedFile = null),
+                      child: Container(
+                        padding: EdgeInsets.all(6.r),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.55),
+                          borderRadius: BorderRadius.circular(999.r),
+                        ),
+                        child: const Icon(Icons.close_rounded,
+                            color: Colors.white, size: 16),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
-            SizedBox(height: 10.h),
+            SizedBox(height: 12.h),
             Row(
               children: [
                 Expanded(
                   child: OutlinedButton(
                     onPressed: _pickStartDate,
-                    child: Text(_startAt == null
-                        ? 'start_date'.tr()
-                        : DateFormat.yMMMd().format(_startAt!)),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      side: BorderSide(
+                          color: Colors.white.withValues(alpha: 0.40)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      padding: EdgeInsets.symmetric(vertical: 11.h),
+                    ),
+                    child: Text(
+                      _startAt == null
+                          ? 'start_date'.tr()
+                          : _formatDate(_startAt),
+                      style: const TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
                 SizedBox(width: 8.w),
                 Expanded(
                   child: OutlinedButton(
                     onPressed: _pickEndDate,
-                    child: Text(_endAt == null
-                        ? 'end_date'.tr()
-                        : DateFormat.yMMMd().format(_endAt!)),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      side: BorderSide(
+                          color: Colors.white.withValues(alpha: 0.40)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      padding: EdgeInsets.symmetric(vertical: 11.h),
+                    ),
+                    child: Text(
+                      _endAt == null ? 'end_date'.tr() : _formatDate(_endAt),
+                      style: const TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
               ],
@@ -253,9 +404,24 @@ class _ManageAdsPageState extends State<ManageAdsPage> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: _creating ? null : _createAd,
-                style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(vertical: 12.h),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.r),
+                  ),
+                  textStyle: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
                 child: _creating
-                    ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                    ? const SizedBox(
+                        height: 18,
+                        width: 18,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white))
                     : Text('create_ad'.tr()),
               ),
             ),
@@ -267,67 +433,114 @@ class _ManageAdsPageState extends State<ManageAdsPage> {
 
   Widget _buildAdsList() {
     if (_loadingList) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(
+        child: CircularProgressIndicator(color: Colors.white),
+      );
     }
     if (_ads.isEmpty) {
       return Center(
-        child: Text('no_ads'.tr(), style: const TextStyle(color: Colors.white70)),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 14.h),
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.06),
+            borderRadius: BorderRadius.circular(14.r),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
+          ),
+          child: Text(
+            'no_ads'.tr(),
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.9),
+              fontSize: 13.sp,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
       );
     }
     return ListView.separated(
       itemCount: _ads.length,
-      separatorBuilder: (_, __) => SizedBox(height: 10.h),
+      padding: EdgeInsets.only(bottom: 8.h),
+      separatorBuilder: (_, __) => SizedBox(height: 12.h),
       itemBuilder: (context, index) {
         final ad = _ads[index];
         final url = ad['image_url']?.toString() ?? '';
         final start = DateTime.tryParse(ad['start_at']?.toString() ?? '');
         final end = DateTime.tryParse(ad['end_at']?.toString() ?? '');
+        final isActive = _isActive(start, end);
+        final daysLeft = _daysLeft(end);
+
         return Container(
           decoration: BoxDecoration(
-            color: AppColors.blackLight.withOpacity(0.4),
-            borderRadius: BorderRadius.circular(10.r),
+            borderRadius: BorderRadius.circular(16.r),
+            gradient: const LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Color(0xFF393743), Color(0xFF292831)],
+            ),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
           ),
           child: Padding(
-            padding: EdgeInsets.all(10.w),
-            child: Row(
+            padding: EdgeInsets.all(12.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(8.r),
+                  borderRadius: BorderRadius.circular(12.r),
                   child: AppCachedNetworkImageView(
                     url: url,
-                    width: 100.w,
-                    height: 70.h,
+                    width: double.infinity,
+                    height: 150.h,
                     fit: BoxFit.cover,
                   ),
                 ),
-                SizedBox(width: 10.w),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${'start_date'.tr()}: ${start == null ? '-' : DateFormat.yMMMd().format(start)}',
-                        style: const TextStyle(color: Colors.white70, fontSize: 12),
-                      ),
-                      Text(
-                        '${'end_date'.tr()}: ${end == null ? '-' : DateFormat.yMMMd().format(end)}',
-                        style: const TextStyle(color: Colors.white70, fontSize: 12),
-                      ),
-                      Row(
-                        children: [
-                          TextButton(
-                            onPressed: () => _editDuration(ad),
-                            child: Text('edit_duration'.tr()),
-                          ),
-                          const SizedBox(width: 8),
-                          TextButton(
-                            onPressed: () => _deleteAd(ad['id'].toString()),
-                            child: Text('delete'.tr(), style: const TextStyle(color: Colors.redAccent)),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                SizedBox(height: 10.h),
+                Wrap(
+                  spacing: 8.w,
+                  runSpacing: 8.h,
+                  children: [
+                    _buildMetaChip(
+                      icon: Icons.calendar_month_rounded,
+                      text: '${'start_date'.tr()}: ${_formatDate(start)}',
+                    ),
+                    _buildMetaChip(
+                      icon: Icons.event_available_rounded,
+                      text: '${'end_date'.tr()}: ${_formatDate(end)}',
+                    ),
+                    _buildMetaChip(
+                      icon: isActive
+                          ? Icons.bolt_rounded
+                          : Icons.pause_circle_filled_rounded,
+                      text: isActive ? 'Active' : 'Expired',
+                      background: isActive
+                          ? const Color(0x3333CC88)
+                          : const Color(0x33FF6B6B),
+                    ),
+                    _buildMetaChip(
+                      icon: Icons.timelapse_rounded,
+                      text:
+                          daysLeft > 0 ? '$daysLeft days left' : '0 days left',
+                    ),
+                  ],
+                ),
+                SizedBox(height: 6.h),
+                Row(
+                  children: [
+                    TextButton.icon(
+                      onPressed: () => _editDuration(ad),
+                      style:
+                          TextButton.styleFrom(foregroundColor: Colors.white),
+                      icon: const Icon(Icons.edit_calendar_outlined, size: 18),
+                      label: Text('edit_duration'.tr()),
+                    ),
+                    const Spacer(),
+                    TextButton.icon(
+                      onPressed: () => _deleteAd(ad['id'].toString()),
+                      style: TextButton.styleFrom(
+                          foregroundColor: Colors.redAccent),
+                      icon: const Icon(Icons.delete_outline_rounded, size: 18),
+                      label: Text('delete'.tr()),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -351,7 +564,7 @@ class _ManageAdsPageState extends State<ManageAdsPage> {
     );
 
     return Scaffold(
-      backgroundColor: AppColors.blackLight,
+      backgroundColor: const Color(0xFF222129),
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: _shouldAnimateEntrance
@@ -374,9 +587,35 @@ class _ManageAdsPageState extends State<ManageAdsPage> {
               delay: const Duration(milliseconds: 260),
               duration: const Duration(milliseconds: 1000),
               beginOffset: const Offset(-0.24, 0),
-              child: content,
+              child: Stack(
+                children: [
+                  Container(
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Color(0xFF2F2D38), Color(0xFF1F1E25)],
+                      ),
+                    ),
+                  ),
+                  content,
+                ],
+              ),
             )
-          : content,
+          : Stack(
+              children: [
+                Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Color(0xFF2F2D38), Color(0xFF1F1E25)],
+                    ),
+                  ),
+                ),
+                content,
+              ],
+            ),
     );
   }
 }
