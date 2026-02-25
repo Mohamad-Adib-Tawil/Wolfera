@@ -1,8 +1,11 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'dart:async';
 import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:wolfera/core/config/routing/router.dart';
 
 @pragma('vm:entry-point')
 void notificationTapBackground(NotificationResponse notificationResponse) {
@@ -18,6 +21,8 @@ class NotificationService {
   static final _localNotifications = FlutterLocalNotificationsPlugin();
   static final _client = Supabase.instance.client;
   static void Function(String? payload)? onTap;
+  static OverlayEntry? _inAppBannerEntry;
+  static Timer? _inAppBannerTimer;
   static const String headsUpChannelId = 'wolfera_heads_up';
   static const String headsUpChannelName = 'Wolfera Heads Up Notifications';
   static const String headsUpChannelDescription =
@@ -153,6 +158,12 @@ class NotificationService {
     required String body,
     required String payload,
   }) async {
+    // iOS simulator often does not show system banners reliably while app is foregrounded.
+    // Show an in-app fallback banner in debug mode for easier testing.
+    if (Platform.isIOS && kDebugMode) {
+      _showInAppBanner(title: title, body: body);
+    }
+
     final platformChannelSpecifics = await _notificationDetails();
     await _localNotifications.show(
       id,
@@ -161,6 +172,86 @@ class NotificationService {
       platformChannelSpecifics,
       payload: payload,
     );
+  }
+
+  static void _showInAppBanner({
+    required String title,
+    required String body,
+  }) {
+    final overlay =
+        GRouter.router.routerDelegate.navigatorKey.currentState?.overlay;
+    if (overlay == null) return;
+
+    _inAppBannerTimer?.cancel();
+    _inAppBannerEntry?.remove();
+
+    _inAppBannerEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        top: 8,
+        left: 12,
+        right: 12,
+        child: SafeArea(
+          child: Material(
+            color: Colors.transparent,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF1E1F24),
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x33000000),
+                    blurRadius: 12,
+                    offset: Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.notifications_active_outlined,
+                      color: Colors.white, size: 20),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        if (body.isNotEmpty)
+                          Text(
+                            body,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: Color(0xFFE0E0E0),
+                              fontSize: 12,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    overlay.insert(_inAppBannerEntry!);
+    _inAppBannerTimer = Timer(const Duration(seconds: 2), () {
+      _inAppBannerEntry?.remove();
+      _inAppBannerEntry = null;
+    });
   }
 
   // إرسال إشعار لمستخدم آخر عبر Supabase
