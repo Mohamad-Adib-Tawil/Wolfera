@@ -18,6 +18,10 @@ class NotificationService {
   static final _localNotifications = FlutterLocalNotificationsPlugin();
   static final _client = Supabase.instance.client;
   static void Function(String? payload)? onTap;
+  static const String headsUpChannelId = 'wolfera_heads_up';
+  static const String headsUpChannelName = 'Wolfera Heads Up Notifications';
+  static const String headsUpChannelDescription =
+      'High priority notifications for messages and important activity';
 
   // ===== Localization helpers for server-sent notifications =====
   static Future<String> _getUserPreferredLanguage(String userId) async {
@@ -64,6 +68,23 @@ class NotificationService {
       },
     );
 
+    // Ensure Android notifications use a high-importance channel for heads-up banners.
+    final androidImpl =
+        _localNotifications.resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
+    if (androidImpl != null) {
+      await androidImpl.createNotificationChannel(
+        const AndroidNotificationChannel(
+          headsUpChannelId,
+          headsUpChannelName,
+          description: headsUpChannelDescription,
+          importance: Importance.max,
+          playSound: true,
+          enableVibration: true,
+        ),
+      );
+    }
+
     // Request runtime notification permissions (Android 13+ and iOS)
     await requestNotificationPermissionsIfNeeded();
   }
@@ -76,10 +97,11 @@ class NotificationService {
         await Permission.notification.request();
       } else if (Platform.isIOS) {
         // iOS permission via iOS plugin
-        final iosImpl = _localNotifications
-            .resolvePlatformSpecificImplementation<
+        final iosImpl =
+            _localNotifications.resolvePlatformSpecificImplementation<
                 IOSFlutterLocalNotificationsPlugin>();
-        await iosImpl?.requestPermissions(alert: true, badge: true, sound: true);
+        await iosImpl?.requestPermissions(
+            alert: true, badge: true, sound: true);
       }
     } catch (_) {
       // no-op
@@ -95,12 +117,13 @@ class NotificationService {
 
   static Future<NotificationDetails> _notificationDetails() async {
     final androidPlatformChannelSpecifics = AndroidNotificationDetails(
-      'wolfera-Cars',
-      'Wolfera Cars Notification',
+      headsUpChannelId,
+      headsUpChannelName,
       groupKey: 'com.wolfera.wolfera',
-      channelDescription: 'for receive notification',
+      channelDescription: headsUpChannelDescription,
       importance: Importance.max,
       priority: Priority.max,
+      visibility: NotificationVisibility.public,
       playSound: true,
       icon: '@drawable/ic_stat_notify',
       largeIcon: DrawableResourceAndroidBitmap('@mipmap/launcher_icon'),
@@ -108,8 +131,12 @@ class NotificationService {
 
     DarwinNotificationDetails iosNotificationDetails =
         const DarwinNotificationDetails(
+      presentAlert: true,
+      presentBanner: true,
+      presentList: true,
       presentBadge: true,
       presentSound: true,
+      interruptionLevel: InterruptionLevel.active,
     );
 
     final details = await _localNotifications.getNotificationAppLaunchDetails();
@@ -135,7 +162,7 @@ class NotificationService {
       payload: payload,
     );
   }
-  
+
   // إرسال إشعار لمستخدم آخر عبر Supabase
   static Future<bool> sendNotificationToUser({
     required String userId,
@@ -178,7 +205,7 @@ class NotificationService {
       return false;
     }
   }
-  
+
   // إرسال إشعار رسالة جديدة
   static Future<void> sendNewMessageNotification({
     required String recipientId,
@@ -202,7 +229,7 @@ class NotificationService {
       },
     );
   }
-  
+
   // إرسال إشعار عرض سعر
   static Future<void> sendOfferNotification({
     required String recipientId,
@@ -211,9 +238,8 @@ class NotificationService {
     required String offerId,
   }) async {
     final lang = await _getUserPreferredLanguage(recipientId);
-    final title = _isArabic(lang)
-        ? 'عرض جديد على $carTitle'
-        : 'New offer on $carTitle';
+    final title =
+        _isArabic(lang) ? 'عرض جديد على $carTitle' : 'New offer on $carTitle';
     final body = _isArabic(lang)
         ? '$senderName قدم عرضاً على سيارتك'
         : '$senderName sent you a new offer';
@@ -228,7 +254,7 @@ class NotificationService {
       },
     );
   }
-  
+
   // إرسال إشعار إعجاب بسيارة
   static Future<void> sendLikeNotification({
     required String carOwnerId,
@@ -252,7 +278,7 @@ class NotificationService {
       },
     );
   }
-  
+
   // إرسال إشعار تعليق
   static Future<void> sendCommentNotification({
     required String recipientId,
@@ -289,9 +315,7 @@ class NotificationService {
     final title = _isArabic(lang)
         ? 'تم حذف السيارة - $carTitle'
         : 'Listing removed - $carTitle';
-    final body = _isArabic(lang)
-        ? 'السبب: $reason'
-        : 'Reason: $reason';
+    final body = _isArabic(lang) ? 'السبب: $reason' : 'Reason: $reason';
     await sendNotificationToUser(
       userId: recipientId,
       title: title,
@@ -321,10 +345,10 @@ class NotificationService {
       }
 
       // الحصول على قائمة المستخدمين الذين أضافوا هذه السيارة للمفضلة
-    final favoriteUsers = await _client.rpc(
-  'get_favorited_user_ids',
-  params: {'p_car_id': carId},
-);
+      final favoriteUsers = await _client.rpc(
+        'get_favorited_user_ids',
+        params: {'p_car_id': carId},
+      );
       if (kDebugMode) {
         print('📋 Found ${favoriteUsers.length} users who favorited this car');
         for (final favorite in favoriteUsers) {
@@ -342,27 +366,27 @@ class NotificationService {
       // إرسال إشعار لكل مستخدم
       for (final favorite in favoriteUsers) {
         final userId = favorite['user_id'] as String;
-        
+
         if (kDebugMode) {
           print('📤 Sending notification to user: $userId');
         }
-        
+
         final lang = await _getUserPreferredLanguage(userId);
-        
+
         final title = _isArabic(lang)
             ? 'تغيير سعر السيارة - $carTitle'
             : 'Price changed - $carTitle';
-        
+
         final body = _isArabic(lang)
             ? 'تم تغيير السعر من $oldPrice إلى $newPrice'
             : 'Price changed from $oldPrice to $newPrice';
-        
+
         if (kDebugMode) {
           print('   Language: $lang');
           print('   Title: $title');
           print('   Body: $body');
         }
-        
+
         final success = await sendNotificationToUser(
           userId: userId,
           title: title,
@@ -376,12 +400,12 @@ class NotificationService {
             'action': 'view_car',
           },
         );
-        
+
         if (kDebugMode) {
           print('   Result: ${success ? "✅ Success" : "❌ Failed"}');
         }
       }
-      
+
       if (kDebugMode) {
         print('🎉 Price change notifications completed');
       }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui' as ui;
 import 'package:flutter/services.dart';
 import 'package:wolfera/core/models/localization_config.dart';
 import 'package:get_it/get_it.dart';
@@ -36,13 +37,12 @@ Future<void> initialization(
       };
     }
   } catch (_) {}
-  
+
   await AppSettingsService.instance.initialize();
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitDown,
     DeviceOrientation.portraitUp,
   ]);
-  
 
   final Widget app;
   if (localizationConfig != null) {
@@ -51,16 +51,18 @@ Future<void> initialization(
     app = await builder();
   }
 
+  // تجنب Zone mismatch: يجب أن يكون ensureInitialized و runApp في نفس الـ zone.
+  // لالتقاط أخطاء async غير المعالجة نستخدم PlatformDispatcher بدل runZonedGuarded.
   if (Firebase.apps.isNotEmpty) {
-    // Capture all uncaught async errors
-    runZonedGuarded(() => runApp(app), (error, stack) {
+    ui.PlatformDispatcher.instance.onError = (error, stack) {
       try {
         FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
       } catch (_) {}
-    });
-  } else {
-    runApp(app);
+      return true;
+    };
   }
+
+  runApp(app);
 }
 
 Future<EasyLocalization> _easyLocalization(

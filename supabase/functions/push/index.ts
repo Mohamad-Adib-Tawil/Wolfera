@@ -62,6 +62,7 @@ serve(async (req) => {
         notification: {
           title,
           body: message,
+          android_channel_id: "wolfera_heads_up",
         },
         data,
       }),

@@ -31,20 +31,24 @@ class PushMessagingService {
     var firebaseReady = true;
     if (Firebase.apps.isEmpty) {
       try {
-        // iOS: استخدم خيارات Firebase من dart-define إذا كانت متوفرة، وإلا اعتمد على GoogleService-Info.plist
+        // iOS: جرّب أولًا التهيئة الافتراضية عبر GoogleService-Info.plist.
+        // إذا فشلت ووجدت dart-define options، جرّب بها كخطة بديلة.
         if (Platform.isIOS) {
-          if (Env.hasFirebaseIosOptions) {
+          try {
+            await Firebase.initializeApp();
+          } catch (_) {
+            if (!Env.hasFirebaseIosOptions) rethrow;
             await Firebase.initializeApp(
               options: FirebaseOptions(
                 apiKey: Env.firebaseIosApiKey,
                 appId: Env.firebaseIosAppId,
                 messagingSenderId: Env.firebaseIosMessagingSenderId,
                 projectId: Env.firebaseIosProjectId,
-                storageBucket: Env.firebaseIosStorageBucket,
+                storageBucket: Env.firebaseIosStorageBucket.isEmpty
+                    ? null
+                    : Env.firebaseIosStorageBucket,
               ),
             );
-          } else {
-            await Firebase.initializeApp();
           }
         } else {
           // باقي المنصات: الإعداد التلقائي كافٍ
@@ -60,7 +64,8 @@ class PushMessagingService {
     }
     if (!firebaseReady) {
       if (kDebugMode) {
-        print('⚠️ Skipping FCM setup because Firebase is not configured on this platform.');
+        print(
+            '⚠️ Skipping FCM setup because Firebase is not configured on this platform.');
       }
       return;
     }
@@ -72,8 +77,9 @@ class PushMessagingService {
     await _requestPermissions();
 
     // تقديم الإشعارات أثناء المقدمة على iOS
-    // على iOS: نعطّل alert في المقدمة ونعتمد على الإشعارات المحلية فقط لضبط السلوك (مثل الكتم داخل نفس المحادثة)
-    await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    // نُبقي alert مُعطّلاً لأننا نعرض إشعارًا محليًا مخصصًا (مع إمكانية الكتم داخل نفس المحادثة).
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
       alert: false,
       badge: true,
       sound: true,
@@ -105,8 +111,7 @@ class PushMessagingService {
       final data = message.data;
       final type = (data['type'] ?? data['action'])?.toString();
       // حاول استخلاص conversationId من عدة مفاتيح مع دعم fallback عند الحاجة
-      String? conversationId =
-          data['conversation_id']?.toString() ??
+      String? conversationId = data['conversation_id']?.toString() ??
           data['conv_id']?.toString() ??
           data['conversationId']?.toString();
 
@@ -123,7 +128,8 @@ class PushMessagingService {
                   .select('conversation_id')
                   .eq('id', msgId)
                   .maybeSingle();
-              conversationId = msg?['conversation_id']?.toString() ?? conversationId;
+              conversationId =
+                  msg?['conversation_id']?.toString() ?? conversationId;
             }
           } catch (_) {}
 
@@ -131,8 +137,13 @@ class PushMessagingService {
           if (conversationId == null || conversationId.isEmpty) {
             try {
               final currentUser = _client.auth.currentUser;
-              final otherId = (data['other_user_id'] ?? data['sender_id'] ?? data['seller_id'])?.toString();
-              if (currentUser != null && otherId != null && otherId.isNotEmpty) {
+              final otherId = (data['other_user_id'] ??
+                      data['sender_id'] ??
+                      data['seller_id'])
+                  ?.toString();
+              if (currentUser != null &&
+                  otherId != null &&
+                  otherId.isNotEmpty) {
                 final conv = await _client
                     .from('conversations')
                     .select('id')
@@ -153,7 +164,8 @@ class PushMessagingService {
             conversationId.isNotEmpty &&
             currentConv == conversationId) {
           if (kDebugMode) {
-            print('🔕 Suppressed notification: currently in conversation $conversationId');
+            print(
+                '🔕 Suppressed notification: currently in conversation $conversationId');
           }
           // حتى مع الكتم، أعلِم الواجهة لتحديث عدادات غير المقروء (قد تُصبح صفراً)
           ChatRouteTracker.notifyIncomingMessage();
@@ -167,9 +179,14 @@ class PushMessagingService {
       try {
         switch (type) {
           case 'new_message':
-            final senderName = (data['sender_name'] ?? data['other_user_name'] ?? data['seller_name'] ?? '').toString();
+            final senderName = (data['sender_name'] ??
+                    data['other_user_name'] ??
+                    data['seller_name'] ??
+                    '')
+                .toString();
             final preview = (data['preview'] ?? data['body'] ?? '').toString();
-            title = 'notif_new_message_from'.tr(args: [senderName]);
+            title =
+                'notif_new_message_from'.tr(namedArgs: {'name': senderName});
             body = preview.isNotEmpty ? preview : 'notif_generic'.tr();
             break;
           case 'car_removed':
@@ -181,19 +198,23 @@ class PushMessagingService {
           case 'new_offer':
           case 'offer_new':
           case 'offer_updated':
-            final carTitle = (data['car_title'] ?? data['title'] ?? '').toString();
+            final carTitle =
+                (data['car_title'] ?? data['title'] ?? '').toString();
             final senderName = (data['sender_name'] ?? '').toString();
             title = 'notif_new_offer_title'.tr(args: [carTitle]);
             body = 'notif_new_offer_body'.tr(args: [senderName]);
             break;
           case 'car_like':
-            final likerName = (data['liker_name'] ?? data['sender_name'] ?? '').toString();
+            final likerName =
+                (data['liker_name'] ?? data['sender_name'] ?? '').toString();
             final carTitle = (data['car_title'] ?? '').toString();
             title = 'notif_like_title'.tr();
             body = 'notif_like_body'.tr(args: [likerName, carTitle]);
             break;
           case 'car_comment':
-            final commenter = (data['commenter_name'] ?? data['sender_name'] ?? '').toString();
+            final commenter =
+                (data['commenter_name'] ?? data['sender_name'] ?? '')
+                    .toString();
             final carTitle = (data['car_title'] ?? '').toString();
             final comment = (data['comment'] ?? data['body'] ?? '').toString();
             title = 'notif_comment_title'.tr(args: [carTitle]);
@@ -233,8 +254,10 @@ class PushMessagingService {
     // إذا فُتح التطبيق من إشعار
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
       if (kDebugMode) {
-        print('🔔 onMessageOpenedApp - Opened from notification: ${message.data}');
-        print('🔔 onMessageOpenedApp - Notification: ${message.notification?.toMap()}');
+        print(
+            '🔔 onMessageOpenedApp - Opened from notification: ${message.data}');
+        print(
+            '🔔 onMessageOpenedApp - Notification: ${message.notification?.toMap()}');
       }
       final data = message.data;
       final type = (data['type'] ?? data['action'])?.toString();
@@ -248,7 +271,8 @@ class PushMessagingService {
     final initial = await FirebaseMessaging.instance.getInitialMessage();
     if (initial != null && kDebugMode) {
       print('🔔 getInitialMessage - Initial message: ${initial.data}');
-      print('🔔 getInitialMessage - Notification: ${initial.notification?.toMap()}');
+      print(
+          '🔔 getInitialMessage - Notification: ${initial.notification?.toMap()}');
     }
     if (initial != null) {
       final data = initial.data;
@@ -270,7 +294,7 @@ class PushMessagingService {
 
   static Future<void> _requestPermissions() async {
     try {
-      await FirebaseMessaging.instance.requestPermission(
+      final settings = await FirebaseMessaging.instance.requestPermission(
         alert: true,
         announcement: false,
         badge: true,
@@ -279,6 +303,15 @@ class PushMessagingService {
         provisional: false,
         sound: true,
       );
+      if (kDebugMode) {
+        if (Platform.isIOS) {
+          print(
+              '🔔 iOS permission status: ${settings.authorizationStatus.name}, alert=${settings.alert}, sound=${settings.sound}, badge=${settings.badge}');
+        } else if (Platform.isAndroid) {
+          print(
+              '🔔 Android notification permission request status: ${settings.authorizationStatus.name}');
+        }
+      }
 
       // Android 13+: اطلب إذن POST_NOTIFICATIONS عبر flutter_local_notifications
       try {
@@ -295,10 +328,12 @@ class PushMessagingService {
       final user = _client.auth.currentUser;
       if (user == null) return;
 
-      final token = tokenOverride ?? await FirebaseMessaging.instance.getToken();
+      final token =
+          tokenOverride ?? await FirebaseMessaging.instance.getToken();
       if (token == null) return;
 
-      final platform = Platform.isAndroid ? 'android' : (Platform.isIOS ? 'ios' : 'other');
+      final platform =
+          Platform.isAndroid ? 'android' : (Platform.isIOS ? 'ios' : 'other');
 
       // جدول مقترح: user_devices(user_id text, token text pk/unique, platform text, updated_at timestamptz)
       try {
@@ -308,7 +343,7 @@ class PushMessagingService {
           'platform': platform,
           'updated_at': DateTime.now().toIso8601String(),
         }, onConflict: 'token');
-        
+
         if (kDebugMode) {
           print('✅ FCM token saved successfully');
         }
@@ -317,14 +352,14 @@ class PushMessagingService {
           print('⚠️ Failed to save to user_devices: $deviceError');
           print('🔄 Trying to update users table instead...');
         }
-        
+
         // Fallback: حفظ FCM token في جدول users
         try {
           await _client.from('users').update({
             'fcm_token': token,
             'updated_at': DateTime.now().toIso8601String(),
           }).eq('id', user.id);
-          
+
           if (kDebugMode) {
             print('✅ FCM token saved to users table as fallback');
           }
@@ -351,7 +386,8 @@ class PushMessagingService {
           .maybeSingle();
       if (row == null) return null;
       final t = row['type']?.toString();
-      final d = (row['data'] as Map?)?.cast<String, dynamic>() ?? <String, dynamic>{};
+      final d =
+          (row['data'] as Map?)?.cast<String, dynamic>() ?? <String, dynamic>{};
       if (t != null) d['type'] = t;
       return d;
     } catch (e) {
@@ -372,8 +408,7 @@ class PushMessagingService {
         print('🔔 Detected type: $type');
       }
       if (type == 'new_message' || data['action']?.toString() == 'open_chat') {
-        String? conversationId =
-            data['conversation_id']?.toString() ??
+        String? conversationId = data['conversation_id']?.toString() ??
             data['conv_id']?.toString() ??
             data['conversationId']?.toString();
 
@@ -417,8 +452,10 @@ class PushMessagingService {
         }
 
         // كحل أخير: إذا كان id هو معرّف إشعار، استرجع بيانات الإشعار واستخدمها
-        if ((conversationId == null || conversationId.isEmpty) && data['id'] != null) {
-          final notifData = await _fetchNotificationById(data['id']!.toString());
+        if ((conversationId == null || conversationId.isEmpty) &&
+            data['id'] != null) {
+          final notifData =
+              await _fetchNotificationById(data['id']!.toString());
           if (kDebugMode) {
             print('🔔 Notification lookup for message returned: $notifData');
           }
@@ -432,9 +469,13 @@ class PushMessagingService {
 
         // إذا لم يتوفر conversationId لكن لدينا other_user_id أو sender_id أو seller_id، حاول إيجاد أحدث محادثة معه
         if ((conversationId == null || conversationId.isEmpty) &&
-            (data['other_user_id'] != null || data['sender_id'] != null || data['seller_id'] != null)) {
+            (data['other_user_id'] != null ||
+                data['sender_id'] != null ||
+                data['seller_id'] != null)) {
           final currentUser = _client.auth.currentUser;
-          final otherId = (data['other_user_id'] ?? data['sender_id'] ?? data['seller_id']).toString();
+          final otherId =
+              (data['other_user_id'] ?? data['sender_id'] ?? data['seller_id'])
+                  .toString();
           if (currentUser != null && otherId.isNotEmpty) {
             try {
               final conv = await _client
@@ -452,19 +493,23 @@ class PushMessagingService {
         if (conversationId != null && conversationId.isNotEmpty) {
           // حاول إثراء البيانات قبل التوجيه لضمان عدم ظهور خطأ البيانات الناقصة
           String? sellerIdExtra = data['seller_id']?.toString();
-          String? sellerNameExtra = data['seller_name']?.toString() ?? data['other_user_name']?.toString() ?? data['sender_name']?.toString();
+          String? sellerNameExtra = data['seller_name']?.toString() ??
+              data['other_user_name']?.toString() ??
+              data['sender_name']?.toString();
           String? sellerAvatarExtra = data['seller_avatar']?.toString();
           String? carIdExtra = data['car_id']?.toString();
           String? carTitleExtra = data['car_title']?.toString();
 
           // Fallback مبكر: إن لم نجد seller_id استخدم other_user_id أو sender_id من الحمولة
-          sellerIdExtra ??= (data['other_user_id'] ?? data['sender_id'])?.toString();
+          sellerIdExtra ??=
+              (data['other_user_id'] ?? data['sender_id'])?.toString();
 
           try {
             final currentUser = _client.auth.currentUser;
             final conv = await _client
                 .from('conversations')
-                .select('buyer_id,seller_id,car_id, car:cars!car_id(title), buyer:users!buyer_id(full_name,avatar_url,photo_url), seller:users!seller_id(full_name,avatar_url,photo_url)')
+                .select(
+                    'buyer_id,seller_id,car_id, car:cars!car_id(title), buyer:users!buyer_id(full_name,avatar_url,photo_url), seller:users!seller_id(full_name,avatar_url,photo_url)')
                 .eq('id', conversationId)
                 .maybeSingle();
 
@@ -475,12 +520,14 @@ class PushMessagingService {
                   currentUser != null && buyerId == currentUser.id;
               final other = isCurrentBuyer ? conv['seller'] : conv['buyer'];
               sellerIdExtra ??= isCurrentBuyer ? sellerId : buyerId;
-              sellerNameExtra ??=
-                  (other?['full_name'] ?? other?['display_name'] ?? other?['name'])
-                      ?.toString();
-              sellerAvatarExtra ??=
-                  (other?['avatar_url'] ?? other?['photo_url'] ?? other?['picture'])
-                      ?.toString();
+              sellerNameExtra ??= (other?['full_name'] ??
+                      other?['display_name'] ??
+                      other?['name'])
+                  ?.toString();
+              sellerAvatarExtra ??= (other?['avatar_url'] ??
+                      other?['photo_url'] ??
+                      other?['picture'])
+                  ?.toString();
               carIdExtra ??= conv['car_id']?.toString();
               carTitleExtra ??= conv['car']?['title']?.toString();
             }
@@ -522,7 +569,8 @@ class PushMessagingService {
       // حاول تحليل الإشعارات العامة للحصول على البيانات من جدول notifications
       if (type == 'general' && data['id'] != null) {
         try {
-          final notifData = await _fetchNotificationById(data['id']!.toString());
+          final notifData =
+              await _fetchNotificationById(data['id']!.toString());
           if (kDebugMode) {
             print('🔔 Resolved general notification: $notifData');
           }
@@ -561,19 +609,22 @@ class PushMessagingService {
         String? carId = data['car_id']?.toString();
         // لا تعتمد على id مباشرة (قد يكون id هو معرّف إشعار)، حاول جلب بيانات الإشعار إذا carId غير موجودة
         if ((carId == null || carId.isEmpty) && data['id'] != null) {
-          final notifData = await _fetchNotificationById(data['id']!.toString());
+          final notifData =
+              await _fetchNotificationById(data['id']!.toString());
           if (kDebugMode) {
             print('🔔 Notification lookup for car returned: $notifData');
           }
           carId = notifData?['car_id']?.toString() ?? carId;
         }
         if (kDebugMode) {
-          print('🔔 Car notification detected. car_id: ${data['car_id']}, id: ${data['id']}, final carId: $carId');
+          print(
+              '🔔 Car notification detected. car_id: ${data['car_id']}, id: ${data['id']}, final carId: $carId');
         }
         if (carId != null && carId.isNotEmpty) {
           if (kDebugMode) {
             print('🔔 Routing to car details: $carId');
-            print('🔔 Full path: ${GRouter.config.mainRoutes.home}/${GRouter.config.homeRoutes.carDetails}');
+            print(
+                '🔔 Full path: ${GRouter.config.mainRoutes.home}/${GRouter.config.homeRoutes.carDetails}');
           }
           GRouter.router.go(
             '${GRouter.config.mainRoutes.home}/${GRouter.config.homeRoutes.carDetails}',
@@ -588,7 +639,7 @@ class PushMessagingService {
         }
         return;
       }
-      
+
       if (kDebugMode) {
         print('🔔 No notification type detected, checking general routing...');
         print('🔔 Available keys in data: ${data.keys.toList()}');
