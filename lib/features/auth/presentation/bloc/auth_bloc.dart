@@ -266,50 +266,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(state.copyWith(
           loginStatus: const BlocStatus.success(),
         ));
-        String? phoneNumber;
-        String? fullName;
-        String? avatarUrl;
-        
-        // Get user data from Supabase
-        final userData = await Supabase.instance.client
-            .from('users')
-            .select('phone_number, full_name, avatar_url')
-            .eq('id', value.id)
-            .maybeSingle();
-
-        phoneNumber = userData?['phone_number'] as String?;
-        fullName = userData?['full_name'] as String?;
-        avatarUrl = userData?['avatar_url'] as String?;
-
-        print('🔐 Login successful - User metadata: ${value.userMetadata}');
-        print('🔐 User from DB: fullName=$fullName, avatarUrl=$avatarUrl');
-        
-        // If display_name is not in metadata, update it from database
-        if (fullName != null && value.userMetadata?['display_name'] == null) {
-          try {
-            print('🔄 Updating auth metadata with display_name from database...');
-            await Supabase.instance.client.auth.updateUser(
-              UserAttributes(
-                data: {
-                  'display_name': fullName,
-                  if (avatarUrl != null) 'avatar_url': avatarUrl,
-                },
-              ),
-            );
-            // Refresh user to get updated metadata
-            final updatedUser = Supabase.instance.client.auth.currentUser;
-            if (updatedUser != null) {
-              await _prefsRepository.setUser(updatedUser, phoneNumber ?? "");
-            } else {
-              await _prefsRepository.setUser(value, phoneNumber ?? "");
-            }
-          } catch (e) {
-            print('⚠️ Could not update auth metadata: $e');
-            await _prefsRepository.setUser(value, phoneNumber ?? "");
-          }
-        } else {
-          await _prefsRepository.setUser(value, phoneNumber ?? "");
-        }
+        final persistedUser = await _persistAuthenticatedUser(value);
 
         loginForm
           ..value = {
@@ -319,7 +276,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           ..markAsUntouched();
         _appManagerCubit.checkUser();
 
-        event.onSuccess(value);
+        event.onSuccess(persistedUser);
       },
     );
   }
@@ -344,71 +301,81 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(state.copyWith(
           loginStatus: const BlocStatus.success(),
         ));
-        String? phoneNumber;
-        String? fullName;
-        String? avatarUrl;
-        
-        // Get user data from Supabase with error handling
-        try {
-          final userData = await Supabase.instance.client
-              .from('users')
-              .select('phone_number, full_name, avatar_url')
-              .eq('id', value.id)
-              .maybeSingle();
-          
-          phoneNumber = userData?['phone_number'];
-          fullName = userData?['full_name'];
-          avatarUrl = userData?['avatar_url'];
-        } catch (e) {
-          print('❌ Failed to get user data from database: $e');
-          phoneNumber = null;
-        }
+        final persistedUser = await _persistAuthenticatedUser(value);
+        final phoneNumber = await _readUserPhoneNumber(value.id);
 
-        print('🔐 Google login successful - User metadata: ${value.userMetadata}');
-        print('🔐 User from DB: fullName=$fullName, avatarUrl=$avatarUrl');
-        print('🔐 Phone number: $phoneNumber');
-        
-        // If display_name is not in metadata, update it from database
-        if (fullName != null && value.userMetadata?['display_name'] == null) {
-          try {
-            print('🔄 Updating auth metadata with display_name from database...');
-            await Supabase.instance.client.auth.updateUser(
-              UserAttributes(
-                data: {
-                  'display_name': fullName,
-                  if (avatarUrl != null) 'avatar_url': avatarUrl,
-                },
-              ),
-            );
-            // Refresh user to get updated metadata
-            final updatedUser = Supabase.instance.client.auth.currentUser;
-            if (updatedUser != null) {
-              await _prefsRepository.setUser(updatedUser, phoneNumber ?? "");
-            } else {
-              await _prefsRepository.setUser(value, phoneNumber ?? "");
-            }
-          } catch (e) {
-            print('⚠️ Could not update auth metadata: $e');
-            await _prefsRepository.setUser(value, phoneNumber ?? "");
-          }
-        } else {
-          await _prefsRepository.setUser(value, phoneNumber ?? "");
-        }
-        
         _appManagerCubit.checkUser();
 
         // Check if user has phone number
         if (phoneNumber == null || phoneNumber.isEmpty) {
           // Navigate to add phone number page
           print('📱 User has no phone number, navigating to add phone page');
-          event.onSuccess(value, needsPhoneNumber: true);
+          event.onSuccess(persistedUser, needsPhoneNumber: true);
         } else {
           // Navigate to home page
           print('✅ User has phone number, proceeding to home page');
-          event.onSuccess(value, needsPhoneNumber: false);
+          event.onSuccess(persistedUser, needsPhoneNumber: false);
         }
       },
     );
+  }
+
+  Future<User> _persistAuthenticatedUser(User user) async {
+    String? phoneNumber;
+    String? fullName;
+    String? avatarUrl;
+
+    try {
+      final userData = await Supabase.instance.client
+          .from('users')
+          .select('phone_number, full_name, avatar_url')
+          .eq('id', user.id)
+          .maybeSingle();
+
+      phoneNumber = userData?['phone_number'] as String?;
+      fullName = userData?['full_name'] as String?;
+      avatarUrl = userData?['avatar_url'] as String?;
+    } catch (e) {
+      print('❌ Failed to get user data from database during login: $e');
+    }
+
+    print('🔐 Login successful - User metadata: ${user.userMetadata}');
+    print('🔐 User from DB: fullName=$fullName, avatarUrl=$avatarUrl');
+    print('🔐 Phone number: $phoneNumber');
+
+    if (fullName != null && user.userMetadata?['display_name'] == null) {
+      try {
+        print('🔄 Updating auth metadata with display_name from database...');
+        await Supabase.instance.client.auth.updateUser(
+          UserAttributes(
+            data: {
+              'display_name': fullName,
+              if (avatarUrl != null) 'avatar_url': avatarUrl,
+            },
+          ),
+        );
+      } catch (e) {
+        print('⚠️ Could not update auth metadata: $e');
+      }
+    }
+
+    final persistedUser = Supabase.instance.client.auth.currentUser ?? user;
+    await _prefsRepository.setUser(persistedUser, phoneNumber ?? "");
+    return persistedUser;
+  }
+
+  Future<String?> _readUserPhoneNumber(String userId) async {
+    try {
+      final userData = await Supabase.instance.client
+          .from('users')
+          .select('phone_number')
+          .eq('id', userId)
+          .maybeSingle();
+      return userData?['phone_number'] as String?;
+    } catch (e) {
+      print('❌ Failed to get user phone number: $e');
+      return null;
+    }
   }
 
   FutureOr<void> _onVerificationEvent(
