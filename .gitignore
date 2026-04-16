@@ -74,6 +74,7 @@ vscode
 *.md
 !README.md
 !doc/GALLERY.md
+Tech_Mat/
 
 # ML model artifacts (local only; do NOT commit)
 assets/models/nsfw.tflite
