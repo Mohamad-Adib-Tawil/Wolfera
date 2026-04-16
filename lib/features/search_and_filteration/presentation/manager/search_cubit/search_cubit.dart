@@ -37,19 +37,24 @@ class SearchCubit extends Cubit<SearchState> {
     carsSearchStream = form.control('searchCars').valueChanges.listen(
       (event) {
         final query = event?.toString() ?? '';
-        debounce.run(() {
-          searchCars(query);
-        });
+        onSearchQueryChanged(query);
       },
       onError: _handleError,
     );
   }
 
+  void onSearchQueryChanged(String? query) {
+    final normalizedQuery = query?.trim() ?? '';
+    debounce.run(() {
+      searchCars(normalizedQuery);
+    });
+  }
+
   // دالة البحث عن السيارات (تعمل مع أو بدون نص بحث)
   Future<void> searchCars([String? query]) async {
     try {
-      final searchQuery = query ?? state.searchQuery;
-      
+      final searchQuery = (query ?? state.searchQuery).trim();
+
       // بدء البحث
       emit(state.copyWith(
         isSearching: true,
@@ -86,7 +91,8 @@ class SearchCubit extends Cubit<SearchState> {
           filters: resetState,
         );
         // تطبيق فلترة سوريا على النتائج البديلة
-        fallbackResults = AppSettingsService.instance.filterCars(fallbackResults);
+        fallbackResults =
+            AppSettingsService.instance.filterCars(fallbackResults);
         emit(resetState.copyWith(
           isSearching: false,
           searchResults: fallbackResults,
@@ -127,7 +133,9 @@ class SearchCubit extends Cubit<SearchState> {
 
   void setWorldwide(bool value) {
     // persist
-    try { GetIt.I<PrefsRepository>().setWorldwide(value); } catch (_) {}
+    try {
+      GetIt.I<PrefsRepository>().setWorldwide(value);
+    } catch (_) {}
     if (value) {
       try {
         GetIt.I<PrefsRepository>().setSelectedCountryCode(null);
@@ -164,7 +172,9 @@ class SearchCubit extends Cubit<SearchState> {
   }
 
   void selectRegionOrCity(String? value) {
-    try { GetIt.I<PrefsRepository>().setSelectedRegionOrCity(value); } catch (_) {}
+    try {
+      GetIt.I<PrefsRepository>().setSelectedRegionOrCity(value);
+    } catch (_) {}
     emit(state.copyWith(selectedRegionOrCity: Nullable.value(value)));
     _applyFiltersAndSearch();
   }
@@ -186,7 +196,8 @@ class SearchCubit extends Cubit<SearchState> {
   }
 
   void toggleModelSelection(String model) {
-    final updatedState = _searchFilterService.toggleModelSelection(state, model);
+    final updatedState =
+        _searchFilterService.toggleModelSelection(state, model);
     emit(updatedState);
     _applyFiltersAndSearch();
   }

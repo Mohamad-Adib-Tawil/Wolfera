@@ -158,7 +158,14 @@ class _AppTextFieldState extends State<AppTextField> {
           return ReactiveTextField(
             controller: widget.controller,
             formControlName: widget.formControlName,
-            onSubmitted: (value) => widget.onFieldSubmitted,
+            onChanged: (control) {
+              final value = control.value;
+              widget.onChange?.call(value?.toString());
+            },
+            onSubmitted: (control) {
+              final value = control.value;
+              widget.onFieldSubmitted?.call(value?.toString() ?? '');
+            },
             maxLines: widget.isPasswordFiled ? 1 : widget.maxLines,
             minLines: widget.minLines,
             maxLength: widget.showLength ? widget.maxLength : null,

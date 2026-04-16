@@ -36,6 +36,8 @@ class SearchItemsBar extends StatelessWidget {
             hintTextStyle: context.textTheme.titleSmall?.s13.r
                 .withColor(AppColors.white.withValues(alpha: 0.67)),
             textInputAction: TextInputAction.search,
+            onChange: bloc.onSearchQueryChanged,
+            onFieldSubmitted: bloc.searchCars,
             maxLines: 1,
             borderWidth: 1.2.r,
             borderSideColor: AppColors.grey,

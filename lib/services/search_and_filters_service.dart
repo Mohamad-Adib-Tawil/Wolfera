@@ -11,6 +11,8 @@ class SearchFilterService {
     required String query,
     required SearchState filters,
   }) async {
+    final normalizedQuery = query.trim();
+
     try {
       var queryBuilder = SupabaseService.client
           .from('cars')
@@ -20,14 +22,16 @@ class SearchFilterService {
 
       // تجميع شروط OR (بحث نصي + ألوان)
       final List<String> orConditions = [];
-      if (query.isNotEmpty) {
-        final q = query.replaceAll(',', '');
+      if (normalizedQuery.isNotEmpty) {
+        final q = normalizedQuery.replaceAll(',', '');
         orConditions.addAll([
           'title.ilike.%$q%',
           'brand.ilike.%$q%',
           'model.ilike.%$q%',
-          'description.ilike.%$q%'
         ]);
+        if (normalizedQuery.length >= 4) {
+          orConditions.add('description.ilike.%$q%');
+        }
       }
       if (filters.seletedColors.isNotEmpty) {
         for (final c in filters.seletedColors) {
@@ -41,15 +45,15 @@ class SearchFilterService {
       }
 
       // فلتر نوع الإعلان (بيع/إيجار)
-      if (filters.selectedListingType != null && 
+      if (filters.selectedListingType != null &&
           filters.selectedListingType!.isNotEmpty) {
         if (filters.selectedListingType == 'both') {
           // عرض السيارات التي تدعم البيع والإيجار معاً
           queryBuilder = queryBuilder.eq('listing_type', 'both');
         } else {
           // عرض السيارات للبيع أو الإيجار أو كليهما
-          queryBuilder = queryBuilder.inFilter('listing_type', 
-            [filters.selectedListingType!, 'both']);
+          queryBuilder = queryBuilder
+              .inFilter('listing_type', [filters.selectedListingType!, 'both']);
         }
       }
 
@@ -61,7 +65,9 @@ class SearchFilterService {
           variants.add(b);
           variants.add(b.toLowerCase());
           variants.add(b.toUpperCase());
-          final title = b.isNotEmpty ? '${b[0].toUpperCase()}${b.substring(1).toLowerCase()}' : b;
+          final title = b.isNotEmpty
+              ? '${b[0].toUpperCase()}${b.substring(1).toLowerCase()}'
+              : b;
           variants.add(title);
         }
         queryBuilder = queryBuilder.inFilter('brand', variants.toList());
@@ -75,14 +81,17 @@ class SearchFilterService {
           variants.add(m);
           variants.add(m.toLowerCase());
           variants.add(m.toUpperCase());
-          final title = m.isNotEmpty ? '${m[0].toUpperCase()}${m.substring(1).toLowerCase()}' : m;
+          final title = m.isNotEmpty
+              ? '${m[0].toUpperCase()}${m.substring(1).toLowerCase()}'
+              : m;
           variants.add(title);
         }
         queryBuilder = queryBuilder.inFilter('model', variants.toList());
       }
 
       if (filters.selectedTransmission != null) {
-        queryBuilder = queryBuilder.eq('transmission', filters.selectedTransmission!);
+        queryBuilder =
+            queryBuilder.eq('transmission', filters.selectedTransmission!);
       }
 
       if (filters.seletedBodyType != null) {
@@ -185,12 +194,51 @@ class SearchFilterService {
         (filters.sortBy).isNotEmpty ? filters.sortBy : 'created_at',
         ascending: filters.sortAsc,
       );
-      return (response as List).cast<Map<String, dynamic>>();
+      final cars = (response as List).cast<Map<String, dynamic>>();
+      return _filterCarsBySearchQuery(cars, normalizedQuery);
     } catch (e) {
-      // Error in searchCars: $e
+      if (normalizedQuery.isNotEmpty) {
+        final fallbackCars = await searchCars(query: '', filters: filters);
+        return _filterCarsBySearchQuery(fallbackCars, normalizedQuery);
+      }
       rethrow;
     }
   }
+
+  List<Map<String, dynamic>> _filterCarsBySearchQuery(
+    List<Map<String, dynamic>> cars,
+    String query,
+  ) {
+    final normalizedQuery = query.trim().toLowerCase();
+    if (normalizedQuery.isEmpty) return cars;
+
+    final terms = normalizedQuery
+        .split(RegExp(r'\s+'))
+        .where((term) => term.isNotEmpty)
+        .toList(growable: false);
+    if (terms.isEmpty) return cars;
+
+    return cars.where((car) {
+      final primarySearchableText = [
+        car['title'],
+        car['brand'],
+        car['model'],
+        car['year'],
+      ]
+          .whereType<Object>()
+          .map((value) => value.toString().toLowerCase())
+          .join(' ');
+
+      final descriptionSearchableText = normalizedQuery.length >= 4
+          ? car['description']?.toString().toLowerCase()
+          : '';
+      final searchableText =
+          '$primarySearchableText ${descriptionSearchableText ?? ''}';
+
+      return terms.every(searchableText.contains);
+    }).toList(growable: false);
+  }
+
   // Toggle Car Maker Selection Filter
   SearchState toggleMakerSelection(SearchState state, String carMaker) {
     final currentSelected = List<String>.from(state.selectedCarMakersFilter);
@@ -412,14 +460,12 @@ class SearchFilterService {
 
       // فلترة حسب نطاق السعر (±20% من السعر الأصلي)
       if (minPrice != null && maxPrice != null) {
-        queryBuilder = queryBuilder
-            .gte('price', minPrice)
-            .lte('price', maxPrice);
+        queryBuilder =
+            queryBuilder.gte('price', minPrice).lte('price', maxPrice);
       }
 
-      final response = await queryBuilder
-          .order('created_at', ascending: false)
-          .limit(limit);
+      final response =
+          await queryBuilder.order('created_at', ascending: false).limit(limit);
 
       return (response as List).cast<Map<String, dynamic>>();
     } catch (e) {
