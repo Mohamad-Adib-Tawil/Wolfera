@@ -26,13 +26,14 @@ class HomeBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bottomResultsPadding = 40.h + (hasBanner ? 35.h : 0);
+
     if (!animate) {
       return SliverList(
         delegate: SliverChildListDelegate([
           10.verticalSpace,
           SearchBarButton(
               onTap: () => StatefulNavigationShell.of(context).goBranch(1)),
-          
           HomeAdBanner(
             refreshToken: refreshToken,
             onRegisterReload: onRegisterBannerReload,
@@ -42,7 +43,7 @@ class HomeBody extends StatelessWidget {
           const CombinedFiltersBar(),
           8.verticalSpace,
           SearchResultsVerticalList(
-            bottomPadding: hasBanner ? 35.h : 0,
+            bottomPadding: bottomResultsPadding,
           ),
         ]),
       );
@@ -71,18 +72,18 @@ class HomeBody extends StatelessWidget {
           ),
         ),
         // Recommended cars list from LEFT
-        _DelayedFadeSlide(
-          delay: const Duration(milliseconds: 220),
-          beginOffset: const Offset(-0.18, 0),
-          child: const RecommendedSection(),
+        const _DelayedFadeSlide(
+          delay: Duration(milliseconds: 220),
+          beginOffset: Offset(-0.18, 0),
+          child: RecommendedSection(),
         ),
         // Rental cars list from LEFT
 
         // Combined filters row + content below cars
-        _DelayedFadeSlide(
-          delay: const Duration(milliseconds: 360),
-          beginOffset: const Offset(0.18, 0),
-          child: const CombinedFiltersBar(),
+        const _DelayedFadeSlide(
+          delay: Duration(milliseconds: 360),
+          beginOffset: Offset(0.18, 0),
+          child: CombinedFiltersBar(),
         ),
         8.verticalSpace,
         // Vertical cars list from LEFT (reactive to filters)
@@ -91,7 +92,7 @@ class HomeBody extends StatelessWidget {
           beginOffset: const Offset(-0.18, 0),
           duration: const Duration(milliseconds: 1000),
           child: SearchResultsVerticalList(
-            bottomPadding: hasBanner ? 35.h : 0,
+            bottomPadding: bottomResultsPadding,
           ),
         ),
       ]),
