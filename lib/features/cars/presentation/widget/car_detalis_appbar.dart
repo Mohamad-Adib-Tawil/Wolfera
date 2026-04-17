@@ -16,25 +16,21 @@ import 'package:wolfera/services/supabase_service.dart';
 
 class CarDetalisAppbar extends StatefulWidget implements PreferredSizeWidget {
   final Map<String, dynamic>? carData;
-  
+
   const CarDetalisAppbar({
     super.key,
     this.carData,
   });
-  
+
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
-  
+
   @override
   State<CarDetalisAppbar> createState() => _CarDetalisAppbarState();
-  
-  @override
-  PreferredSizeWidget build(BuildContext context) {
-    throw UnimplementedError();
-  }
 }
 
-class _CarDetalisAppbarState extends State<CarDetalisAppbar> with SingleTickerProviderStateMixin {
+class _CarDetalisAppbarState extends State<CarDetalisAppbar>
+    with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
   bool _isAdmin = false;
@@ -43,12 +39,12 @@ class _CarDetalisAppbarState extends State<CarDetalisAppbar> with SingleTickerPr
   @override
   void initState() {
     super.initState();
-    
+
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
-    
+
     _scaleAnimation = TweenSequence<double>([
       TweenSequenceItem(
         tween: Tween<double>(begin: 1.0, end: 1.4)
@@ -90,12 +86,14 @@ class _CarDetalisAppbarState extends State<CarDetalisAppbar> with SingleTickerPr
       builder: (ctx) {
         return AlertDialog(
           backgroundColor: const Color(0xFF1E1F24),
-          title: Text('admin_remove_car'.tr(), style: const TextStyle(color: Colors.white)),
+          title: Text('admin_remove_car'.tr(),
+              style: const TextStyle(color: Colors.white)),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('admin_remove_car_desc'.tr(), style: const TextStyle(color: Colors.white70)),
+              Text('admin_remove_car_desc'.tr(),
+                  style: const TextStyle(color: Colors.white70)),
               const SizedBox(height: 12),
               TextField(
                 controller: controller,
@@ -106,8 +104,10 @@ class _CarDetalisAppbarState extends State<CarDetalisAppbar> with SingleTickerPr
                   hintText: 'reason_hint'.tr(),
                   labelStyle: const TextStyle(color: Colors.white70),
                   hintStyle: const TextStyle(color: Colors.white54),
-                  enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.white24)),
-                  focusedBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.white70)),
+                  enabledBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white24)),
+                  focusedBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white70)),
                 ),
               ),
             ],
@@ -137,8 +137,12 @@ class _CarDetalisAppbarState extends State<CarDetalisAppbar> with SingleTickerPr
       await SupabaseService.adminRemoveCar(carId: carId, reason: reason);
       showMessage('removal_success'.tr(), isSuccess: true);
       // Refresh home featured and search results
-      try { GetIt.I<HomeCubit>().getHomeData(); } catch (_) {}
-      try { GetIt.I<SearchCubit>().searchCars(); } catch (_) {}
+      try {
+        GetIt.I<HomeCubit>().getHomeData();
+      } catch (_) {}
+      try {
+        GetIt.I<SearchCubit>().searchCars();
+      } catch (_) {}
       if (mounted) Navigator.of(context).maybePop();
     } catch (e) {
       showMessage('removal_failed'.tr(), isSuccess: false);
@@ -162,23 +166,25 @@ class _CarDetalisAppbarState extends State<CarDetalisAppbar> with SingleTickerPr
 
   Future<void> _toggleFavorite(BuildContext context) async {
     if (widget.carData == null) {
-      showMessage('Cannot add to favorites: Car data not available', isSuccess: false);
+      showMessage('Cannot add to favorites: Car data not available',
+          isSuccess: false);
       return;
     }
-    
+
     final carId = widget.carData!['id']?.toString();
     if (carId == null) {
-      showMessage('Cannot add to favorites: Car ID not available', isSuccess: false);
+      showMessage('Cannot add to favorites: Car ID not available',
+          isSuccess: false);
       return;
     }
-    
+
     _animationController.forward(from: 0.0);
-    
+
     try {
       // استخدام FavoriteCubit الموحد
       final favoriteCubit = context.read<FavoriteCubit>();
       await favoriteCubit.toggleFavorite(widget.carData!);
-      
+
       final isFavorite = favoriteCubit.isFavoriteById(carId);
       showMessage(
         isFavorite ? 'Added to favorites' : 'Removed from favorites',
@@ -195,12 +201,14 @@ class _CarDetalisAppbarState extends State<CarDetalisAppbar> with SingleTickerPr
       return;
     }
     if (widget.carData == null) {
-      showMessage('Cannot update featured: Car data not available', isSuccess: false);
+      showMessage('Cannot update featured: Car data not available',
+          isSuccess: false);
       return;
     }
     final carId = widget.carData!['id']?.toString();
     if (carId == null) {
-      showMessage('Cannot update featured: Car ID not available', isSuccess: false);
+      showMessage('Cannot update featured: Car ID not available',
+          isSuccess: false);
       return;
     }
     try {
@@ -209,7 +217,8 @@ class _CarDetalisAppbarState extends State<CarDetalisAppbar> with SingleTickerPr
       if (mounted) {
         setState(() => _isFeatured = newVal);
       }
-      showMessage(newVal ? 'Marked as featured' : 'Removed from featured', isSuccess: true);
+      showMessage(newVal ? 'Marked as featured' : 'Removed from featured',
+          isSuccess: true);
       // Refresh home featured list if available
       try {
         GetIt.I<HomeCubit>().getHomeData();
@@ -222,7 +231,7 @@ class _CarDetalisAppbarState extends State<CarDetalisAppbar> with SingleTickerPr
   @override
   Widget build(BuildContext context) {
     final carId = widget.carData?['id']?.toString();
-    
+
     return CustomAppbar(
       automaticallyImplyLeading: true,
       action: Padding(
@@ -248,7 +257,9 @@ class _CarDetalisAppbarState extends State<CarDetalisAppbar> with SingleTickerPr
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 10.w),
                   child: Icon(
-                    _isFeatured ? CupertinoIcons.star_fill : CupertinoIcons.star,
+                    _isFeatured
+                        ? CupertinoIcons.star_fill
+                        : CupertinoIcons.star,
                     size: 28.r,
                     color: _isFeatured ? AppColors.orange : AppColors.white,
                   ),
@@ -256,10 +267,10 @@ class _CarDetalisAppbarState extends State<CarDetalisAppbar> with SingleTickerPr
               ),
             BlocBuilder<FavoriteCubit, FavoriteState>(
               builder: (context, state) {
-                final isFavorite = carId != null 
+                final isFavorite = carId != null
                     ? context.read<FavoriteCubit>().isFavoriteById(carId)
                     : false;
-                
+
                 return GestureDetector(
                   onTap: () => _toggleFavorite(context),
                   child: Padding(
@@ -270,7 +281,9 @@ class _CarDetalisAppbarState extends State<CarDetalisAppbar> with SingleTickerPr
                         return Transform.scale(
                           scale: _scaleAnimation.value,
                           child: Icon(
-                            isFavorite ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
+                            isFavorite
+                                ? CupertinoIcons.heart_fill
+                                : CupertinoIcons.heart,
                             size: 28.r,
                             color: isFavorite ? AppColors.red : AppColors.white,
                           ),

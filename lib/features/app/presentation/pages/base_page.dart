@@ -1,5 +1,3 @@
- 
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -17,7 +15,7 @@ import 'package:wolfera/features/app/presentation/widgets/custom_navigation_bar.
 import 'package:wolfera/generated/locale_keys.g.dart';
 
 import '../../../../generated/assets.dart';
- 
+
 import '../widgets/app_scaffold.dart';
 
 class BasePage extends StatefulWidget {
@@ -63,10 +61,6 @@ class _BasePageState extends State<BasePage> {
 
   @override
   Widget build(BuildContext context) {
-    // Compute dynamic bottom padding to avoid overlap with system nav bar
-    final bottomInset = MediaQuery.of(context).padding.bottom;
-    final navHeight = 85.h; // must match CustomNavigationBar height
-    final bodyBottomPadding = navHeight + bottomInset;
     return PopScope(
       onPopInvoked: (didPop) {
         if (widget.child.currentIndex != 0) {

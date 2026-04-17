@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
@@ -109,25 +110,26 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
             updateProfileStatus: const BlocStatus.fail(error: "fail")));
         return;
       }
-      
+
       final email = profileForm.control(kFromEmail).value;
       final displayName = profileForm.control(kFromName).value;
       var phoneNumber = profileForm.control(kFromPhone).value as String?;
       final countryCode = profileForm.control(kFromCountryCode).value;
-      
+
       // Remove leading zero if user entered national format (e.g., 0555123456)
       if (phoneNumber != null && phoneNumber.startsWith('0')) {
         phoneNumber = phoneNumber.substring(1);
       }
-      
+
       // Combine country code with phone number
       final fullPhoneNumber = phoneNumber != null && phoneNumber.isNotEmpty
           ? '+$countryCode$phoneNumber'
           : null;
-      
-      print('📝 Form data: name=$displayName, email=$email, phone=$fullPhoneNumber');
+
+      print(
+          '📝 Form data: name=$displayName, email=$email, phone=$fullPhoneNumber');
       print('📷 Has avatar: ${state.selectedFile != null}');
-      
+
       final result = await _updateProfileUsecase(UpdateProfileParams(
         email: email,
         displayName: displayName,
@@ -158,19 +160,19 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
           phoneNumber = userData?['phone_number'] as String?;
           print('📞 Phone from DB: $phoneNumber');
-          
+
           // Save updated user to preferences
           print('💾 Saving updated user to preferences...');
           await _prefsRepository.setUser(value, phoneNumber ?? "");
-          
+
           // Force UI update by checking user again
           print('🔄 Refreshing UI...');
           _appManagerCubit.checkUser();
-          
+
           // Show success message
           showMessage(tr(LocaleKeys.dataHasBeenModifiedSuccessfully),
               isSuccess: true);
-          
+
           // Pop the edit screen
           print('✅ Profile update complete, closing screen');
           GRouter.router.pop();

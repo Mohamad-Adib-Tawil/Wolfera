@@ -25,6 +25,8 @@ class FilterWithBidgeWidget extends StatelessWidget {
       },
       child: BlocBuilder<SearchCubit, SearchState>(
         builder: (context, state) {
+          final activeFilterCount = state.activeFilterCount();
+
           return AnimatedContainer(
             duration: const Duration(milliseconds: 400),
             alignment: Alignment.center,
@@ -33,19 +35,20 @@ class FilterWithBidgeWidget extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10.r),
               // color: AppColors.grey.shade900,
-              border: state.activeFilterCount() > 0
+              border: activeFilterCount > 0
                   ? Border.all(color: AppColors.primary, width: 1.6.r)
                   : Border.all(color: AppColors.grey, width: 1.2.r),
             ),
             child: badges.Badge(
               position: badges.BadgePosition.bottomEnd(end: -8),
-              showBadge: true,
+              showBadge: activeFilterCount > 0,
               onTap: () {
                 GRouter.router.pushNamed(GRouter.config.filterRoutes.filter);
               },
               badgeContent: Center(
                 child: AppText(
-                  state.activeFilterCount().toString(),
+                  activeFilterCount.toString(),
+                  translation: false,
                   style: context.textTheme.bodySmall!.sb!.copyWith(
                     color: AppColors.white,
                     fontSize: 12.sp,
@@ -60,7 +63,7 @@ class FilterWithBidgeWidget extends StatelessWidget {
                 padding: HWEdgeInsets.all(3.5),
               ),
               child: AppSvgPicture(
-                  state.activeFilterCount() > 0
+                  activeFilterCount > 0
                       ? Assets.svgFilterAcitve
                       : Assets.svgFilter,
                   width: 25.r),

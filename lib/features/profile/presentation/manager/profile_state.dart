@@ -1,7 +1,7 @@
 part of 'profile_bloc.dart';
 
 @immutable
-class ProfileState {
+class ProfileState extends Equatable {
   ProfileState({
     this.updateProfileStatus = const BlocStatus.initial(),
     this.phone,
@@ -13,7 +13,7 @@ class ProfileState {
   final File? selectedFile;
   final String? phone;
 
-  Country selectedCountry;
+  final Country selectedCountry;
 
   @override
   List<Object?> get props =>

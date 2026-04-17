@@ -171,6 +171,8 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
         final me = SupabaseService.currentUser!.id;
         final isBuyer = conv['buyer_id'] == me;
         final other = isBuyer ? conv['seller'] : conv['buyer'];
+        final otherId =
+            (isBuyer ? conv['seller_id'] : conv['buyer_id'])?.toString();
         final otherName = other != null
             ? (other['full_name'] ?? other['display_name'] ?? other['name'])
                 ?.toString()
@@ -218,7 +220,7 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
                           AppColors.primary.withValues(alpha: 0.18),
                       foregroundColor: AppColors.primary,
                       icon: Icons.archive_outlined,
-                      label: 'Hide',
+                      label: 'hide'.tr(),
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ],
@@ -232,7 +234,7 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
                   unreadCount: unread,
                   onTap: () => _openConversation(
                     conv,
-                    otherId: other?['id']?.toString(),
+                    otherId: otherId ?? other?['id']?.toString(),
                     otherName: otherName,
                     otherAvatar: otherAvatar,
                   ),
@@ -256,11 +258,8 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
   }
 
   Future<void> _loadConversations() async {
-    print('🔍 [MessagesBasePage] Starting _loadConversations...');
-
     final user = SupabaseService.currentUser;
     if (user == null) {
-      print('❌ [MessagesBasePage] No current user found');
       setState(() {
         _isLoading = false;
         _conversations = [];
@@ -268,22 +267,16 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
       return;
     }
 
-    print('🔍 [MessagesBasePage] Current user: ${user.id}');
-
     try {
       setState(() {
         _isLoading = true;
       });
 
       final list = await _chatService.getUserConversations(user.id);
-      print(
-          '🔍 [MessagesBasePage] Received ${list.length} conversations from service');
 
       // استبعد المحادثات الخاطئة التي يكون فيها الطرفان نفس المستخدم
       final filtered =
           list.where((c) => c['buyer_id'] != c['seller_id']).toList();
-      print(
-          '🔍 [MessagesBasePage] After filtering: ${filtered.length} conversations');
 
       if (mounted) {
         setState(() {
@@ -297,36 +290,25 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
       _sub = _chatService.subscribeToUserConversations(
         userId: user.id,
         onConversationUpdate: (conv) {
-          print(
-              '🔍 [MessagesBasePage] Realtime conversation update: ${conv['id']}');
           if (!mounted) return;
 
           setState(() {
             // إذا أصبحت غير نشطة (مؤرشفة) احذفها من اللائحة
             if (conv['is_active'] != true) {
               _conversations.removeWhere((e) => e['id'] == conv['id']);
-              print(
-                  '🔍 [MessagesBasePage] Removed inactive conversation: ${conv['id']}');
             } else {
               final i = _conversations.indexWhere((e) => e['id'] == conv['id']);
               if (i >= 0) {
                 _conversations[i] = conv;
-                print(
-                    '🔍 [MessagesBasePage] Updated existing conversation: ${conv['id']}');
               } else {
                 _conversations.insert(0, conv);
-                print(
-                    '🔍 [MessagesBasePage] Added new conversation: ${conv['id']}');
               }
             }
           });
         },
       );
-
-      print('✅ [MessagesBasePage] Conversations loaded successfully');
     } catch (e, stackTrace) {
-      print('❌ [MessagesBasePage] Error loading conversations: $e');
-      print('❌ [MessagesBasePage] Stack trace: $stackTrace');
+      debugPrint('MessagesBasePage load error: $e\n$stackTrace');
 
       if (mounted) {
         setState(() {
@@ -336,7 +318,7 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
         // Show error message to user
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to load conversations. Tap to retry.'),
+            content: const Text('Failed to load conversations. Tap to retry.'),
             action: SnackBarAction(
               label: 'Retry',
               onPressed: _loadConversations,
@@ -350,7 +332,6 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
 
   // Refresh conversations when a push new_message arrives
   Future<void> _onIncomingPushTick() async {
-    print('🔍 [DEBUG] MessagesBasePage: _onIncomingPushTick called');
     final user = SupabaseService.currentUser;
     if (user == null) return;
     try {
@@ -362,10 +343,8 @@ class _MessagesBasePageState extends State<MessagesBasePage> {
         _conversations = filtered;
         _isLoading = false;
       });
-      print(
-          '🔍 [DEBUG] MessagesBasePage: Conversations refreshed, count = ${filtered.length}');
     } catch (e) {
-      print('❌ [DEBUG] MessagesBasePage: Error in _onIncomingPushTick: $e');
+      debugPrint('MessagesBasePage refresh error: $e');
     }
   }
 

@@ -24,16 +24,15 @@ Future<void> initialization(
     getIt.registerLazySingleton<FavoriteCubit>(() => FavoriteCubit());
   }
   await AppService.initializeApp();
-  // Configure Firebase Crashlytics (enable in release, set handlers)
+  // Configure Firebase Crashlytics. Keep debug logs clean and avoid reporting
+  // transient auth/network retries as fatal crashes.
   try {
     if (Firebase.apps.isNotEmpty) {
       await FirebaseCrashlytics.instance
           .setCrashlyticsCollectionEnabled(!kDebugMode);
       FlutterError.onError = (FlutterErrorDetails details) {
-        // Keep default Flutter error behavior
         FlutterError.presentError(details);
-        // Also report to Crashlytics
-        FirebaseCrashlytics.instance.recordFlutterError(details);
+        _recordFlutterError(details);
       };
     }
   } catch (_) {}
@@ -55,14 +54,35 @@ Future<void> initialization(
   // لالتقاط أخطاء async غير المعالجة نستخدم PlatformDispatcher بدل runZonedGuarded.
   if (Firebase.apps.isNotEmpty) {
     ui.PlatformDispatcher.instance.onError = (error, stack) {
-      try {
-        FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-      } catch (_) {}
+      _recordPlatformError(error, stack);
       return true;
     };
   }
 
   runApp(app);
+}
+
+void _recordFlutterError(FlutterErrorDetails details) {
+  if (kDebugMode || _isRecoverableRuntimeError(details.exception)) return;
+
+  try {
+    FirebaseCrashlytics.instance.recordFlutterError(details);
+  } catch (_) {}
+}
+
+void _recordPlatformError(Object error, StackTrace stack) {
+  if (kDebugMode || _isRecoverableRuntimeError(error)) return;
+
+  try {
+    FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
+  } catch (_) {}
+}
+
+bool _isRecoverableRuntimeError(Object error) {
+  final message = error.toString();
+  return message.contains('AuthRetryableFetchException') ||
+      message.contains('SocketException') ||
+      message.contains('Failed host lookup');
 }
 
 Future<EasyLocalization> _easyLocalization(

@@ -3,7 +3,6 @@ import 'package:wolfera/services/supabase_service.dart';
 
 /// مساعد لإدارة إشعارات تغيير الأسعار
 class PriceChangeHelper {
-  
   /// إرسال إشعار تغيير السعر للمستخدمين الذين أضافوا السيارة للمفضلة
   /// يمكن استخدام هذه الدالة من أي مكان في التطبيق
   static Future<void> notifyPriceChange({
@@ -26,22 +25,12 @@ class PriceChangeHelper {
     required String newPrice,
     Map<String, dynamic>? additionalData,
   }) async {
-    // جلب بيانات السيارة الحالية
-    final currentCar = await SupabaseService.client
-        .from('cars')
-        .select('rental_price, title')
-        .eq('id', carId)
-        .single();
-    
-    final oldPrice = currentCar['rental_price']?.toString();
-    final carTitle = currentCar['title']?.toString() ?? 'Unknown Car';
-    
     // تحضير البيانات للتحديث
     final updateData = <String, dynamic>{
       'rental_price': newPrice,
       ...?additionalData,
     };
-    
+
     // تحديث السيارة (سيتم إرسال الإشعار تلقائياً من خلال updateCar)
     await SupabaseService.updateCar(carId, updateData);
   }

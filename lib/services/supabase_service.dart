@@ -14,7 +14,8 @@ class SupabaseService {
   static Future<void> initialize() async {
     SupabaseConfig.ensureConfigured();
     final url = Env.hasSupabase ? Env.supabaseUrl : SupabaseConfig.supabaseUrl;
-    final anon = Env.hasSupabase ? Env.supabaseAnonKey : SupabaseConfig.supabaseAnonKey;
+    final anon =
+        Env.hasSupabase ? Env.supabaseAnonKey : SupabaseConfig.supabaseAnonKey;
     await Supabase.initialize(
       url: url,
       anonKey: anon,
@@ -52,7 +53,9 @@ class SupabaseService {
       } catch (_) {}
 
       // 4) Ensure user row exists in 'users'
-      try { await _ensureUserRow(); } catch (_) {}
+      try {
+        await _ensureUserRow();
+      } catch (_) {}
 
       return response;
     } catch (e, st) {
@@ -107,8 +110,7 @@ class SupabaseService {
     try {
       await client
           .from('users')
-          .update({'preferred_language': languageCode})
-          .eq('id', uid);
+          .update({'preferred_language': languageCode}).eq('id', uid);
     } catch (_) {}
   }
 
@@ -150,7 +152,8 @@ class SupabaseService {
       } else {
         final webClientId = Env.googleWebClientId.isNotEmpty
             ? Env.googleWebClientId
-            : SupabaseConfig.googleWebClientId; // fallback to existing config if provided locally
+            : SupabaseConfig
+                .googleWebClientId; // fallback to existing config if provided locally
         if (webClientId.isNotEmpty) {
           await GoogleSignIn.instance.initialize(serverClientId: webClientId);
         } else {
@@ -163,8 +166,7 @@ class SupabaseService {
         scopeHint: const ['email', 'profile'],
       );
 
-      // In GoogleSignIn v7, you must await the authentication
-      final googleAuth = await account.authentication;
+      final googleAuth = account.authentication;
       final idToken = googleAuth.idToken;
       if (idToken == null) {
         throw 'No ID Token found.';
@@ -177,7 +179,9 @@ class SupabaseService {
       );
 
       // Ensure user row exists in 'users'
-      try { await _ensureUserRow(); } catch (_) {}
+      try {
+        await _ensureUserRow();
+      } catch (_) {}
 
       // Google Sign-In successful
       return response;
@@ -238,8 +242,8 @@ class SupabaseService {
         .from('cars')
         .select('*')
         .eq('is_featured', true)
-        .inFilter('status', ['active', 'available'])
-        .order('created_at', ascending: false);
+        .inFilter('status', ['active', 'available']).order('created_at',
+            ascending: false);
     return (response as List).cast<Map<String, dynamic>>();
   }
 
@@ -254,16 +258,17 @@ class SupabaseService {
     // جلب بيانات السيارة الحالية للمقارنة
     final currentCar = await client
         .from('cars')
-        .select('price, title, rental_price_per_day, rental_price_per_week, rental_price_per_month, rental_price_per_3months, rental_price_per_6months, rental_price_per_year')
+        .select(
+            'price, title, rental_price_per_day, rental_price_per_week, rental_price_per_month, rental_price_per_3months, rental_price_per_6months, rental_price_per_year')
         .eq('id', id)
         .single();
-    
+
     // تحديث السيارة
     await client.from('cars').update(carData).eq('id', id);
-    
+
     // التحقق من تغيير أي سعر وإرسال الإشعارات
     final carTitle = currentCar['title']?.toString() ?? 'Unknown Car';
-    
+
     // التحقق من تغيير سعر البيع (قارن فقط إذا كان الحقل موجوداً في التحديث)
     final rentalFields = [
       'rental_price_per_day',
@@ -316,16 +321,16 @@ class SupabaseService {
         }
       }
     }
-    
+
     if (priceChanged && oldPriceDisplay != null && newPriceDisplay != null) {
       print('💰 Price change detected for car: $id');
       print('   Title: $carTitle');
       if (changedField != null) {
         print('   Changed field: $changedField');
       }
-      print('   Old Price: ${oldPriceDisplay ?? '—'}');
-      print('   New Price: ${newPriceDisplay ?? '—'}');
-      
+      print('   Old Price: $oldPriceDisplay');
+      print('   New Price: $newPriceDisplay');
+
       // إرسال إشعار تغيير السعر للمستخدمين الذين أضافوا السيارة للمفضلة
       await NotificationService.sendPriceChangeNotification(
         carId: id,
@@ -381,7 +386,9 @@ class SupabaseService {
     } catch (e) {
       // Fallback if columns don't exist: update status only
       try {
-        await client.from('cars').update({'status': 'inactive'}).eq('id', carId);
+        await client
+            .from('cars')
+            .update({'status': 'inactive'}).eq('id', carId);
         updated = true;
       } catch (e2) {
         // RLS or other error – propagate to caller
@@ -466,9 +473,9 @@ class SupabaseService {
       throw Exception('Invalid user id');
     }
     // 2) update is_admin
-    await client
-        .from('users')
-        .update({'is_admin': true, 'updated_at': DateTime.now().toIso8601String()})
-        .eq('id', uid);
+    await client.from('users').update({
+      'is_admin': true,
+      'updated_at': DateTime.now().toIso8601String()
+    }).eq('id', uid);
   }
 }

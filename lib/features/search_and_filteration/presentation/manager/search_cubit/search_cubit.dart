@@ -76,7 +76,7 @@ class SearchCubit extends Cubit<SearchState> {
         searchResults: results,
       ));
     } catch (e) {
-      print('🔴 Error searching cars: $e');
+      debugPrint('Error searching cars: $e');
       // تعافي صامت: إعادة تعيين جميع الفلاتر وجلب كل السيارات بدون عرض خطأ للمستخدم
       try {
         final resetState = SearchState.initial();
@@ -99,9 +99,7 @@ class SearchCubit extends Cubit<SearchState> {
         ));
       } catch (e2) {
         // إذا فشل الاسترجاع أيضاً، أعِد حالة افتراضية بصمت بدون نتائج
-        if (kDebugMode) {
-          print('🔴 Fallback search failed: $e2');
-        }
+        debugPrint('Fallback search failed: $e2');
         emit(SearchState.initial().copyWith(
           isSearching: false,
           searchResults: const [],
@@ -362,8 +360,6 @@ class SearchCubit extends Cubit<SearchState> {
   }
 
   void _handleError(error) {
-    if (kDebugMode) {
-      print('Error in stream: $error');
-    }
+    debugPrint('Search stream error: $error');
   }
 }

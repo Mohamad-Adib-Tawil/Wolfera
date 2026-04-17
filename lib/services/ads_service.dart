@@ -60,7 +60,7 @@ class AdsService {
         .select()
         .single();
 
-    return (row as Map<String, dynamic>);
+    return row;
   }
 
   // Admin: update duration for an ad
@@ -89,7 +89,8 @@ class AdsService {
         .eq('id', adId)
         .maybeSingle();
 
-    final storagePath = row != null ? (row['storage_path']?.toString() ?? '') : '';
+    final storagePath =
+        row != null ? (row['storage_path']?.toString() ?? '') : '';
     if (storagePath.isNotEmpty) {
       await SupabaseStorageHelper.deleteFile(storagePath);
     }

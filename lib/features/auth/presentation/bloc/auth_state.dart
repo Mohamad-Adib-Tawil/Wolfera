@@ -23,7 +23,7 @@ class AuthState extends Equatable {
   final BlocStatus resetPasswordStatus;
   final BlocStatus logoutStatus;
   final String? phone;
-  Country selectedCountry;
+  final Country selectedCountry;
 
   @override
   List<Object?> get props => [
