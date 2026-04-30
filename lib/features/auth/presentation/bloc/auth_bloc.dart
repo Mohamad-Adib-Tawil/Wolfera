@@ -79,6 +79,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     this._prefsRepository,
     this._authDatasource,
   ) : super(AuthState()) {
+    on<RegisterEvent>(_onRegisterEvent);
     on<LoginEvent>(_onLoginEvent);
     on<GoogleLoginEvent>(_onGoogleLoginEvent);
     on<LogoutEvent>(_onLogoutEvent);
@@ -136,12 +137,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         validators: [
           Validators.required,
           // const PhoneNumberValidator(),
-        ],
-      ),
-      kFromPassword: FormControl<String>(
-        validators: [
-          Validators.required,
-          Validators.minLength(8),
         ],
       ),
       kFromPassword: FormControl<String>(
