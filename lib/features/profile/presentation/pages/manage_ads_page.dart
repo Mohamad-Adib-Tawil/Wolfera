@@ -20,6 +20,7 @@ class ManageAdsPage extends StatefulWidget {
 
 class _ManageAdsPageState extends State<ManageAdsPage> {
   final _picker = ImagePicker();
+  final _linkController = TextEditingController();
   File? _selectedFile;
   DateTime? _startAt;
   DateTime? _endAt;
@@ -37,6 +38,12 @@ class _ManageAdsPageState extends State<ManageAdsPage> {
     _shouldAnimateEntrance = !_didAnimateOnce;
     _didAnimateOnce = true;
     _loadAll();
+  }
+
+  @override
+  void dispose() {
+    _linkController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadAll() async {
@@ -113,7 +120,11 @@ class _ManageAdsPageState extends State<ManageAdsPage> {
     setState(() => _creating = true);
     try {
       await AdsService.createAd(
-          file: _selectedFile!, startAt: _startAt!, endAt: _endAt!);
+        file: _selectedFile!,
+        startAt: _startAt!,
+        endAt: _endAt!,
+        linkUrl: _linkController.text,
+      );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('ad_created'.tr())),
@@ -122,6 +133,7 @@ class _ManageAdsPageState extends State<ManageAdsPage> {
         _selectedFile = null;
         _startAt = null;
         _endAt = null;
+        _linkController.clear();
       });
       await _loadAll();
     } catch (e) {
@@ -134,33 +146,144 @@ class _ManageAdsPageState extends State<ManageAdsPage> {
     }
   }
 
-  Future<void> _editDuration(Map<String, dynamic> ad) async {
+  Future<void> _editAd(Map<String, dynamic> ad) async {
     DateTime start =
         DateTime.tryParse(ad['start_at']?.toString() ?? '') ?? DateTime.now();
     DateTime end = DateTime.tryParse(ad['end_at']?.toString() ?? '') ??
         start.add(const Duration(days: 7));
+    final linkController = TextEditingController(
+      text: ad['link_url']?.toString() ?? '',
+    );
 
-    final newStart = await showDatePicker(
+    final result =
+        await showDialog<({DateTime start, DateTime end, String link})>(
       context: context,
-      initialDate: start,
-      firstDate: DateTime.now().subtract(const Duration(days: 365 * 3)),
-      lastDate: DateTime.now().add(const Duration(days: 365 * 3)),
+      builder: (ctx) {
+        DateTime selectedStart = start;
+        DateTime selectedEnd = end;
+
+        return StatefulBuilder(
+          builder: (ctx, setDialogState) {
+            Future<void> pickStart() async {
+              final picked = await showDatePicker(
+                context: ctx,
+                initialDate: selectedStart,
+                firstDate:
+                    DateTime.now().subtract(const Duration(days: 365 * 3)),
+                lastDate: DateTime.now().add(const Duration(days: 365 * 3)),
+              );
+              if (picked == null) return;
+              setDialogState(() {
+                selectedStart = DateTime(picked.year, picked.month, picked.day);
+                if (selectedEnd.isBefore(selectedStart)) {
+                  selectedEnd = DateTime(
+                    picked.year,
+                    picked.month,
+                    picked.day,
+                    23,
+                    59,
+                    59,
+                  );
+                }
+              });
+            }
+
+            Future<void> pickEnd() async {
+              final picked = await showDatePicker(
+                context: ctx,
+                initialDate: selectedEnd.isBefore(selectedStart)
+                    ? selectedStart
+                    : selectedEnd,
+                firstDate: selectedStart,
+                lastDate: selectedStart.add(const Duration(days: 365 * 3)),
+              );
+              if (picked == null) return;
+              setDialogState(() {
+                selectedEnd = DateTime(
+                  picked.year,
+                  picked.month,
+                  picked.day,
+                  23,
+                  59,
+                  59,
+                );
+              });
+            }
+
+            return AlertDialog(
+              title: Text('edit_ad'.tr()),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: linkController,
+                    keyboardType: TextInputType.url,
+                    decoration: InputDecoration(
+                      labelText: 'ad_link'.tr(),
+                      hintText: 'ad_link_hint'.tr(),
+                    ),
+                  ),
+                  SizedBox(height: 12.h),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: pickStart,
+                          child: Text(_formatDate(selectedStart)),
+                        ),
+                      ),
+                      SizedBox(width: 8.w),
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: pickEnd,
+                          child: Text(_formatDate(selectedEnd)),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  child: Text('cancel'.tr()),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(
+                    (
+                      start: selectedStart,
+                      end: selectedEnd,
+                      link: linkController.text,
+                    ),
+                  ),
+                  child: Text('save'.tr()),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
-    if (newStart == null) return;
-    if (!mounted) return;
-    final newEnd = await showDatePicker(
-      context: context,
-      initialDate: end,
-      firstDate: newStart,
-      lastDate: newStart.add(const Duration(days: 365 * 3)),
-    );
-    if (newEnd == null) return;
+    linkController.dispose();
+    if (result == null) return;
 
     try {
       await AdsService.updateAdDuration(
         adId: ad['id'].toString(),
-        startAt: DateTime(newStart.year, newStart.month, newStart.day),
-        endAt: DateTime(newEnd.year, newEnd.month, newEnd.day, 23, 59, 59),
+        startAt: DateTime(
+          result.start.year,
+          result.start.month,
+          result.start.day,
+        ),
+        endAt: DateTime(
+          result.end.year,
+          result.end.month,
+          result.end.day,
+          23,
+          59,
+          59,
+        ),
+        linkUrl: result.link,
       );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -301,6 +424,35 @@ class _ManageAdsPageState extends State<ManageAdsPage> {
                   ),
                 ),
               ],
+            ),
+            SizedBox(height: 12.h),
+            TextField(
+              controller: _linkController,
+              keyboardType: TextInputType.url,
+              textInputAction: TextInputAction.done,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                labelText: 'ad_link'.tr(),
+                hintText: 'ad_link_hint'.tr(),
+                labelStyle: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.85),
+                ),
+                hintStyle: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.45),
+                ),
+                filled: true,
+                fillColor: Colors.white.withValues(alpha: 0.08),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                  borderSide: BorderSide(
+                    color: Colors.white.withValues(alpha: 0.30),
+                  ),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.r),
+                  borderSide: const BorderSide(color: AppColors.primary),
+                ),
+              ),
             ),
             SizedBox(height: 12.h),
             Row(
@@ -464,6 +616,7 @@ class _ManageAdsPageState extends State<ManageAdsPage> {
       itemBuilder: (context, index) {
         final ad = _ads[index];
         final url = ad['image_url']?.toString() ?? '';
+        final linkUrl = ad['link_url']?.toString() ?? '';
         final start = DateTime.tryParse(ad['start_at']?.toString() ?? '');
         final end = DateTime.tryParse(ad['end_at']?.toString() ?? '');
         final isActive = _isActive(start, end);
@@ -520,17 +673,22 @@ class _ManageAdsPageState extends State<ManageAdsPage> {
                       text:
                           daysLeft > 0 ? '$daysLeft days left' : '0 days left',
                     ),
+                    if (linkUrl.trim().isNotEmpty)
+                      _buildMetaChip(
+                        icon: Icons.link_rounded,
+                        text: 'ad_link'.tr(),
+                      ),
                   ],
                 ),
                 SizedBox(height: 6.h),
                 Row(
                   children: [
                     TextButton.icon(
-                      onPressed: () => _editDuration(ad),
+                      onPressed: () => _editAd(ad),
                       style:
                           TextButton.styleFrom(foregroundColor: Colors.white),
-                      icon: const Icon(Icons.edit_calendar_outlined, size: 18),
-                      label: Text('edit_duration'.tr()),
+                      icon: const Icon(Icons.edit_outlined, size: 18),
+                      label: Text('edit_ad'.tr()),
                     ),
                     const Spacer(),
                     TextButton.icon(

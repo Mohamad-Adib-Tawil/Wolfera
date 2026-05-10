@@ -1,7 +1,9 @@
 import 'package:card_swiper/card_swiper.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_cached_network_image.dart';
 import 'package:wolfera/services/ads_service.dart';
 
@@ -67,6 +69,32 @@ class _HomeAdBannerState extends State<HomeAdBanner> {
     }
   }
 
+  Future<void> _openAdLink(String? value) async {
+    final link = value?.trim() ?? '';
+    if (link.isEmpty) return;
+
+    final uri = _parseExternalUri(link);
+    if (uri == null) return;
+
+    final launched = await launchUrl(
+      uri,
+      mode: LaunchMode.externalApplication,
+    ).catchError((_) => false);
+    if (!launched && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('open_ad_link_failed'.tr())),
+      );
+    }
+  }
+
+  Uri? _parseExternalUri(String link) {
+    final parsed = Uri.tryParse(link);
+    if (parsed == null) return null;
+    if (parsed.hasScheme) return parsed;
+
+    return Uri.tryParse('https://$link');
+  }
+
   @override
   Widget build(BuildContext context) {
     // If there are no ads yet (initial load or empty), occupy zero height
@@ -74,7 +102,7 @@ class _HomeAdBannerState extends State<HomeAdBanner> {
     // While reloading with existing ads, keep showing current content (no layout jump)
 
     return Padding(
-      padding: EdgeInsets.only(left: 14.w,right: 14.w,top:14.h),
+      padding: EdgeInsets.only(left: 14.w, right: 14.w, top: 14.h),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(10.r),
         child: Stack(
@@ -93,11 +121,16 @@ class _HomeAdBannerState extends State<HomeAdBanner> {
                 itemBuilder: (context, index) {
                   final ad = _ads[index];
                   final url = ad['image_url']?.toString() ?? '';
-                  return AppCachedNetworkImageView(
-                    url: url,
-                    width: double.infinity,
-                    height: 160.h,
-                    fit: BoxFit.cover,
+                  final linkUrl = ad['link_url']?.toString();
+                  return GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => _openAdLink(linkUrl),
+                    child: AppCachedNetworkImageView(
+                      url: url,
+                      width: double.infinity,
+                      height: 160.h,
+                      fit: BoxFit.cover,
+                    ),
                   );
                 },
               ),
@@ -108,7 +141,7 @@ class _HomeAdBannerState extends State<HomeAdBanner> {
                 activeIndex: _activeIndex,
                 count: _ads.length,
                 effect: ExpandingDotsEffect(
-                  dotColor: Colors.white.withOpacity(0.45),
+                  dotColor: Colors.white.withValues(alpha: 0.45),
                   activeDotColor: Colors.white,
                   dotHeight: 6.h,
                   dotWidth: 6.w,

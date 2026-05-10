@@ -9,14 +9,14 @@ class AdsService {
   static SupabaseClient get _client => SupabaseService.client;
 
   static const String _table = 'ads'; // Expected table schema on Supabase
-  // columns: id (uuid), image_url (text), storage_path (text), start_at (timestamp), end_at (timestamp), created_at (timestamp)
+  // columns: id (uuid), image_url (text), storage_path (text), link_url (text), start_at (timestamp), end_at (timestamp), created_at (timestamp)
 
   // Public: fetch currently active ads to display on Home
   static Future<List<Map<String, dynamic>>> fetchActiveAds() async {
     final nowIso = DateTime.now().toIso8601String();
     final res = await _client
         .from(_table)
-        .select('id, image_url, storage_path, start_at, end_at')
+        .select('id, image_url, storage_path, link_url, start_at, end_at')
         .lte('start_at', nowIso)
         .gte('end_at', nowIso)
         .order('created_at', ascending: false);
@@ -29,7 +29,8 @@ class AdsService {
     if (!isSuper) throw Exception('admin_only_action');
     final res = await _client
         .from(_table)
-        .select('id, image_url, storage_path, start_at, end_at, created_at')
+        .select(
+            'id, image_url, storage_path, link_url, start_at, end_at, created_at')
         .order('created_at', ascending: false);
     return (res as List).cast<Map<String, dynamic>>();
   }
@@ -39,6 +40,7 @@ class AdsService {
     required File file,
     required DateTime startAt,
     required DateTime endAt,
+    String? linkUrl,
   }) async {
     final isSuper = await SupabaseService.isCurrentUserSuperAdmin();
     if (!isSuper) throw Exception('admin_only_action');
@@ -54,6 +56,7 @@ class AdsService {
         .insert({
           'image_url': publicUrl,
           'storage_path': storagePath,
+          'link_url': _normalizeNullableUrl(linkUrl),
           'start_at': startAt.toIso8601String(),
           'end_at': endAt.toIso8601String(),
         })
@@ -68,6 +71,7 @@ class AdsService {
     required String adId,
     required DateTime startAt,
     required DateTime endAt,
+    String? linkUrl,
   }) async {
     final isSuper = await SupabaseService.isCurrentUserSuperAdmin();
     if (!isSuper) throw Exception('admin_only_action');
@@ -75,6 +79,7 @@ class AdsService {
     await _client.from(_table).update({
       'start_at': startAt.toIso8601String(),
       'end_at': endAt.toIso8601String(),
+      'link_url': _normalizeNullableUrl(linkUrl),
     }).eq('id', adId);
   }
 
@@ -96,5 +101,10 @@ class AdsService {
     }
 
     await _client.from(_table).delete().eq('id', adId);
+  }
+
+  static String? _normalizeNullableUrl(String? value) {
+    final trimmed = value?.trim() ?? '';
+    return trimmed.isEmpty ? null : trimmed;
   }
 }
