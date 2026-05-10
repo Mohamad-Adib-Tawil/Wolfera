@@ -17,6 +17,7 @@ class CarModelsDialog extends StatefulWidget {
   final List<String> selectedModels;
   final Function(dynamic) onSelectionConfirmed;
   final bool includeAllOption; // Show 'All Models' shortcut (for search filter)
+  final bool allowCustomModel;
 
   const CarModelsDialog({
     super.key,
@@ -26,6 +27,7 @@ class CarModelsDialog extends StatefulWidget {
     this.makers,
     this.selectedModels = const [],
     this.includeAllOption = false,
+    this.allowCustomModel = true,
   });
 
   @override
@@ -54,7 +56,8 @@ class _CarModelsDialogState extends State<CarModelsDialog> {
         style: ButtonStyle(
           backgroundColor: const WidgetStatePropertyAll(AppColors.grey),
           minimumSize: WidgetStatePropertyAll(Size(80.w, 32.h)),
-          padding: const WidgetStatePropertyAll(EdgeInsets.symmetric(horizontal: 10, vertical: 6)),
+          padding: const WidgetStatePropertyAll(
+              EdgeInsets.symmetric(horizontal: 10, vertical: 6)),
         ),
         onPressed: () {
           // Treat 'All' as clearing model filter
@@ -90,9 +93,7 @@ class _CarModelsDialogState extends State<CarModelsDialog> {
 
   List<String> _filter(String q) {
     q = q.toLowerCase();
-    final list = _allModels
-        .where((m) => m.toLowerCase().contains(q))
-        .toList();
+    final list = _allModels.where((m) => m.toLowerCase().contains(q)).toList();
     list.sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
     return list;
   }
@@ -101,6 +102,17 @@ class _CarModelsDialogState extends State<CarModelsDialog> {
     setState(() {
       _filteredModels = _filter(_searchController.text);
     });
+  }
+
+  String get _customModelText => _searchController.text.trim();
+
+  bool get _canUseCustomModel {
+    if (!widget.allowCustomModel || _customModelText.isEmpty) return false;
+
+    final normalizedCustomModel = _customModelText.toLowerCase();
+    return !_allModels.any(
+      (model) => model.trim().toLowerCase() == normalizedCustomModel,
+    );
   }
 
   void _onModelTapped(String model) {
@@ -117,11 +129,30 @@ class _CarModelsDialogState extends State<CarModelsDialog> {
     });
   }
 
+  void _onCustomModelTapped() {
+    final customModel = _customModelText;
+    if (customModel.isEmpty) return;
+
+    if (widget.isMultiSelect) {
+      setState(() {
+        if (!_selectedModels.contains(customModel)) {
+          _selectedModels.add(customModel);
+        }
+        _searchController.clear();
+      });
+      return;
+    }
+
+    widget.onSelectionConfirmed(customModel);
+    Navigator.of(context).pop();
+  }
+
   void _confirm() {
     if (widget.isMultiSelect) {
       widget.onSelectionConfirmed(_selectedModels);
     } else {
-      widget.onSelectionConfirmed(_selectedModels.isNotEmpty ? _selectedModels.first : null);
+      widget.onSelectionConfirmed(
+          _selectedModels.isNotEmpty ? _selectedModels.first : null);
     }
     Navigator.of(context).pop();
   }
@@ -156,6 +187,10 @@ class _CarModelsDialogState extends State<CarModelsDialog> {
               searchController: _searchController,
               hintText: 'Search for Models',
             ),
+            if (_canUseCustomModel) ...[
+              8.verticalSpace,
+              _buildCustomModelButton(context),
+            ],
             if (widget.includeAllOption) ...[
               8.verticalSpace,
               _allButton(context),
@@ -172,21 +207,29 @@ class _CarModelsDialogState extends State<CarModelsDialog> {
                     )
                   : ListView.separated(
                       itemCount: _filteredModels.length,
-                      separatorBuilder: (_, __) => const Divider(height: 1, color: AppColors.whiteLess),
+                      separatorBuilder: (_, __) =>
+                          const Divider(height: 1, color: AppColors.whiteLess),
                       itemBuilder: (context, index) {
                         final model = _filteredModels[index];
                         final isSelected = _selectedModels.contains(model);
                         return ListTile(
                           dense: true,
-                          contentPadding: HWEdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          title: Text(model, style: context.textTheme.bodyMedium),
+                          contentPadding: HWEdgeInsets.symmetric(
+                              horizontal: 6, vertical: 2),
+                          title:
+                              Text(model, style: context.textTheme.bodyMedium),
                           trailing: widget.isMultiSelect
                               ? Icon(
-                                  isSelected ? Icons.check_circle : Icons.circle_outlined,
-                                  color: isSelected ? AppColors.primary : AppColors.grey,
+                                  isSelected
+                                      ? Icons.check_circle
+                                      : Icons.circle_outlined,
+                                  color: isSelected
+                                      ? AppColors.primary
+                                      : AppColors.grey,
                                 )
                               : (isSelected
-                                  ? const Icon(Icons.check, color: AppColors.primary)
+                                  ? const Icon(Icons.check,
+                                      color: AppColors.primary)
                                   : null),
                           onTap: () => _onModelTapped(model),
                         );
@@ -199,7 +242,8 @@ class _CarModelsDialogState extends State<CarModelsDialog> {
                 child: AppText(
                   'Please select maker first',
                   translation: false,
-                  style: context.textTheme.bodyMedium?.withColor(AppColors.grey),
+                  style:
+                      context.textTheme.bodyMedium?.withColor(AppColors.grey),
                 ),
               ),
             ),
@@ -224,6 +268,24 @@ class _CarModelsDialogState extends State<CarModelsDialog> {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ],
+    );
+  }
+
+  Widget _buildCustomModelButton(BuildContext context) {
+    return Align(
+      alignment: AlignmentDirectional.centerStart,
+      child: TextButton.icon(
+        onPressed: _onCustomModelTapped,
+        style: TextButton.styleFrom(
+          foregroundColor: AppColors.primary,
+          padding: HWEdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        ),
+        icon: const Icon(Icons.add, size: 18),
+        label: Text(
+          'Use "$_customModelText"',
+          style: context.textTheme.bodySmall?.b.withColor(AppColors.primary),
+        ),
+      ),
     );
   }
 
