@@ -7,7 +7,6 @@ import 'package:wolfera/services/chat_service.dart';
 import 'package:wolfera/services/chat_route_tracker.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
 import 'package:wolfera/features/app/presentation/widgets/nav_bar_item.dart';
-import 'package:wolfera/features/app/presentation/widgets/nav_bar_item_circular.dart';
 import 'package:wolfera/generated/assets.dart';
 import 'package:wolfera/generated/locale_keys.g.dart';
 
@@ -113,69 +112,80 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 85.h,
-      width: 413.w,
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(5), topRight: Radius.circular(5)),
+      height: 78.h,
+      width: double.infinity,
+      padding: EdgeInsetsDirectional.only(
+        start: 6.w,
+        end: 6.w,
+        top: 8.h,
+        bottom: 6.h,
       ),
-      child: Stack(
+      decoration: BoxDecoration(
+        color: AppColors.blackLight,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(8.r),
+          topRight: Radius.circular(8.r),
+        ),
+        border: Border(
+          top: BorderSide(color: AppColors.white.withValues(alpha: 0.08)),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.black.withValues(alpha: 0.22),
+            blurRadius: 18,
+            offset: const Offset(0, -8),
+          ),
+        ],
+      ),
+      child: Row(
         children: [
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Container(
-              height: 65.h,
-              decoration: const BoxDecoration(
-                color: AppColors.blackLight,
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(5), topRight: Radius.circular(5)),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  NavBarItem(
-                    title: LocaleKeys.home,
-                    svgAsset: Assets.svgNavHome,
-                    isSelected: widget.child.currentIndex == 0,
-                    onTap: () => _animateCursor(0),
-                  ),
-                  NavBarItem(
-                    title: LocaleKeys.search,
-                    svgAsset: Assets.svgNavSearch,
-                    isSelected: widget.child.currentIndex == 1,
-                    onTap: () => _animateCursor(1),
-                  ),
-                  40.horizontalSpace,
-                  NavBarItem(
-                    title: LocaleKeys.favorite,
-                    svgAsset: Assets.svgNavFavorite,
-                    isSelected: widget.child.currentIndex == 3,
-                    onTap: () => _animateCursor(3),
-                  ),
-                  NavBarItem(
-                    title: LocaleKeys.chat,
-                    svgAsset: Assets.svgNavChat,
-                    isSelected: widget.child.currentIndex == 4,
-                    onTap: () => _animateCursor(4),
-                    badgeCount: _chatUnread,
-                  ),
-                ],
-              ),
+          Expanded(
+            child: NavBarItem(
+              title: LocaleKeys.home,
+              svgAsset: Assets.svgNavHome,
+              isSelected: widget.child.currentIndex == 0,
+              onTap: () => _animateCursor(0),
             ),
           ),
-          Positioned(
-            top: 0,
-            right: 0,
-            left: 0,
-            child: Center(
-              child: NavBarItemCircular(
-                svgAsset: Assets.svgNavCarSell,
-                isSelected: widget.child.currentIndex == 2,
-                onTap: () => _animateCursor(2),
-              ),
+          Expanded(
+            child: NavBarItem(
+              title: LocaleKeys.search,
+              svgAsset: Assets.svgNavSearch,
+              isSelected: widget.child.currentIndex == 1,
+              onTap: () => _animateCursor(1),
+            ),
+          ),
+          Expanded(
+            child: NavBarItem(
+              title: LocaleKeys.my_cars,
+              svgAsset: Assets.svgNavCarSell,
+              isSelected: widget.child.currentIndex == 2,
+              onTap: () => _animateCursor(2),
+            ),
+          ),
+          Expanded(
+            child: NavBarItem(
+              title: 'car_stores',
+              svgAsset: Assets.svgCarDealer,
+              isSelected: widget.child.currentIndex == 3,
+              onTap: () => _animateCursor(3),
+            ),
+          ),
+          Expanded(
+            child: NavBarItem(
+              title: LocaleKeys.favorite,
+              svgAsset: Assets.svgNavFavorite,
+              isSelected: widget.child.currentIndex == 4,
+              onTap: () => _animateCursor(4),
+            ),
+          ),
+          Expanded(
+            child: NavBarItem(
+              title: LocaleKeys.chat,
+              svgAsset: Assets.svgNavChat,
+              isSelected: widget.child.currentIndex == 5,
+              onTap: () => _animateCursor(5),
+              badgeCount: _chatUnread,
             ),
           ),
         ],

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:wolfera/core/config/routing/router_config.dart';
 import 'package:wolfera/features/app/presentation/pages/splash_page.dart';
+import 'package:wolfera/features/car_stores/presentation/pages/car_stores_page.dart';
 import 'package:wolfera/features/cars/presentation/pages/car_details_page.dart';
 import 'package:wolfera/features/cars/presentation/pages/car_images_previewer.dart';
 import 'package:wolfera/features/chat/presentation/pages/messages_base_page.dart';
@@ -244,7 +245,8 @@ class GRouter {
                                   ?.map((e) => e.toString())
                                   .toList() ??
                               const <String>[];
-                          final initialIndex = extra?['initialIndex'] as int? ?? 0;
+                          final initialIndex =
+                              extra?['initialIndex'] as int? ?? 0;
                           return _builderPage(
                             child: CarImagesPreviewer(
                               images: images,
@@ -321,6 +323,20 @@ class GRouter {
                       },
                     ),
                   ]),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: _config.mainRoutes.carStores,
+                name: _config.mainRoutes.carStores,
+                pageBuilder: (BuildContext context, GoRouterState state) {
+                  return _builderPage(
+                    child: const CarStoresPage(),
+                    state: state,
+                  );
+                },
+              ),
             ],
           ),
           StatefulShellBranch(

@@ -62,7 +62,7 @@ class _BasePageState extends State<BasePage> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, result) {
         if (widget.child.currentIndex != 0) {
           widget.child.goBranch(0);
         } else {
@@ -114,7 +114,7 @@ class _BasePageState extends State<BasePage> {
         scaffoldKey: BasePage._scaffoldKey,
         body: Stack(children: [
           Padding(
-            padding: HWEdgeInsets.only(bottom: 50),
+            padding: HWEdgeInsets.only(bottom: 68),
             child: widget.child,
           ),
           Positioned(

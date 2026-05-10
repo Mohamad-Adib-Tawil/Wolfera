@@ -20,6 +20,7 @@ class _MainRoutes {
   final String home = '/home';
   final String search = '/search';
   final String myCars = '/myCars';
+  final String carStores = '/carStores';
   final String favorites = '/favorites';
   final String messagesBasePage = '/messagesBasePage';
 }

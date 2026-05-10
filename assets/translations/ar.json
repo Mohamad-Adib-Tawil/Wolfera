@@ -858,5 +858,12 @@
   "ad_updated": "تم تحديث الإعلان بنجاح",
   "ad_deleted": "تم حذف الإعلان",
   "edit_duration": "تعديل المدة",
-  "are_you_sure_delete_ad": "حذف هذا الإعلان؟"
+  "are_you_sure_delete_ad": "حذف هذا الإعلان؟",
+  "car_stores": "المتاجر",
+  "car_stores_title": "متاجر السيارات",
+  "listed_cars": "سيارة معروضة",
+  "latest_listing": "أحدث إعلان",
+  "car_stores_empty_title": "لا توجد متاجر سيارات بعد",
+  "car_stores_empty_subtitle": "سيظهر هنا كل مستخدم لديه سيارات منشورة.",
+  "failed_to_load_car_stores": "فشل تحميل متاجر السيارات"
 }

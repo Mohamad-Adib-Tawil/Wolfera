@@ -25,11 +25,16 @@ class NavBarItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final iconColor = isSelected ? AppColors.orange : AppColors.greyStroke;
+
     return InkWell(
       onTap: onTap,
+      borderRadius: BorderRadius.circular(8.r),
       child: SizedBox(
-        height: 50.h,
+        width: double.infinity,
+        height: 58.h,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Stack(
@@ -39,19 +44,21 @@ class NavBarItem extends StatelessWidget {
                   svgAsset,
                   width: 20.w,
                   height: 22.h,
-                  color: isSelected ? AppColors.orange : AppColors.greyStroke,
-                  fit: BoxFit.cover,
+                  color: iconColor,
+                  fit: BoxFit.contain,
                 ),
                 if ((badgeCount ?? 0) > 0)
                   Positioned(
                     top: -6,
                     right: -10,
                     child: Container(
-                      padding: HWEdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                      padding:
+                          HWEdgeInsets.symmetric(horizontal: 5, vertical: 2),
                       decoration: BoxDecoration(
                         color: Colors.redAccent,
                         borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: AppColors.blackLight, width: 1),
+                        border:
+                            Border.all(color: AppColors.blackLight, width: 1),
                       ),
                       constraints: BoxConstraints(minWidth: 16.w),
                       child: Text(
@@ -68,15 +75,20 @@ class NavBarItem extends StatelessWidget {
                   ),
               ],
             ),
-            5.verticalSpace,
+            4.verticalSpace,
             Padding(
               padding: HWEdgeInsetsDirectional.only(
                 start: 2,
+                end: 2,
               ),
               child: AppText(
                 title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
                 style: context.textTheme.bodyMedium.m.withColor(
-                    isSelected ? AppColors.orange : AppColors.greyStroke),
+                  isSelected ? AppColors.orange : AppColors.greyStroke,
+                ),
               ),
             )
           ],

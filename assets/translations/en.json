@@ -859,5 +859,12 @@
   "ad_updated": "Ad updated successfully",
   "ad_deleted": "Ad deleted",
   "edit_duration": "Edit duration",
-  "are_you_sure_delete_ad": "Delete this ad?"
+  "are_you_sure_delete_ad": "Delete this ad?",
+  "car_stores": "Stores",
+  "car_stores_title": "Car Stores",
+  "listed_cars": "cars listed",
+  "latest_listing": "Latest listing",
+  "car_stores_empty_title": "No car stores yet",
+  "car_stores_empty_subtitle": "Users with published cars will appear here.",
+  "failed_to_load_car_stores": "Failed to load car stores"
 }
