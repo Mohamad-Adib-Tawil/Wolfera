@@ -86,9 +86,11 @@ class NavBarItem extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,
-                style: context.textTheme.bodyMedium.m.withColor(
-                  isSelected ? AppColors.orange : AppColors.greyStroke,
-                ),
+                style: context.textTheme.bodyMedium.m
+                    .withColor(
+                      isSelected ? AppColors.orange : AppColors.greyStroke,
+                    )
+                    ?.s13,
               ),
             )
           ],

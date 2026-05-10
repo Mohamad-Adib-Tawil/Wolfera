@@ -157,8 +157,8 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
           ),
           Expanded(
             child: NavBarItem(
-              title: LocaleKeys.my_cars,
-              svgAsset: Assets.svgNavCarSell,
+              title: 'nav_my_cars_short',
+              svgAsset: 'assets/svg/nav_my_cars.svg',
               isSelected: widget.child.currentIndex == 2,
               onTap: () => _animateCursor(2),
             ),
@@ -166,14 +166,14 @@ class _CustomNavigationBarState extends State<CustomNavigationBar>
           Expanded(
             child: NavBarItem(
               title: 'car_stores',
-              svgAsset: Assets.svgCarDealer,
+              svgAsset: 'assets/svg/nav_store.svg',
               isSelected: widget.child.currentIndex == 3,
               onTap: () => _animateCursor(3),
             ),
           ),
           Expanded(
             child: NavBarItem(
-              title: LocaleKeys.favorite,
+              title: 'nav_favorite_short',
               svgAsset: Assets.svgNavFavorite,
               isSelected: widget.child.currentIndex == 4,
               onTap: () => _animateCursor(4),
