@@ -4,9 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
-import 'package:wolfera/core/config/theme/typography.dart';
 import 'package:wolfera/core/config/routing/router.dart';
-import 'package:wolfera/core/utils/extensions/build_context.dart';
 import 'package:wolfera/features/app/presentation/bloc/app_manager_cubit.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_svg_picture.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
@@ -20,9 +18,11 @@ import 'package:wolfera/features/home/presentation/manager/home_cubit/home_cubit
 class HomeAppBar extends StatelessWidget {
   const HomeAppBar({
     super.key,
+    required this.searchCubit,
     this.animate = false,
   });
 
+  final SearchCubit searchCubit;
   final bool animate;
 
   @override
@@ -70,8 +70,8 @@ class HomeAppBar extends StatelessWidget {
                                   minHeight: 12.w,
                                 ),
                                 child: AppText(
-                                  state.unreadCount > 9 
-                                      ? '9+' 
+                                  state.unreadCount > 9
+                                      ? '9+'
                                       : state.unreadCount.toString(),
                                   style: TextStyle(
                                     fontSize: 10.sp,
@@ -92,7 +92,6 @@ class HomeAppBar extends StatelessWidget {
               CityDropdown(
                 onChanged: (label) {
                   final v = label ?? 'worldwide'.tr();
-                  final searchCubit = GetIt.I<SearchCubit>();
                   final homeCubit = GetIt.I<HomeCubit>();
                   if (v == 'worldwide'.tr()) {
                     searchCubit.setWorldwide(true);

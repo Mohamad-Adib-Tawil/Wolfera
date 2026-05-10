@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get_it/get_it.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
 import 'package:wolfera/core/config/theme/typography.dart';
 import 'package:wolfera/core/utils/extensions/build_context.dart';
 import 'package:wolfera/core/utils/responsive_padding.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
-import 'package:wolfera/features/home/presentation/widgets/city_dropdown.dart';
 import 'package:wolfera/features/search_and_filteration/presentation/manager/search_cubit/search_cubit.dart';
 import 'package:wolfera/features/search_and_filteration/presentation/widget/budget_list_view.dart';
 import 'package:wolfera/features/search_and_filteration/presentation/widget/car_body_type_list_view.dart';
@@ -24,12 +22,16 @@ import 'package:wolfera/features/app/presentation/widgets/animated_dialog.dart';
 import 'package:wolfera/features/app/presentation/widgets/year_picker_dialog.dart';
 import 'package:wolfera/features/search_and_filteration/presentation/widget/kilometers_dialog.dart';
 import 'package:wolfera/features/search_and_filteration/presentation/widget/listing_type_filter.dart';
-import 'package:wolfera/features/home/presentation/manager/home_cubit/home_cubit.dart';
 
 /// A compact, professional filter bar showing categories in a row and the
 /// selected category content right below it. Reuses existing search widgets.
 class CombinedFiltersBar extends StatefulWidget {
-  const CombinedFiltersBar({super.key});
+  const CombinedFiltersBar({
+    super.key,
+    required this.searchCubit,
+  });
+
+  final SearchCubit searchCubit;
 
   @override
   State<CombinedFiltersBar> createState() => _CombinedFiltersBarState();
@@ -53,7 +55,7 @@ class _CombinedFiltersBarState extends State<CombinedFiltersBar> {
     _FilterTab('car_filters.condition', Icons.check_circle_outline),
   ];
 
-  SearchCubit get _searchCubit => GetIt.I<SearchCubit>();
+  SearchCubit get _searchCubit => widget.searchCubit;
 
   @override
   Widget build(BuildContext context) {

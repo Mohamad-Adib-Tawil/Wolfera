@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get_it/get_it.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
 import 'package:wolfera/core/utils/money_formatter.dart';
 import 'package:wolfera/core/constants/currencies.dart';
+import 'package:get_it/get_it.dart';
 import 'package:wolfera/features/app/domin/repositories/prefs_repository.dart';
 import 'package:wolfera/features/app/presentation/widgets/app_text.dart';
 import 'package:wolfera/features/home/presentation/widgets/car_mini_details_card_widget.dart';
@@ -14,12 +14,18 @@ import 'package:wolfera/features/search_and_filteration/presentation/manager/sea
 import 'package:wolfera/core/utils/car_value_translator.dart';
 
 class SearchResultsVerticalList extends StatefulWidget {
-  const SearchResultsVerticalList({super.key, this.bottomPadding = 0});
+  const SearchResultsVerticalList({
+    super.key,
+    required this.searchCubit,
+    this.bottomPadding = 0,
+  });
 
+  final SearchCubit searchCubit;
   final double bottomPadding;
 
   @override
-  State<SearchResultsVerticalList> createState() => _SearchResultsVerticalListState();
+  State<SearchResultsVerticalList> createState() =>
+      _SearchResultsVerticalListState();
 }
 
 class _SkeletonCarMiniCard extends StatelessWidget {
@@ -90,20 +96,17 @@ class _SkeletonCarMiniCard extends StatelessWidget {
 }
 
 class _SearchResultsVerticalListState extends State<SearchResultsVerticalList> {
-  late final SearchCubit _cubit;
-
   @override
   void initState() {
     super.initState();
-    _cubit = GetIt.I<SearchCubit>();
     // Trigger initial search to populate the list (idempotent)
-    _cubit.searchCars();
+    widget.searchCubit.searchCars();
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SearchCubit, SearchState>(
-      bloc: _cubit,
+      bloc: widget.searchCubit,
       builder: (context, state) {
         Widget content;
         if (state.isSearching) {
@@ -124,7 +127,8 @@ class _SearchResultsVerticalListState extends State<SearchResultsVerticalList> {
               child: Column(
                 children: List.generate(4, (index) {
                   return Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
                     child: const ShimmerLoading(
                       isLoading: true,
                       child: _SkeletonCarMiniCard(fullWidth: true),
@@ -159,11 +163,13 @@ class _SearchResultsVerticalListState extends State<SearchResultsVerticalList> {
               physics: const NeverScrollableScrollPhysics(),
               itemCount: list.length,
               separatorBuilder: (_, __) => 12.verticalSpace,
-              padding: EdgeInsets.fromLTRB(12.w, 8.h, 12.w, widget.bottomPadding),
+              padding:
+                  EdgeInsets.fromLTRB(12.w, 8.h, 12.w, widget.bottomPadding),
               itemBuilder: (context, index) {
                 final car = list[index];
 
-                final imageUrls = (car['image_urls'] as List?)?.cast<dynamic>() ?? const [];
+                final imageUrls =
+                    (car['image_urls'] as List?)?.cast<dynamic>() ?? const [];
                 final mainImage = car['main_image_url']?.toString();
                 final imageUrl = imageUrls.isNotEmpty
                     ? imageUrls.first?.toString()
@@ -174,7 +180,9 @@ class _SearchResultsVerticalListState extends State<SearchResultsVerticalList> {
                   car['brand']?.toString(),
                   car['model']?.toString(),
                 ];
-                final title = titleParts.where((e) => e != null && e.isNotEmpty).join(' ');
+                final title = titleParts
+                    .where((e) => e != null && e.isNotEmpty)
+                    .join(' ');
                 final rawSpec1 = car['body_type']?.toString();
                 final spec1 = rawSpec1 != null
                     ? CarValueTranslator.translateBodyType(rawSpec1)
@@ -197,22 +205,30 @@ class _SearchResultsVerticalListState extends State<SearchResultsVerticalList> {
                 final countryRaw = car['country']?.toString();
                 final locationRaw = car['location']?.toString();
                 String? location;
-                if (city != null && city.isNotEmpty && countryRaw != null && countryRaw.isNotEmpty) {
+                if (city != null &&
+                    city.isNotEmpty &&
+                    countryRaw != null &&
+                    countryRaw.isNotEmpty) {
                   final c = CarValueTranslator.translateCountry(countryRaw);
-                  final tCity = CarValueTranslator.translateCity(city, country: countryRaw);
-                  location = '${tCity.isNotEmpty ? tCity : city}, ${c != '-' ? c : countryRaw}';
+                  final tCity = CarValueTranslator.translateCity(city,
+                      country: countryRaw);
+                  location =
+                      '${tCity.isNotEmpty ? tCity : city}, ${c != '-' ? c : countryRaw}';
                 } else if (countryRaw != null && countryRaw.isNotEmpty) {
                   final c = CarValueTranslator.translateCountry(countryRaw);
                   location = c != '-' ? c : countryRaw;
                 } else if (city != null && city.isNotEmpty) {
-                  final tCity = CarValueTranslator.translateCity(city, country: countryRaw);
+                  final tCity = CarValueTranslator.translateCity(city,
+                      country: countryRaw);
                   location = tCity.isNotEmpty ? tCity : city;
                 } else if (locationRaw != null && locationRaw.isNotEmpty) {
                   // Treat generic 'location' as a possible city/region first
-                  final tCity = CarValueTranslator.translateCity(locationRaw, country: countryRaw);
+                  final tCity = CarValueTranslator.translateCity(locationRaw,
+                      country: countryRaw);
                   if (countryRaw != null && countryRaw.isNotEmpty) {
                     final c = CarValueTranslator.translateCountry(countryRaw);
-                    location = '${tCity.isNotEmpty ? tCity : locationRaw}, ${c != '-' ? c : countryRaw}';
+                    location =
+                        '${tCity.isNotEmpty ? tCity : locationRaw}, ${c != '-' ? c : countryRaw}';
                   } else {
                     location = tCity.isNotEmpty ? tCity : locationRaw;
                   }
@@ -224,13 +240,15 @@ class _SearchResultsVerticalListState extends State<SearchResultsVerticalList> {
                 final defaultCode = prefs.isWorldwide
                     ? 'USD'
                     : CurrenciesData.codeForCountry(prefs.selectedCountryCode);
-                final fallbackSymbol = (CurrenciesData.findByCode(preferredCode ?? defaultCode)
-                            ?? CurrenciesData.defaultCurrency())
+                final fallbackSymbol =
+                    (CurrenciesData.findByCode(preferredCode ?? defaultCode) ??
+                            CurrenciesData.defaultCurrency())
                         .symbol;
                 final carCurrencyRaw = car['currency']?.toString();
-                final currency = (carCurrencyRaw != null && carCurrencyRaw.isNotEmpty)
-                    ? carCurrencyRaw
-                    : fallbackSymbol;
+                final currency =
+                    (carCurrencyRaw != null && carCurrencyRaw.isNotEmpty)
+                        ? carCurrencyRaw
+                        : fallbackSymbol;
                 final lt = car['listing_type']?.toString().toLowerCase();
                 String? price;
                 if (lt == 'rent' || lt == 'both') {
@@ -245,24 +263,31 @@ class _SearchResultsVerticalListState extends State<SearchResultsVerticalList> {
                   for (final c in candidates) {
                     final raw = car[c[0]];
                     if (raw != null) {
-                      final num? v = raw is num ? raw : num.tryParse(raw.toString());
+                      final num? v =
+                          raw is num ? raw : num.tryParse(raw.toString());
                       if (v != null) {
-                        final compact = MoneyFormatter.compact(v, symbol: currency);
+                        final compact =
+                            MoneyFormatter.compact(v, symbol: currency);
                         final period = c[1];
-                        price = compact != null ? '$compact / ${period.tr()}' : null;
+                        price = compact != null
+                            ? '$compact / ${period.tr()}'
+                            : null;
                         break;
                       }
                     }
                   }
                   if (price == null && lt == 'both') {
-                    price = MoneyFormatter.compactFromString(priceVal, symbol: currency);
+                    price = MoneyFormatter.compactFromString(priceVal,
+                        symbol: currency);
                   }
                 } else {
-                  price = MoneyFormatter.compactFromString(priceVal, symbol: currency);
+                  price = MoneyFormatter.compactFromString(priceVal,
+                      symbol: currency);
                 }
 
-                final itemKey = 'item-${car['id']?.toString() ?? '$index'}|${state.sortBy}|${state.sortAsc}';
-                final baseMs = 500;
+                final itemKey =
+                    'item-${car['id']?.toString() ?? '$index'}|${state.sortBy}|${state.sortAsc}';
+                const baseMs = 500;
                 final extra = (index % 8) * 40; // gentle stagger
                 return TweenAnimationBuilder<double>(
                   key: ValueKey(itemKey),
@@ -303,9 +328,10 @@ class _SearchResultsVerticalListState extends State<SearchResultsVerticalList> {
           switchInCurve: Curves.easeOutCubic,
           switchOutCurve: Curves.easeOutCubic,
           transitionBuilder: (child, animation) {
-            final offsetAnim = Tween<Offset>(begin: const Offset(-0.12, 0), end: Offset.zero)
-                .chain(CurveTween(curve: Curves.easeOutCubic))
-                .animate(animation);
+            final offsetAnim =
+                Tween<Offset>(begin: const Offset(-0.12, 0), end: Offset.zero)
+                    .chain(CurveTween(curve: Curves.easeOutCubic))
+                    .animate(animation);
             return FadeTransition(
               opacity: animation,
               child: SlideTransition(position: offsetAnim, child: child),
@@ -319,7 +345,8 @@ class _SearchResultsVerticalListState extends State<SearchResultsVerticalList> {
 
   String _buildResultKey(SearchState st) {
     final ids = st.searchResults
-        .map((e) => e['id']?.toString() ?? '${e['brand']}-${e['model']}-${e['year']}')
+        .map((e) =>
+            e['id']?.toString() ?? '${e['brand']}-${e['model']}-${e['year']}')
         .take(6)
         .join('|');
     return '${st.sortBy}|${st.sortAsc}|${st.searchQuery}|${st.selectedCountryCode}|${st.selectedRegionOrCity}|$ids';

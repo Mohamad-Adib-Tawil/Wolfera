@@ -6,6 +6,7 @@ import 'package:wolfera/features/home/presentation/manager/home_cubit/home_cubit
 import 'package:wolfera/features/home/presentation/widgets/home_app_bar.dart';
 import 'package:wolfera/features/home/presentation/widgets/home_body.dart';
 import 'package:wolfera/features/search_and_filteration/presentation/manager/search_cubit/search_cubit.dart';
+import 'package:wolfera/services/search_and_filters_service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -20,18 +21,24 @@ class _HomePageState extends State<HomePage>
   static bool _didAnimateOnce = false;
   late final bool _shouldAnimateEntrance;
   late HomeCubit _homeCubit;
-  int _adRefresh = 0;
+  late SearchCubit _homeSearchCubit;
+  final int _adRefresh = 0;
   Future<void> Function()? _bannerReload;
   bool _hasBanner = false;
   @override
   void initState() {
     _homeCubit = GetIt.I<HomeCubit>()..getHomeData();
+    _homeSearchCubit = SearchCubit(GetIt.I<SearchFilterService>());
     _shouldAnimateEntrance = !_didAnimateOnce;
     // Mark as animated for subsequent visits
     _didAnimateOnce = true;
-    // Ensure initial search results are loaded for the vertical list under filters
-    GetIt.I<SearchCubit>().searchCars();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _homeSearchCubit.close();
+    super.dispose();
   }
 
   @override
@@ -47,7 +54,7 @@ class _HomePageState extends State<HomePage>
             onRefresh: () async {
               // Refresh Recommended (featured) and Combined Search lists
               _homeCubit.getHomeData(); // returns void
-              await GetIt.I<SearchCubit>().searchCars();
+              await _homeSearchCubit.searchCars();
               // Refresh banners without rebuilding the whole sliver list
               await _bannerReload?.call();
             },
@@ -55,10 +62,14 @@ class _HomePageState extends State<HomePage>
               physics: const AlwaysScrollableScrollPhysics(),
               slivers: [
                 // App Bar
-                HomeAppBar(animate: _shouldAnimateEntrance),
+                HomeAppBar(
+                  animate: _shouldAnimateEntrance,
+                  searchCubit: _homeSearchCubit,
+                ),
                 // Home Body
                 HomeBody(
                   animate: _shouldAnimateEntrance,
+                  searchCubit: _homeSearchCubit,
                   refreshToken: _adRefresh,
                   onRegisterBannerReload: (fn) => _bannerReload = fn,
                   hasBanner: _hasBanner,

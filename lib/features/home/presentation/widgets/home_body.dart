@@ -7,10 +7,12 @@ import 'package:wolfera/features/home/presentation/widgets/recommended_section.d
 import 'package:wolfera/features/home/presentation/widgets/home_ad_banner.dart';
 import 'package:wolfera/features/home/presentation/widgets/search_bar_button.dart';
 import 'package:wolfera/features/home/presentation/widgets/search_results_vertical_list.dart';
+import 'package:wolfera/features/search_and_filteration/presentation/manager/search_cubit/search_cubit.dart';
 
 class HomeBody extends StatelessWidget {
   const HomeBody({
     super.key,
+    required this.searchCubit,
     this.animate = false,
     this.refreshToken = 0,
     this.onRegisterBannerReload,
@@ -18,6 +20,7 @@ class HomeBody extends StatelessWidget {
     this.onBannerPresenceChanged,
   });
 
+  final SearchCubit searchCubit;
   final bool animate;
   final int refreshToken;
   final void Function(Future<void> Function())? onRegisterBannerReload;
@@ -40,9 +43,10 @@ class HomeBody extends StatelessWidget {
             onPresenceChanged: onBannerPresenceChanged,
           ),
           const RecommendedSection(),
-          const CombinedFiltersBar(),
+          CombinedFiltersBar(searchCubit: searchCubit),
           8.verticalSpace,
           SearchResultsVerticalList(
+            searchCubit: searchCubit,
             bottomPadding: bottomResultsPadding,
           ),
         ]),
@@ -80,10 +84,10 @@ class HomeBody extends StatelessWidget {
         // Rental cars list from LEFT
 
         // Combined filters row + content below cars
-        const _DelayedFadeSlide(
-          delay: Duration(milliseconds: 360),
-          beginOffset: Offset(0.18, 0),
-          child: CombinedFiltersBar(),
+        _DelayedFadeSlide(
+          delay: const Duration(milliseconds: 360),
+          beginOffset: const Offset(0.18, 0),
+          child: CombinedFiltersBar(searchCubit: searchCubit),
         ),
         8.verticalSpace,
         // Vertical cars list from LEFT (reactive to filters)
@@ -92,6 +96,7 @@ class HomeBody extends StatelessWidget {
           beginOffset: const Offset(-0.18, 0),
           duration: const Duration(milliseconds: 1000),
           child: SearchResultsVerticalList(
+            searchCubit: searchCubit,
             bottomPadding: bottomResultsPadding,
           ),
         ),
