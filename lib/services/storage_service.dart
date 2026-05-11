@@ -290,13 +290,53 @@ class StorageService {
     try {
       final files = await listFiles(carImagesBucket, '$userId/$carId');
       final paths = files.map((f) => '$userId/$carId/${f.name}').toList();
-      
+
       if (paths.isNotEmpty) {
         await deleteFiles(carImagesBucket, paths);
       }
     } catch (e) {
       // Failed to delete car images: $e
     }
+  }
+
+  /// Delete car image files whose car row no longer exists.
+  ///
+  /// Requires running the storage cleanup migration first because this reads
+  /// public.orphan_car_image_objects and deletes through the Storage API.
+  static Future<int> deleteOrphanCarImages() async {
+    final rows = await _client.rpc('fetch_orphan_car_image_objects');
+    return _deleteStoragePathsFromRows(rows);
+  }
+
+  /// Delete images for cars that are not visible publicly.
+  ///
+  /// Set [includePending] to true only when pending review cars should also
+  /// lose their images.
+  static Future<int> deleteHiddenCarImages({bool includePending = false}) async {
+    final rows = await _client.rpc(
+      'fetch_hidden_car_image_objects',
+      params: {'include_pending': includePending},
+    );
+
+    return _deleteStoragePathsFromRows(rows);
+  }
+
+  static Future<int> _deleteStoragePathsFromRows(dynamic rows) async {
+    final paths = (rows as List)
+        .map((row) => row['name']?.toString())
+        .whereType<String>()
+        .where((path) => path.isNotEmpty)
+        .toList();
+
+    var deletedCount = 0;
+    for (var index = 0; index < paths.length; index += 1000) {
+      final end = (index + 1000 > paths.length) ? paths.length : index + 1000;
+      final batch = paths.sublist(index, end);
+      await _client.storage.from(carImagesBucket).remove(batch);
+      deletedCount += batch.length;
+    }
+
+    return deletedCount;
   }
 
   /// Get the current user ID

@@ -18,7 +18,7 @@ class SearchFilterService {
           .from('cars')
           .select('*')
           // تشمل 'active' و 'available' لدعم بيانات قديمة
-          .inFilter('status', ['active', 'available']).eq(
+          .inFilter('status', SupabaseService.publicCarStatuses).eq(
               'approval_status', SupabaseService.approvedApprovalStatus);
 
       // تجميع شروط OR (بحث نصي + ألوان)
@@ -444,7 +444,8 @@ class SearchFilterService {
           .from('cars')
           .select('*')
           .neq('id', currentCarId) // استبعاد السيارة الحالية
-          .eq('status', 'active') // فقط السيارات النشطة
+          .inFilter('status',
+              SupabaseService.publicCarStatuses) // فقط السيارات المنشورة
           .eq('approval_status', SupabaseService.approvedApprovalStatus);
 
       // فلترة حسب الماركة

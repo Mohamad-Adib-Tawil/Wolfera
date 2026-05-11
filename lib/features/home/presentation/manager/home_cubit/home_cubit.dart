@@ -31,7 +31,7 @@ class HomeCubit extends Cubit<HomeState> {
           .from('cars')
           .select('*')
           .inFilter('listing_type', ['rent', 'both'])
-          .inFilter('status', ['active', 'available', 'Active', 'Available'])
+          .inFilter('status', SupabaseService.publicCarStatuses)
           .eq('approval_status', SupabaseService.approvedApprovalStatus)
           .order('created_at', ascending: false)
           .limit(20);

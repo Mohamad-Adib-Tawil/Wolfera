@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:wolfera/services/notification_service.dart';
 import 'package:wolfera/services/apple_auth_service.dart';
+import 'package:wolfera/services/storage_service.dart';
 
 import '../core/config/supabase_config.dart';
 import 'package:wolfera/core/config/env.dart';
@@ -233,6 +234,14 @@ class SupabaseService {
   // Database methods
   static const String approvedApprovalStatus = 'approved';
   static const String pendingApprovalStatus = 'pending';
+  static const List<String> publicCarStatuses = [
+    'active',
+    'available',
+    'Active',
+    'Available',
+    'ACTIVE',
+    'AVAILABLE',
+  ];
 
   static Future<List<Map<String, dynamic>>> getCars() async {
     final response = await client
@@ -249,7 +258,7 @@ class SupabaseService {
         .select('*')
         .eq('is_featured', true)
         .eq('approval_status', approvedApprovalStatus)
-        .inFilter('status', ['active', 'available']).order('created_at',
+        .inFilter('status', publicCarStatuses).order('created_at',
             ascending: false);
     return (response as List).cast<Map<String, dynamic>>();
   }
@@ -354,7 +363,22 @@ class SupabaseService {
   }
 
   static Future<void> deleteCar(String id) async {
+    String? ownerId;
+    try {
+      final car = await client
+          .from('cars')
+          .select('user_id')
+          .eq('id', id)
+          .maybeSingle();
+      ownerId = car?['user_id']?.toString();
+    } catch (_) {}
+
     await client.from('cars').delete().eq('id', id);
+
+    final carOwnerId = ownerId;
+    if (carOwnerId != null && carOwnerId.isNotEmpty) {
+      await StorageService.deleteCarImages(userId: carOwnerId, carId: id);
+    }
   }
 
   // Admin/SuperAdmin: remove any car with a reason (soft delete)
@@ -522,6 +546,27 @@ class SupabaseService {
     }
 
     await client.from('cars').delete().eq('id', carId);
+    await StorageService.deleteCarImages(userId: sellerId, carId: carId);
+  }
+
+  static Future<int> deleteOrphanCarImages() async {
+    final isAdmin = await isCurrentUserAdmin();
+    if (!isAdmin) {
+      throw Exception('admin_only_action');
+    }
+
+    return StorageService.deleteOrphanCarImages();
+  }
+
+  static Future<int> deleteHiddenCarImages({
+    bool includePending = false,
+  }) async {
+    final isAdmin = await isCurrentUserAdmin();
+    if (!isAdmin) {
+      throw Exception('admin_only_action');
+    }
+
+    return StorageService.deleteHiddenCarImages(includePending: includePending);
   }
 
   // Check if current user is admin (treat super admin as admin too)
