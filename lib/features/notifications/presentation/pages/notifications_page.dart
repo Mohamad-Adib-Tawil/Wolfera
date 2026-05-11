@@ -49,8 +49,12 @@ class _NotificationsPageState extends State<NotificationsPage> {
       child: BlocBuilder<NotificationsCubit, NotificationsState>(
         builder: (context, state) {
           final all = state.notifications;
-          final msgs = all.where((n) => (n['type']?.toString() ?? '') == 'new_message').toList();
-          final general = all.where((n) => (n['type']?.toString() ?? '') != 'new_message').toList();
+          final msgs = all
+              .where((n) => (n['type']?.toString() ?? '') == 'new_message')
+              .toList();
+          final general = all
+              .where((n) => (n['type']?.toString() ?? '') != 'new_message')
+              .toList();
 
           Widget buildList(List<Map<String, dynamic>> items) {
             if (state.isLoading) {
@@ -67,7 +71,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
                       color: AppColors.grey,
                     ),
                     16.verticalSpace,
-                    AppText('no_notifications', style: context.textTheme.bodyLarge?.withColor(AppColors.grey)),
+                    AppText('no_notifications',
+                        style: context.textTheme.bodyLarge
+                            ?.withColor(AppColors.grey)),
                   ],
                 ),
               );
@@ -90,6 +96,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
               ),
             );
           }
+
           return DefaultTabController(
             length: 2,
             child: Scaffold(
@@ -139,15 +146,16 @@ class _NotificationsPageState extends State<NotificationsPage> {
     if (notification['read_at'] == null) {
       _notificationsCubit.markAsRead(notification['id'].toString());
     }
-    
+
     // التنقل حسب نوع الإشعار
     final type = notification['type']?.toString();
     final data = notification['data'] ?? {};
-    
+
     switch (type) {
       case 'new_message':
         final conversationId = data['conversation_id']?.toString();
-        final sellerId = data['other_user_id']?.toString() ?? data['sender_id']?.toString();
+        final sellerId =
+            data['other_user_id']?.toString() ?? data['sender_id']?.toString();
         final carId = data['car_id']?.toString();
         final extras = <String, dynamic>{
           if (conversationId != null) 'conversation_id': conversationId,
@@ -166,7 +174,8 @@ class _NotificationsPageState extends State<NotificationsPage> {
       case 'price_drop':
       case 'car_status_changed':
       case 'car_state_changed':
-        final carId = data['car_id']?.toString() ?? notification['car_id']?.toString();
+        final carId =
+            data['car_id']?.toString() ?? notification['car_id']?.toString();
         if (carId != null && carId.isNotEmpty) {
           GRouter.router.go(
             '${GRouter.config.mainRoutes.home}/${GRouter.config.homeRoutes.carDetails}',
@@ -184,7 +193,7 @@ class NotificationItemWidget extends StatelessWidget {
   final Map<String, dynamic> notification;
   final VoidCallback onTap;
   final VoidCallback onDismiss;
-  
+
   const NotificationItemWidget({
     super.key,
     required this.notification,
@@ -196,42 +205,55 @@ class NotificationItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final isRead = notification['read_at'] != null;
     final type = notification['type']?.toString() ?? '';
-    final data = (notification['data'] as Map?)?.cast<String, dynamic>() ?? <String, dynamic>{};
+    final data = (notification['data'] as Map?)?.cast<String, dynamic>() ??
+        <String, dynamic>{};
 
     String title;
     String body;
     try {
       switch (type) {
         case 'new_message':
-          final senderName = (data['sender_name'] ?? data['other_user_name'] ?? '').toString();
+          final senderName =
+              (data['sender_name'] ?? data['other_user_name'] ?? '').toString();
           title = 'notif_new_message_from'.tr(namedArgs: {'name': senderName});
           final preview = (data['preview'] ?? '').toString();
           body = preview.isNotEmpty ? preview : 'notif_generic'.tr();
           break;
         case 'new_offer':
-          final carTitle = (data['car_title'] ?? data['title'] ?? '').toString();
+          final carTitle =
+              (data['car_title'] ?? data['title'] ?? '').toString();
           final senderName = (data['sender_name'] ?? '').toString();
           title = 'notif_new_offer_title'.tr(args: [carTitle]);
           body = 'notif_new_offer_body'.tr(args: [senderName]);
           break;
         case 'car_like':
-          final liker = (data['liker_name'] ?? data['sender_name'] ?? '').toString();
+          final liker =
+              (data['liker_name'] ?? data['sender_name'] ?? '').toString();
           final carTitle = (data['car_title'] ?? '').toString();
           title = 'notif_like_title'.tr();
           body = 'notif_like_body'.tr(args: [liker, carTitle]);
           break;
         case 'car_comment':
-          final commenter = (data['commenter_name'] ?? data['sender_name'] ?? '').toString();
+          final commenter =
+              (data['commenter_name'] ?? data['sender_name'] ?? '').toString();
           final carTitle = (data['car_title'] ?? '').toString();
           final comment = (data['comment'] ?? '').toString();
           title = 'notif_comment_title'.tr(args: [carTitle]);
-          body = comment.isNotEmpty ? 'notif_comment_body'.tr(args: [commenter, comment]) : 'notif_generic'.tr();
+          body = comment.isNotEmpty
+              ? 'notif_comment_body'.tr(args: [commenter, comment])
+              : 'notif_generic'.tr();
           break;
         case 'car_removed':
           final carTitle = (data['car_title'] ?? '').toString();
           final reason = (data['reason'] ?? '').toString();
           title = 'notif_car_removed_title'.tr(args: [carTitle]);
           body = 'notif_car_removed_body'.tr(args: [reason]);
+          break;
+        case 'car_rejected':
+          final carTitle = (data['car_title'] ?? '').toString();
+          final reason = (data['reason'] ?? '').toString();
+          title = 'notif_car_rejected_title'.tr(args: [carTitle]);
+          body = 'notif_car_rejected_body'.tr(args: [reason]);
           break;
         default:
           title = notification['title']?.toString() ?? 'notification'.tr();
@@ -266,11 +288,11 @@ class NotificationItemWidget extends StatelessWidget {
           margin: HWEdgeInsets.only(bottom: 12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16.r),
-            color: isRead 
+            color: isRead
                 ? AppColors.white.withValues(alpha: 0.05)
                 : AppColors.primary.withValues(alpha: 0.15),
             border: Border.all(
-              color: isRead 
+              color: isRead
                   ? AppColors.white.withValues(alpha: 0.2)
                   : AppColors.primary.withValues(alpha: 0.3),
             ),
@@ -307,7 +329,8 @@ class NotificationItemWidget extends StatelessWidget {
                         if (createdAt != null)
                           AppText(
                             _formatTime(createdAt),
-                            style: context.textTheme.bodySmall?.withColor(AppColors.grey),
+                            style: context.textTheme.bodySmall
+                                ?.withColor(AppColors.grey),
                             translation: false,
                           ),
                       ],
@@ -323,7 +346,10 @@ class NotificationItemWidget extends StatelessWidget {
                     ),
                     if (sender != null) ...[
                       4.verticalSpace,
-                      AppText('from'.tr(args: [senderName]), style: context.textTheme.bodySmall?.withColor(AppColors.grey), translation: false),
+                      AppText('from'.tr(args: [senderName]),
+                          style: context.textTheme.bodySmall
+                              ?.withColor(AppColors.grey),
+                          translation: false),
                     ],
                   ],
                 ),
@@ -334,13 +360,13 @@ class NotificationItemWidget extends StatelessWidget {
       ),
     );
   }
-  
+
   String _formatTime(String dateStr) {
     try {
       final date = DateTime.parse(dateStr).toLocal();
       final now = DateTime.now();
       final diff = now.difference(date);
-      
+
       if (diff.inDays > 0) {
         return '${diff.inDays}d';
       } else if (diff.inHours > 0) {

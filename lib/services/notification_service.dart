@@ -421,6 +421,32 @@ class NotificationService {
     );
   }
 
+  // إرسال إشعار رفض سيارة أثناء مراجعة الأدمن
+  static Future<bool> sendCarRejectedNotification({
+    required String recipientId,
+    required String carTitle,
+    required String reason,
+    required String carId,
+  }) async {
+    final lang = await _getUserPreferredLanguage(recipientId);
+    final title = _isArabic(lang)
+        ? 'تم رفض إعلان السيارة - $carTitle'
+        : 'Listing rejected - $carTitle';
+    final body = _isArabic(lang) ? 'السبب: $reason' : 'Reason: $reason';
+    return sendNotificationToUser(
+      userId: recipientId,
+      title: title,
+      body: body,
+      type: 'car_rejected',
+      data: {
+        'car_id': carId,
+        'car_title': carTitle,
+        'reason': reason,
+        'action': 'car_rejected',
+      },
+    );
+  }
+
   // إرسال إشعار تغيير سعر السيارة للمستخدمين الذين أضافوها للمفضلة
   static Future<void> sendPriceChangeNotification({
     required String carId,

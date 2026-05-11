@@ -11,6 +11,12 @@ import 'package:wolfera/services/search_and_filters_service.dart';
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
+  static final ValueNotifier<int> refreshTick = ValueNotifier<int>(0);
+
+  static void requestRefresh() {
+    refreshTick.value++;
+  }
+
   @override
   State<HomePage> createState() => _HomePageState();
 }
@@ -32,13 +38,21 @@ class _HomePageState extends State<HomePage>
     _shouldAnimateEntrance = !_didAnimateOnce;
     // Mark as animated for subsequent visits
     _didAnimateOnce = true;
+    HomePage.refreshTick.addListener(_handleExternalRefresh);
     super.initState();
   }
 
   @override
   void dispose() {
+    HomePage.refreshTick.removeListener(_handleExternalRefresh);
     _homeSearchCubit.close();
     super.dispose();
+  }
+
+  void _handleExternalRefresh() {
+    _homeCubit.getHomeData();
+    _homeSearchCubit.searchCars();
+    _bannerReload?.call();
   }
 
   @override

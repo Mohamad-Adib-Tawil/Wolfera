@@ -367,6 +367,12 @@ class NotificationsCubit extends Cubit<NotificationsState> {
           title = 'notif_car_removed_title'.tr(args: [carTitle]);
           body = 'notif_car_removed_body'.tr(args: [reason]);
           break;
+        case 'car_rejected':
+          final carTitle = (data['car_title'] ?? '').toString();
+          final reason = (data['reason'] ?? '').toString();
+          title = 'notif_car_rejected_title'.tr(args: [carTitle]);
+          body = 'notif_car_rejected_body'.tr(args: [reason]);
+          break;
         default:
           break;
       }

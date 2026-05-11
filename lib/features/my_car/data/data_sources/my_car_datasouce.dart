@@ -4,37 +4,38 @@ import 'package:uuid/uuid.dart';
 import 'package:wolfera/core/api/api_utils.dart';
 import 'package:wolfera/core/api/result.dart';
 import 'package:wolfera/features/my_car/domain/usecases/sell_my_car_usecase.dart';
+import 'package:wolfera/services/app_settings_service.dart';
 import 'package:wolfera/services/supabase_service.dart';
 import 'package:wolfera/services/storage_service.dart';
 
 @injectable
 class MyCarDatasouce {
   static const _uuid = Uuid();
-  
+
   Future<Result<bool>> sellMyCar(SellMyCarParams params) async {
     Future<bool> fun() async {
       print('\n🚗 ========== SELL MY CAR START ==========');
-      
+
       // Generate a unique car ID for this listing
       final carId = _uuid.v4();
       print('📝 Generated Car ID: $carId');
-      
+
       // Get current user ID
       final userId = StorageService.currentUserId;
       print('👤 Current User ID: $userId');
-      
+
       if (userId == null) {
         print('❌ ERROR: User not authenticated');
         throw Exception('User not authenticated');
       }
-      
+
       // Upload car images using the new StorageService
       final List<String> uploadedUrls = [];
-      
+
       // Filter out null images and upload them
       final validImages = params.carImages.where((img) => img != null).toList();
       print('📸 Total images to upload: ${validImages.length}');
-      
+
       if (validImages.isNotEmpty) {
         // Upload images and get their URLs
         print('⬆️  Uploading images...');
@@ -43,16 +44,22 @@ class MyCarDatasouce {
           carId: carId,
           imageFiles: validImages,
         ));
-        print('✅ Images uploaded successfully. URLs count: ${uploadedUrls.length}');
+        print(
+            '✅ Images uploaded successfully. URLs count: ${uploadedUrls.length}');
       } else {
         print('⚠️  No images to upload');
       }
-      
+
       // Prepare car data with uploaded image URLs
       print('\n📦 Preparing car data...');
       final carData = params.toMapWithUrls(uploadedUrls);
       carData['id'] = carId; // Add the car ID to the data
-      
+      final requireCarApproval =
+          await AppSettingsService.instance.fetchRequireCarApproval();
+      carData['approval_status'] = requireCarApproval
+          ? SupabaseService.pendingApprovalStatus
+          : SupabaseService.approvedApprovalStatus;
+
       print('📋 Car data keys: ${carData.keys.toList()}');
       print('🧾 Full car data payload:');
       carData.forEach((key, value) {
@@ -79,7 +86,7 @@ class MyCarDatasouce {
       Map<String, dynamic> carData) async {
     final data = Map<String, dynamic>.from(carData);
     int attempt = 1;
-    
+
     while (true) {
       try {
         print('🔄 Insert attempt #$attempt with ${data.keys.length} fields');
@@ -91,7 +98,7 @@ class MyCarDatasouce {
         print('   Code: ${e.code}');
         print('   Message: ${e.message}');
         print('   Details: ${e.details}');
-        
+
         final message = e.message;
         final match =
             RegExp(r"Could not find the '([^']+)' column").firstMatch(message);
@@ -102,7 +109,7 @@ class MyCarDatasouce {
           attempt++;
           continue;
         }
-        
+
         print('💥 Unhandled PostgrestException - rethrowing');
         rethrow;
       } catch (e) {

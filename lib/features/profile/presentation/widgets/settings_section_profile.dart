@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:wolfera/core/config/routing/router.dart';
 import 'package:get_it/get_it.dart';
 import 'package:wolfera/features/app/domin/repositories/prefs_repository.dart';
 import 'package:wolfera/core/config/theme/colors_app.dart';
 import 'package:wolfera/features/app/presentation/widgets/animated_dialog.dart';
-import 'package:wolfera/features/app/presentation/widgets/app_bottom_sheet.dart';
 import 'package:wolfera/features/app/presentation/widgets/language_dialog.dart';
-import 'package:wolfera/features/profile/presentation/pages/profile_page.dart';
 import 'package:wolfera/features/profile/presentation/widgets/logout_bottom_sheet.dart';
 import 'package:wolfera/generated/assets.dart';
 import 'package:wolfera/services/supabase_service.dart';
@@ -59,6 +56,7 @@ class SettingsSectionProfile extends StatelessWidget {
                 ),
                 // خيار إخفاء/إظهار سوريا
                 _SyriaVisibilityToggle(),
+                const _CarApprovalToggle(),
               ],
             );
           },
@@ -116,6 +114,59 @@ class SettingsSectionProfile extends StatelessWidget {
   }
 }
 
+/// ويدجت لتفعيل/إيقاف مراجعة السيارات قبل النشر (للسوبر أدمن فقط)
+class _CarApprovalToggle extends StatefulWidget {
+  const _CarApprovalToggle();
+
+  @override
+  State<_CarApprovalToggle> createState() => _CarApprovalToggleState();
+}
+
+class _CarApprovalToggleState extends State<_CarApprovalToggle> {
+  bool _isRequired = false;
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _isRequired = AppSettingsService.instance.requireCarApproval;
+  }
+
+  Future<void> _toggleApproval() async {
+    setState(() => _isLoading = true);
+
+    try {
+      EasyLoading.show(status: 'Updating...');
+      final newValue = !_isRequired;
+      await AppSettingsService.instance.setCarApprovalRequired(newValue);
+
+      setState(() => _isRequired = newValue);
+
+      EasyLoading.dismiss();
+      EasyLoading.showSuccess(
+        'car_approval_setting_updated'.tr(),
+        duration: const Duration(seconds: 2),
+      );
+    } catch (e) {
+      EasyLoading.dismiss();
+      EasyLoading.showError('Failed: $e');
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ProfileItemSettingsWidget(
+      title: _isRequired ? 'disable_car_approval' : 'enable_car_approval',
+      svgIcon: Assets.svgCheckCircle,
+      onTap: _isLoading ? null : _toggleApproval,
+    );
+  }
+}
+
 /// ويدجت لتبديل إخفاء/إظهار سوريا (للسوبر أدمن فقط)
 class _SyriaVisibilityToggle extends StatefulWidget {
   const _SyriaVisibilityToggle();
@@ -136,20 +187,20 @@ class _SyriaVisibilityToggleState extends State<_SyriaVisibilityToggle> {
 
   Future<void> _toggleVisibility() async {
     setState(() => _isLoading = true);
-    
+
     try {
       EasyLoading.show(status: 'Updating...');
       final newValue = !_isHidden;
       await AppSettingsService.instance.setSyriaVisibility(newValue);
-      
+
       setState(() => _isHidden = newValue);
-      
+
       EasyLoading.dismiss();
       EasyLoading.showSuccess(
         'syria_visibility_updated'.tr(),
         duration: const Duration(seconds: 2),
       );
-      
+
       // إعادة تحميل التطبيق لتطبيق التغييرات
       if (mounted) {
         showDialog(

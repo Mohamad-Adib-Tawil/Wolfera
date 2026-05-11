@@ -18,7 +18,8 @@ class SearchFilterService {
           .from('cars')
           .select('*')
           // تشمل 'active' و 'available' لدعم بيانات قديمة
-          .inFilter('status', ['active', 'available']);
+          .inFilter('status', ['active', 'available']).eq(
+              'approval_status', SupabaseService.approvedApprovalStatus);
 
       // تجميع شروط OR (بحث نصي + ألوان)
       final List<String> orConditions = [];
@@ -443,7 +444,8 @@ class SearchFilterService {
           .from('cars')
           .select('*')
           .neq('id', currentCarId) // استبعاد السيارة الحالية
-          .eq('status', 'active'); // فقط السيارات النشطة
+          .eq('status', 'active') // فقط السيارات النشطة
+          .eq('approval_status', SupabaseService.approvedApprovalStatus);
 
       // فلترة حسب الماركة
       if (brand != null && brand.isNotEmpty) {

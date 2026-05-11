@@ -8,7 +8,7 @@ class NavStack<T> {
   }
 
   T pop() {
-    final T lastElement = _stack.last;
+  final T lastElement = _stack.last;
     _stack.removeLast();
     return lastElement;
   }

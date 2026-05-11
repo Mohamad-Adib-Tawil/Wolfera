@@ -32,12 +32,14 @@ class HomeCubit extends Cubit<HomeState> {
           .select('*')
           .inFilter('listing_type', ['rent', 'both'])
           .inFilter('status', ['active', 'available', 'Active', 'Available'])
+          .eq('approval_status', SupabaseService.approvedApprovalStatus)
           .order('created_at', ascending: false)
           .limit(20);
       rentalCars = (primary as List).cast<Map<String, dynamic>>();
       // تطبيق فلترة سوريا
       rentalCars = AppSettingsService.instance.filterCars(rentalCars);
-      print('✅ HomeCubit: Primary query returned ${rentalCars.length} cars (after Syria filter)');
+      print(
+          '✅ HomeCubit: Primary query returned ${rentalCars.length} cars (after Syria filter)');
     } catch (e) {
       print('⚠️ HomeCubit: Primary rental query failed: $e');
     }
@@ -49,24 +51,30 @@ class HomeCubit extends Cubit<HomeState> {
         final fallback = await SupabaseService.client
             .from('cars')
             .select('*')
+            .eq('approval_status', SupabaseService.approvedApprovalStatus)
             .order('created_at', ascending: false)
             .limit(50);
         final list = (fallback as List).cast<Map<String, dynamic>>();
-        rentalCars = list.where((c) {
-          final lt = c['listing_type']?.toString().toLowerCase();
-          final anyRental = c['rental_price_per_day'] != null ||
-              c['rental_price_per_week'] != null ||
-              c['rental_price_per_month'] != null ||
-              c['rental_price_per_3months'] != null ||
-              c['rental_price_per_6months'] != null ||
-              c['rental_price_per_year'] != null;
-          final status = c['status']?.toString().toLowerCase();
-          final isActive = status == null || status == 'active' || status == 'available';
-          return isActive && (lt == 'rent' || lt == 'both' || anyRental);
-        }).take(20).toList();
+        rentalCars = list
+            .where((c) {
+              final lt = c['listing_type']?.toString().toLowerCase();
+              final anyRental = c['rental_price_per_day'] != null ||
+                  c['rental_price_per_week'] != null ||
+                  c['rental_price_per_month'] != null ||
+                  c['rental_price_per_3months'] != null ||
+                  c['rental_price_per_6months'] != null ||
+                  c['rental_price_per_year'] != null;
+              final status = c['status']?.toString().toLowerCase();
+              final isActive =
+                  status == null || status == 'active' || status == 'available';
+              return isActive && (lt == 'rent' || lt == 'both' || anyRental);
+            })
+            .take(20)
+            .toList();
         // تطبيق فلترة سوريا على النتائج البديلة
         rentalCars = AppSettingsService.instance.filterCars(rentalCars);
-        print('✅ HomeCubit: Fallback produced ${rentalCars.length} cars (after Syria filter)');
+        print(
+            '✅ HomeCubit: Fallback produced ${rentalCars.length} cars (after Syria filter)');
       } catch (e) {
         print('❌ HomeCubit: Fallback rental fetch failed: $e');
         emit(state.copyWith(
@@ -103,20 +111,26 @@ class HomeCubit extends Cubit<HomeState> {
         if (!prefs.isWorldwide) {
           final code = prefs.selectedCountryCode;
           final region = prefs.selectedRegionOrCity;
-          
+
           // إذا تم تحديد محافظة/مدينة، فلتر حسب المحافظة فقط (لأنها أكثر تحديداً)
           if (region != null && region.isNotEmpty) {
-            finalList = finalList.where((e) => (e['city']?.toString() ?? '') == region).toList();
+            finalList = finalList
+                .where((e) => (e['city']?.toString() ?? '') == region)
+                .toList();
           } else {
             // إذا لم يتم تحديد محافظة، فلتر حسب الدولة فقط
-            final countryName = code != null ? LocationsData.findByCode(code)?.name : null;
+            final countryName =
+                code != null ? LocationsData.findByCode(code)?.name : null;
             if (countryName != null && countryName.isNotEmpty) {
-              finalList = finalList.where((e) => (e['country']?.toString() ?? '') == countryName).toList();
+              finalList = finalList
+                  .where((e) => (e['country']?.toString() ?? '') == countryName)
+                  .toList();
             }
           }
         }
       } catch (_) {}
-      print('✅ HomeCubit: Showing ${finalList.length} featured cars (available subset: ${filtered.length}, after Syria filter)');
+      print(
+          '✅ HomeCubit: Showing ${finalList.length} featured cars (available subset: ${filtered.length}, after Syria filter)');
 
       emit(state.copyWith(carsState: PageState.loaded(data: finalList)));
     } catch (e) {

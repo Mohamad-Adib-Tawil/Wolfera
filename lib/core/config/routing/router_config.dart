@@ -23,6 +23,7 @@ class _MainRoutes {
   final String carStores = '/carStores';
   final String favorites = '/favorites';
   final String messagesBasePage = '/messagesBasePage';
+  final String carApproval = '/carApproval';
 }
 
 class _HomeRoutes {

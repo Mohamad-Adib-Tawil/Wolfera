@@ -195,6 +195,12 @@ class PushMessagingService {
             title = 'notif_car_removed_title'.tr(args: [carTitle]);
             body = 'notif_car_removed_body'.tr(args: [reason]);
             break;
+          case 'car_rejected':
+            final carTitle = (data['car_title'] ?? '').toString();
+            final reason = (data['reason'] ?? '').toString();
+            title = 'notif_car_rejected_title'.tr(args: [carTitle]);
+            body = 'notif_car_rejected_body'.tr(args: [reason]);
+            break;
           case 'new_offer':
           case 'offer_new':
           case 'offer_updated':

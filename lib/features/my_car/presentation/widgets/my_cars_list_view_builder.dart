@@ -126,9 +126,8 @@ class MyCarsListViewBuilder extends StatelessWidget {
           final spec2 = car['transmission']?.toString();
           final mileageVal = car['mileage']?.toString();
           // Pass raw mileage only; BottomSectionCarMiniDetailsCard appends the localized unit
-          final mileage = (mileageVal != null && mileageVal.isNotEmpty)
-              ? mileageVal
-              : null;
+          final mileage =
+              (mileageVal != null && mileageVal.isNotEmpty) ? mileageVal : null;
           final fuel = car['fuel_type']?.toString();
           final location = (car['city'] ?? car['location'])?.toString();
           final priceVal = car['price']?.toString();
@@ -138,15 +137,20 @@ class MyCarsListViewBuilder extends StatelessWidget {
           final defaultCode = prefs.isWorldwide
               ? 'USD'
               : CurrenciesData.codeForCountry(prefs.selectedCountryCode);
-          final fallbackSymbol = (CurrenciesData.findByCode(preferredCode ?? defaultCode)
-                      ?? CurrenciesData.defaultCurrency())
+          final fallbackSymbol =
+              (CurrenciesData.findByCode(preferredCode ?? defaultCode) ??
+                      CurrenciesData.defaultCurrency())
                   .symbol;
           final carCurrencyRaw = car['currency']?.toString();
-          final currencySymbol = (carCurrencyRaw != null && carCurrencyRaw.isNotEmpty)
-              ? carCurrencyRaw
-              : fallbackSymbol;
-          final price =
-              MoneyFormatter.compactFromString(priceVal, symbol: currencySymbol);
+          final currencySymbol =
+              (carCurrencyRaw != null && carCurrencyRaw.isNotEmpty)
+                  ? carCurrencyRaw
+                  : fallbackSymbol;
+          final price = MoneyFormatter.compactFromString(priceVal,
+              symbol: currencySymbol);
+          final approvalStatus =
+              (car['approval_status']?.toString() ?? 'approved').toLowerCase();
+          final isPendingApproval = approvalStatus == 'pending';
 
           return Padding(
             padding: HWEdgeInsets.only(top: 20, right: 14, left: 14),
@@ -166,6 +170,27 @@ class MyCarsListViewBuilder extends StatelessWidget {
                   carData: car,
                   fullWidth: true,
                 ),
+                if (isPendingApproval)
+                  Positioned(
+                    top: 10,
+                    left: 10,
+                    child: Container(
+                      padding: HWEdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.92),
+                        borderRadius: BorderRadius.circular(10.r),
+                      ),
+                      child: Text(
+                        'approval_pending_badge'.tr(),
+                        style: context.textTheme.bodySmall?.xb
+                            .withColor(Colors.white)
+                            ?.copyWith(fontSize: 12.sp),
+                      ),
+                    ),
+                  ),
                 if (carId != null)
                   Positioned(
                     top: 10,
@@ -262,17 +287,30 @@ class MyCarsListViewBuilder extends StatelessWidget {
                                 return AlertDialog(
                                   backgroundColor: const Color(0xFF1E1F24),
                                   title: Text('edit_rental_prices'.tr(),
-                                      style: const TextStyle(color: Colors.white)),
+                                      style:
+                                          const TextStyle(color: Colors.white)),
                                   content: SingleChildScrollView(
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        _rentalField('rental_periods.per_day'.tr(), dayCtrl),
-                                        _rentalField('rental_periods.per_week'.tr(), weekCtrl),
-                                        _rentalField('rental_periods.per_month'.tr(), monthCtrl),
-                                        _rentalField('rental_periods.per_3months'.tr(), m3Ctrl),
-                                        _rentalField('rental_periods.per_6months'.tr(), m6Ctrl),
-                                        _rentalField('rental_periods.per_year'.tr(), yearCtrl),
+                                        _rentalField(
+                                            'rental_periods.per_day'.tr(),
+                                            dayCtrl),
+                                        _rentalField(
+                                            'rental_periods.per_week'.tr(),
+                                            weekCtrl),
+                                        _rentalField(
+                                            'rental_periods.per_month'.tr(),
+                                            monthCtrl),
+                                        _rentalField(
+                                            'rental_periods.per_3months'.tr(),
+                                            m3Ctrl),
+                                        _rentalField(
+                                            'rental_periods.per_6months'.tr(),
+                                            m6Ctrl),
+                                        _rentalField(
+                                            'rental_periods.per_year'.tr(),
+                                            yearCtrl),
                                       ],
                                     ),
                                   ),
@@ -411,9 +449,9 @@ class MyCarsListViewBuilder extends StatelessWidget {
                           final isRental =
                               listingType == 'rent' || listingType == 'both';
                           final isRentalOnly = listingType == 'rent';
-                          
+
                           final items = <PopupMenuEntry<String>>[];
-                          
+
                           // إظهار "edit_price" فقط للسيارات المعروضة للبيع
                           if (!isRentalOnly) {
                             items.add(
@@ -429,7 +467,7 @@ class MyCarsListViewBuilder extends StatelessWidget {
                               ),
                             );
                           }
-                          
+
                           // إظهار "edit_rental_prices" فقط للسيارات المعروضة للإيجار
                           if (isRental) {
                             items.add(
@@ -439,12 +477,13 @@ class MyCarsListViewBuilder extends StatelessWidget {
                                   leading: const Icon(Icons.car_rental,
                                       color: Colors.white70),
                                   title: Text('edit_rental_prices'.tr(),
-                                      style: const TextStyle(color: Colors.white)),
+                                      style:
+                                          const TextStyle(color: Colors.white)),
                                 ),
                               ),
                             );
                           }
-                          
+
                           // إظهار "mark_as_sold" فقط للسيارات المعروضة للبيع
                           if (!isRentalOnly) {
                             items.add(
@@ -464,7 +503,7 @@ class MyCarsListViewBuilder extends StatelessWidget {
                               ),
                             );
                           }
-                          
+
                           items.addAll([
                             PopupMenuItem(
                               value: 'delete',

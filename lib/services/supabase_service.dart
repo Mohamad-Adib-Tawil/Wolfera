@@ -231,8 +231,14 @@ class SupabaseService {
   static Session? get currentSession => client.auth.currentSession;
 
   // Database methods
+  static const String approvedApprovalStatus = 'approved';
+  static const String pendingApprovalStatus = 'pending';
+
   static Future<List<Map<String, dynamic>>> getCars() async {
-    final response = await client.from('cars').select('*');
+    final response = await client
+        .from('cars')
+        .select('*')
+        .eq('approval_status', approvedApprovalStatus);
     return response;
   }
 
@@ -242,6 +248,7 @@ class SupabaseService {
         .from('cars')
         .select('*')
         .eq('is_featured', true)
+        .eq('approval_status', approvedApprovalStatus)
         .inFilter('status', ['active', 'available']).order('created_at',
             ascending: false);
     return (response as List).cast<Map<String, dynamic>>();
@@ -413,6 +420,108 @@ class SupabaseService {
   // Toggle is_featured flag (admin-only via RLS policy)
   static Future<void> setCarFeatured(String id, bool isFeatured) async {
     await client.from('cars').update({'is_featured': isFeatured}).eq('id', id);
+  }
+
+  static Future<List<Map<String, dynamic>>> fetchPendingCars() async {
+    final isAdmin = await isCurrentUserAdmin();
+    if (!isAdmin) {
+      throw Exception('admin_only_action');
+    }
+
+    final response = await client
+        .from('cars')
+        .select('*')
+        .eq('approval_status', pendingApprovalStatus)
+        .order('created_at', ascending: false);
+
+    final cars = (response as List).cast<Map<String, dynamic>>();
+    final ownerIds = cars
+        .map((car) => car['user_id']?.toString())
+        .whereType<String>()
+        .where((id) => id.isNotEmpty)
+        .toSet()
+        .toList();
+
+    if (ownerIds.isEmpty) return cars;
+
+    try {
+      final usersResponse =
+          await client.from('users').select('*').inFilter('id', ownerIds);
+      final users = {
+        for (final user in (usersResponse as List).cast<Map<String, dynamic>>())
+          if (user['id'] != null) user['id'].toString(): user,
+      };
+
+      return cars
+          .map(
+            (car) => {
+              ...car,
+              'owner': users[car['user_id']?.toString()],
+            },
+          )
+          .toList();
+    } catch (_) {
+      return cars;
+    }
+  }
+
+  static Future<void> approveCar(String carId) async {
+    final isAdmin = await isCurrentUserAdmin();
+    if (!isAdmin) {
+      throw Exception('admin_only_action');
+    }
+
+    await client.from('cars').update({
+      'approval_status': approvedApprovalStatus,
+      'approved_by': currentUser?.id,
+      'approved_at': DateTime.now().toIso8601String(),
+      'updated_at': DateTime.now().toIso8601String(),
+    }).eq('id', carId);
+  }
+
+  static Future<void> rejectCar({
+    required String carId,
+    required String reason,
+  }) async {
+    final isAdmin = await isCurrentUserAdmin();
+    if (!isAdmin) {
+      throw Exception('admin_only_action');
+    }
+
+    final car = await client
+        .from('cars')
+        .select('id,user_id,title,brand,model,year')
+        .eq('id', carId)
+        .maybeSingle();
+    if (car == null) {
+      throw Exception('car_not_found');
+    }
+
+    final sellerId = car['user_id']?.toString();
+    if (sellerId == null || sellerId.isEmpty) {
+      throw Exception('car_owner_not_found');
+    }
+
+    final carTitle = (car['title']?.toString().trim().isNotEmpty ?? false)
+        ? car['title'].toString()
+        : [
+            car['year']?.toString(),
+            car['brand']?.toString(),
+            car['model']?.toString(),
+          ].where((part) => part != null && part.trim().isNotEmpty).join(' ');
+
+    final notified = await NotificationService.sendCarRejectedNotification(
+      recipientId: sellerId,
+      carTitle: carTitle.isNotEmpty ? carTitle : 'Car',
+      reason: reason,
+      carId: carId,
+    );
+
+    if (!notified) {
+      throw Exception('notification_failed');
+    }
+
+    await client.from('cars').delete().eq('id', carId);
   }
 
   // Check if current user is admin (treat super admin as admin too)

@@ -14,6 +14,7 @@ class SellerCarsRepository {
         .from('cars')
         .select('*')
         .eq('user_id', sellerId)
+        .eq('approval_status', SupabaseService.approvedApprovalStatus)
         .order('created_at', ascending: false);
 
     final cars = List<Map<String, dynamic>>.from(data as List);
@@ -24,6 +25,7 @@ class SellerCarsRepository {
     final data = await _client
         .from('cars')
         .select('*')
+        .eq('approval_status', SupabaseService.approvedApprovalStatus)
         .order('created_at', ascending: false);
 
     final cars = AppSettingsService.instance

@@ -12,6 +12,7 @@ import 'package:wolfera/features/my_car/presentation/pages/congratulations_page.
 import 'package:wolfera/features/my_car/presentation/pages/sell_my_car_page.dart';
 import 'package:wolfera/features/search_and_filteration/presentation/pages/filter_page.dart';
 import 'package:wolfera/features/profile/presentation/pages/edit_profile_page.dart';
+import 'package:wolfera/features/profile/presentation/pages/car_approval_page.dart';
 import 'package:wolfera/features/profile/presentation/pages/manage_ads_page.dart';
 import 'package:wolfera/features/profile/presentation/pages/privacy_policy_page.dart';
 import 'package:wolfera/features/profile/presentation/pages/about_us_page.dart';
@@ -398,6 +399,20 @@ class GRouter {
                     },
                   ),
                 ],
+              ),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: _config.mainRoutes.carApproval,
+                name: _config.mainRoutes.carApproval,
+                pageBuilder: (BuildContext context, GoRouterState state) {
+                  return _builderPage(
+                    child: const CarApprovalPage(),
+                    state: state,
+                  );
+                },
               ),
             ],
           ),
