@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:injectable/injectable.dart';
 import 'package:wolfera/core/api/result.dart';
-import 'package:wolfera/core/config/use_case/use_case.dart';
+import 'package:wolfera/core/use_case/use_case.dart';
 import 'package:wolfera/features/profile/data/data_sources/profile_datasource.dart';
 
 @injectable

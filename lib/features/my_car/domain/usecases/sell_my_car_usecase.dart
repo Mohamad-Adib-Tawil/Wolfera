@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:injectable/injectable.dart';
 import 'package:wolfera/core/api/result.dart';
-import 'package:wolfera/core/config/use_case/use_case.dart';
+import 'package:wolfera/core/use_case/use_case.dart';
 import 'package:wolfera/features/my_car/data/data_sources/my_car_datasouce.dart';
 
 @injectable

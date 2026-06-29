@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'FILE=\"$CLAUDE_TOOL_RESULT_FILE_PATH\"; if [[ \"$FILE\" == *.dart ]]; then DIR=$(dirname \"$FILE\"); if [[ \"$DIR\" == */services* ]]; then echo \"⚠️  REMINDER: If you changed a public method signature in lib/services/, update lib/services/CLAUDE.md\"; elif [[ \"$DIR\" == */features/my_car* ]]; then echo \"⚠️  REMINDER: If you changed MyCarsBloc events/state or page structure, update lib/features/my_car/CLAUDE.md\"; elif [[ \"$DIR\" == */features/chat* ]]; then echo \"⚠️  REMINDER: If you changed ChatCubit/ChatService interface, update lib/features/chat/CLAUDE.md\"; elif [[ \"$DIR\" == */features/auth* ]]; then echo \"⚠️  REMINDER: If you changed AuthBloc events/flow, update lib/features/auth/CLAUDE.md\"; elif [[ \"$DIR\" == */features* ]]; then echo \"⚠️  REMINDER: If you added/removed a feature or bloc, update lib/features/CLAUDE.md\"; elif [[ \"$DIR\" == */core* ]]; then echo \"⚠️  REMINDER: If you changed a core API/routing/DI interface, update lib/core/CLAUDE.md\"; fi; fi'"
+          }
+        ]
+      }
+    ]
+  }
+}

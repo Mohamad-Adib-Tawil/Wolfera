@@ -1,6 +1,6 @@
 import 'package:injectable/injectable.dart';
 import 'package:wolfera/core/api/result.dart';
-import 'package:wolfera/core/config/use_case/use_case.dart';
+import 'package:wolfera/core/use_case/use_case.dart';
 import 'package:wolfera/features/auth/data/data_sources/auth_datasource.dart';
 
 @injectable

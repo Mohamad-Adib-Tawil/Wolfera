@@ -1,13 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:injectable/injectable.dart';
 import 'package:wolfera/common/models/page_state/page_state.dart';
 
 part 'chat_event.dart';
 part 'chat_state.dart';
 
-@lazySingleton
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
   // final GetChatsUsecase _getChatsUsecase;
 

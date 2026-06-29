@@ -28,7 +28,6 @@ import '../../features/auth/domain/use_cases/reset_password_usecase.dart'
 import '../../features/auth/domain/use_cases/verification_usecase.dart'
     as _i438;
 import '../../features/auth/presentation/bloc/auth_bloc.dart' as _i797;
-import '../../features/chat/presentation/manager/chat_bloc.dart' as _i243;
 import '../../features/chat/presentation/manager/chat_cubit.dart' as _i770;
 import '../../features/home/data/datasources/home_datasource.dart' as _i1055;
 import '../../features/home/presentation/manager/home_cubit/home_cubit.dart'
@@ -50,8 +49,6 @@ import '../../features/search_and_filteration/presentation/manager/search_cubit/
 import '../../services/chat_service.dart' as _i207;
 import '../../services/search_and_filters_service.dart' as _i749;
 import '../api/client.dart' as _i265;
-import '../storage/prefs_repository.dart' as _i866;
-import '../storage/prefs_repository_impl.dart' as _i1072;
 import 'di_container.dart' as _i198;
 
 // initializes the registration of main-scope dependencies inside of GetIt
@@ -75,7 +72,6 @@ Future<_i174.GetIt> $initGetIt(
     preResolve: true,
   );
   gh.lazySingleton<_i535.HomeCubit>(() => _i535.HomeCubit());
-  gh.lazySingleton<_i243.ChatBloc>(() => _i243.ChatBloc());
   gh.lazySingleton<_i986.NotificationsCubit>(() => _i986.NotificationsCubit());
   gh.lazySingleton<_i207.ChatService>(() => _i207.ChatService());
   gh.lazySingleton<_i749.SearchFilterService>(
@@ -94,8 +90,6 @@ Future<_i174.GetIt> $initGetIt(
       () => _i770.ChatCubit(gh<_i207.ChatService>()));
   gh.lazySingleton<_i139.MyCarsBloc>(
       () => _i139.MyCarsBloc(gh<_i531.SellMyCarUsecase>()));
-  gh.factory<_i866.PrefsRepository>(
-      () => _i1072.PrefsRepositoryImpl(gh<_i460.SharedPreferences>()));
   gh.factory<_i483.PrefsRepository>(
       () => _i210.PrefsRepositoryImpl(gh<_i460.SharedPreferences>()));
   gh.factory<_i265.ClientApi>(() => _i265.ClientApi(gh<_i361.Dio>()));
